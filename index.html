@@ -14,7 +14,7 @@ header{padding:10px 12px 6px}h1{font-size:16px;margin:0}header p{margin:2px 0 0;
 ol{list-style:none;margin:0;padding:0}
 li{display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
 li.new{background:var(--new)}li.sel{outline:2px solid #2563eb;outline-offset:-2px}
-.min{flex:none;width:42px;text-align:center;font-weight:700;color:#fff;border-radius:8px;padding:6px 0;font-size:14px;height:fit-content}
+.min{flex:none;width:44px;text-align:center;color:var(--muted);font-size:12px;padding-top:2px}
 .a{font-weight:600}.s{color:var(--muted);font-size:13px}.flag{color:#b42318;font-size:13px}
 a{color:#2563eb}
 .kt{font-size:11px;padding:1px 5px;font-weight:600}
@@ -34,6 +34,7 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
 L.circleMarker(K,{radius:7,color:'#fff',weight:2,fillColor:'#2563eb',fillOpacity:1}).addTo(map).bindTooltip('karlaplan',{permanent:true,direction:'right',offset:[6,0],className:'kt'});
 const SC={qasa:'#7c3aed',bostadsförmedlingen:'#0e7490',bofrid:'#db2777',samtrygg:'#92400e',homeq:'#4338ca','wåhlin':'#475569',heimstaden:'#0f172a',stena:'#57534e',rikshem:'#9333ea'};
 const badge=src=>{const n=String(src||'').split(/[ –(]/)[0];const c=SC[n.toLowerCase()]||'#6b7280';const rest=String(src).slice(n.length).replace(/^\s*[–-]\s*/,'');return `<span style="background:${c};color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">${esc(n)}</span>${rest?' <span class=s>'+esc(rest)+'</span>':''}`};
+const m2badge=sz=>{const [r,m]=String(sz).split(',');return `<span style="background:#e2e8f0;color:#0f172a;border-radius:4px;padding:1px 6px;font-size:12px;font-weight:700">${esc((m||'').trim())}</span> <span class=s>${esc(r)}</span>`};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const BK=[[250,'#1a9850','<250'],[350,'#91cf60','250–350'],[450,'#fc8d59','350–450'],[1e9,'#d73027','>450']];
 const col=k=>BK.find(b=>k<b[0])[1];
@@ -46,8 +47,8 @@ fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
       .bindPopup(`<b>${esc(p.address.split(',')[0])}</b><br>${esc(p.rent)} · ${esc(p.size)} · ${p.t} min<br><a href="${esc(p.link)}" target="_blank">open listing</a>`,{closeButton:false,maxWidth:200});
     mk.push(m);
     const li=document.createElement('li');li.id='r'+i;if(p.new)li.className='new';
-    li.innerHTML=`<div class="min" style="background:#333">${p.t}<div style="font-size:10px;font-weight:400">min</div></div><div><div class="a">${esc(p.address)}</div>
-      <div>${esc(p.rent)} · ${esc(p.size)} · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²</div><div class="s">${badge(p.source)} · ${esc(p['move in'])} · <a href="${esc(p.link)}" target="_blank">open</a></div>${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}</div>`;
+    li.innerHTML=`<div class="min">${p.t} min</div><div><div class="a">${esc(p.address)}</div>
+      <div>${esc(p.rent)} · ${m2badge(p.size)} · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²</div><div class="s">${badge(p.source)} · ${esc(p['move in'])} · <a href="${esc(p.link)}" target="_blank">open</a></div>${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}</div>`;
     li.onclick=e=>{if(e.target.tagName==='A')return;sel(i);map.setView([p.lat,p.lon],14);mk[i].openPopup();window.scrollTo({top:0,behavior:'smooth'})};
     ol.appendChild(li)});
   function sel(i){document.querySelectorAll('li.sel').forEach(x=>x.classList.remove('sel'));document.getElementById('r'+i).classList.add('sel')}
