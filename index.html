@@ -45,7 +45,7 @@ fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
   const ol=document.getElementById('list'),mk=[];
   P.forEach((p,i)=>{
     const m=L.circleMarker([p.lat,p.lon],{radius:Math.max(4,Math.min(14,Math.sqrt(parseFloat(String(p.size).split(',')[1])||20)*1.25)),color:p.new?'#111':'#fff',weight:p.new?2:1.5,fillColor:col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
-      .bindPopup(`<b>${esc(p.address.split(',')[0])}</b><br>${esc(p.rent)} · ${esc(p.size)} · ${p.t} min<br><a href="${esc(p.link)}" target="_blank">open listing</a>`,{closeButton:false,maxWidth:200});
+      .bindPopup(`<div class="a">${esc(p.address)}${p.new?' <span style="background:#fde68a;border-radius:4px;padding:0 5px;font-size:11px">new</span>':''}</div>${esc(p.rent)} · ${m2badge(p.size)} · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²<br>${p.t} min · ${esc(p['move in'])}<br>${badge(p.source)} · <a href="${esc(p.link)}" target="_blank">open</a>${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}`,{closeButton:false,maxWidth:260});
     mk.push(m);
     const li=document.createElement('li');li.id='r'+i;if(p.new)li.className='new';
     li.innerHTML=`<div class="min">${p.t} min</div><div><div class="a">${esc(p.address)}</div>
