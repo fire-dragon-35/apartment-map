@@ -22,7 +22,7 @@ a{color:#2563eb}
 </style></head><body>
 <header><h1>apartments ≤15k · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
-<div class="legend"><span>kr/m²:</span><span><i style="background:#1a9850"></i>&lt;250</span><span><i style="background:#91cf60"></i>250–350</span><span><i style="background:#fc8d59"></i>350–450</span><span><i style="background:#d73027"></i>&gt;450</span><span><i style="background:#2563eb"></i>karlaplan</span></div>
+<div class="legend"><span>kr/m²:</span><span><i style="background:#1a9850"></i>&lt;250</span><span><i style="background:#91cf60"></i>250–350</span><span><i style="background:#fc8d59"></i>350–450</span><span><i style="background:#d73027"></i>&gt;450</span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
 <ol id="list"></ol>
 <script>
 const K=[59.3389,18.0907];
@@ -40,7 +40,7 @@ fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
   document.getElementById('meta').textContent=`${P.length} matches · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00`;
   const ol=document.getElementById('list'),mk=[];
   P.forEach((p,i)=>{
-    const m=L.circleMarker([p.lat,p.lon],{radius:p.new?8:6,color:p.new?'#111':'#fff',weight:p.new?2:1.5,fillColor:col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
+    const m=L.circleMarker([p.lat,p.lon],{radius:Math.max(4,Math.min(14,Math.sqrt(parseFloat(String(p.size).split(',')[1])||20)*1.25)),color:p.new?'#111':'#fff',weight:p.new?2:1.5,fillColor:col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
       .bindPopup(`<b>${esc(p.address.split(',')[0])}</b><br>${esc(p.rent)} · ${esc(p.size)} · ${p.t} min<br><a href="${esc(p.link)}" target="_blank">open listing</a>`,{closeButton:false,maxWidth:200});
     m.on('click',()=>{sel(i);document.getElementById('r'+i).scrollIntoView({behavior:'smooth',block:'nearest'})});mk.push(m);
     const li=document.createElement('li');li.id='r'+i;if(p.new)li.className='new';
@@ -49,5 +49,6 @@ fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
     li.onclick=e=>{if(e.target.tagName==='A')return;sel(i);map.setView([p.lat,p.lon],14);mk[i].openPopup();window.scrollTo({top:0,behavior:'smooth'})};
     ol.appendChild(li)});
   function sel(i){document.querySelectorAll('li.sel').forEach(x=>x.classList.remove('sel'));document.getElementById('r'+i).classList.add('sel')}
+  mk.slice().map((m,i)=>[m,parseFloat(String(P[i].size).split(',')[1])||0]).sort((a,b)=>a[1]-b[1]).forEach(([m])=>m.bringToFront());
 }).catch(e=>{document.getElementById('meta').textContent='could not load data: '+e});
 </script></body></html>
