@@ -7,7 +7,7 @@ async function fetchSamtrygg() {
     lat: x.GeographicPositionLat, lon: x.GeographicPositionLong,
     rent: Number(String(x.FormatedHGPrice || '').replace(/\D/g, '')) || null, m2: x.SquareMeters, rooms: x.NoOfRooms,
     start: ms(x.StartRentalDate), end: ms(x.EndRentalDate), published: ms(x.PublishedTs),
-    url: 'https://www.samtrygg.se/' + x.RentalObjectLink,
+    url: x.RentalObjectLink,
     flags: x.HasExtensionChance ? ['extension possible'] : [],
   }));
   return { total: items.length, items };

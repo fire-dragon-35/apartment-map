@@ -12,7 +12,7 @@ async function fetchBF() {
     items.push({
       id: x.AnnonsId, addr: x.Gatuadress, area: x.Stadsdel || x.Kommun, lat: x.KoordinatLatitud, lon: x.KoordinatLongitud,
       rent: x.Hyra, m2: x.Yta, rooms: x.AntalRum, start: day(x.Inflyttningsdatum), end: null,
-      published: day(x.AnnonseradFran), url: 'https://bostad.stockholm.se' + x.Url, flags,
+      published: day(x.AnnonseradFran), url: (x.Url || '').replace(/\D/g, ''), flags,
     });
   }
   return { total: all.length, items };

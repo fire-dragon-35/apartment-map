@@ -41,7 +41,8 @@ async function slMinutes(lat, lon) {
 
 // item: {id, addr, area, lat, lon, rent, m2, rooms, start, end, published, url, flags:[]}
 async function run(source, fetchAll) {
-  const { total, items } = await fetchAll();
+  const res = await fetchAll();
+  const { total, items } = res;
   const seen = items.length;
   let c = items.filter(x =>
     x.lat && x.lon && x.rent > 1000 && x.rent <= CFG.maxRent && (x.m2 || 0) >= CFG.minM2 &&
@@ -52,15 +53,15 @@ async function run(source, fetchAll) {
     await Promise.all(c.slice(i, i + 12).map(async x => { x.t = await slMinutes(x.lat, x.lon); }));
   }
   c = c.filter(x => x.t !== null && x.t <= CFG.maxMin);
-  const r = n => Math.round(n * 1e5) / 1e5;
-  return {
-    source, total, fetched: seen, run: new Date().toISOString(),
-    matches: c.map(x => ({
-      id: String(x.id), a: x.addr, ar: x.area || '', la: r(x.lat), lo: r(x.lon), r: x.rent, m: x.m2,
-      k: x.rooms ?? null, st: x.start && x.start > today ? x.start : (x.start ? 'now' : null),
-      en: x.end || null, p: x.published || null, u: x.url, t: x.t, f: (x.flags || []).join('; '),
-    })),
-  };
+  const r = n => Math.round(n * 1e4) / 1e4;
+  // compact rows (the task copies this output into results/<source>.json, so keep it small)
+  return JSON.stringify({
+    source, total, fetched: seen, skipped: res.skipped || 0, run: new Date().toISOString(),
+    cols: ['id', 'a', 'ar', 'la', 'lo', 'r', 'm', 'k', 'st', 'en', 't', 'f', 'u'],
+    rows: c.map(x => [String(x.id), x.addr, x.area || '', r(x.lat), r(x.lon), x.rent, x.m2, x.rooms ?? null,
+      x.start && x.start > today ? x.start : (x.start ? 'now' : null), x.end || null, x.t,
+      (x.flags || []).join('; '), x.url || '']),
+  });
 }
 
 // javascript_tool calls time out after ~45 s, so a run is started in the background
