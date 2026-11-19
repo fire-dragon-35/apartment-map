@@ -22,7 +22,7 @@ a{color:#2563eb}
 </style></head><body>
 <header><h1>apartments ≤15k · ≥30 m² · ≥6 months · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
-<div class="legend"><span>kr/m²</span><span style="display:flex;align-items:center;gap:4px">150<span style="display:inline-block;width:120px;height:10px;border-radius:5px;background:linear-gradient(90deg,hsl(120,85%,46%),hsl(60,85%,46%),hsl(0,85%,46%))"></span>550+</span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
+<div class="legend"><span>kr/m²</span><span id="bk"></span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
 <ol id="list"></ol>
 <script>
 const K=[59.3389,18.0907];
@@ -38,11 +38,12 @@ const m2badge=sz=>{const [r,m]=String(sz).split(',');return `<span style="backgr
 const okLen=mi=>{const [a,b]=String(mi||'').split('→').map(x=>x.trim());const e=Date.parse(b);if(isNaN(e))return true;let st=Date.parse(a);if(isNaN(st))st=Date.now();return (e-st)/864e5>=180};
 const mi=v=>{let [a,b]=String(v||'').split('→').map(x=>x.trim());a=(!a||/see ad/i.test(a))?'move-in date in ad':(a==='now'?'available now':'from '+a);b=(!b||b==='–'||/indefinite/i.test(b))?'no end date':(/korttid/i.test(b)?'short-term (see ad)':'until '+b);return a+' · '+b};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const LO=150,HI=550;
-const col=k=>{const t=Math.max(0,Math.min(1,(k-LO)/(HI-LO)));const h=120*(1-t);return `hsl(${h},85%,46%)`};
+const BK=[[250,'#22c55e','<250'],[300,'#a3e635','250–300'],[350,'#facc15','300–350'],[400,'#fb923c','350–400'],[1e9,'#ef4444','400+']];
+const col=k=>BK.find(b=>k<b[0])[1];
 fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
   const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=30&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=30).sort((a,b)=>a.t-b.t);
   document.getElementById('meta').textContent=`${P.length} matches · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00`;
+  document.getElementById('bk').innerHTML=BK.map(b=>`<span style="margin-right:8px"><i style="background:${b[1]}"></i>${b[2]}</span>`).join('');
   const ol=document.getElementById('list'),mk=[];
   P.forEach((p,i)=>{
     const m=L.circleMarker([p.lat,p.lon],{radius:Math.max(4,Math.min(14,Math.sqrt(parseFloat(String(p.size).split(',')[1])||20)*1.25)),color:p.new?'#111':'#fff',weight:p.new?2:1.5,fillColor:col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
