@@ -22,7 +22,7 @@ a{color:#2563eb}
 </style></head><body>
 <header><h1>apartments ≤15k · ≥30 m² · ≥6 months · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
-<div class="legend"><span>kr/m²:</span><span><i style="background:#1a9850"></i>&lt;250</span><span><i style="background:#91cf60"></i>250–350</span><span><i style="background:#fc8d59"></i>350–450</span><span><i style="background:#d73027"></i>&gt;450</span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
+<div class="legend"><span>kr/m²</span><span style="display:flex;align-items:center;gap:4px">150<span style="display:inline-block;width:120px;height:10px;border-radius:5px;background:linear-gradient(90deg,hsl(120,75%,45%),hsl(60,75%,40%),hsl(0,75%,45%))"></span>550+</span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
 <ol id="list"></ol>
 <script>
 const K=[59.3389,18.0907];
@@ -38,8 +38,8 @@ const m2badge=sz=>{const [r,m]=String(sz).split(',');return `<span style="backgr
 const okLen=mi=>{const [a,b]=String(mi||'').split('→').map(x=>x.trim());const e=Date.parse(b);if(isNaN(e))return true;let st=Date.parse(a);if(isNaN(st))st=Date.now();return (e-st)/864e5>=180};
 const mi=v=>{let [a,b]=String(v||'').split('→').map(x=>x.trim());a=(!a||/see ad/i.test(a))?'move-in date in ad':(a==='now'?'available now':'from '+a);b=(!b||b==='–'||/indefinite/i.test(b))?'no end date':(/korttid/i.test(b)?'short-term (see ad)':'until '+b);return a+' · '+b};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const BK=[[250,'#1a9850','<250'],[350,'#91cf60','250–350'],[450,'#fc8d59','350–450'],[1e9,'#d73027','>450']];
-const col=k=>BK.find(b=>k<b[0])[1];
+const LO=150,HI=550;
+const col=k=>{const t=Math.max(0,Math.min(1,(k-LO)/(HI-LO)));const h=120*(1-t);return `hsl(${h},75%,${45-5*Math.sin(Math.PI*t)}%)`};
 fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
   const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=30&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=30).sort((a,b)=>a.t-b.t);
   document.getElementById('meta').textContent=`${P.length} matches · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00`;
