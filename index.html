@@ -20,7 +20,7 @@ a{color:#2563eb}
 .kt{font-size:11px;padding:1px 5px;font-weight:600}
 .leaflet-popup-content{margin:8px 10px;font-size:13px;line-height:1.35}
 </style></head><body>
-<header><h1>apartments ≤15k · ≥30 m² · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
+<header><h1>apartments ≤15k · ≥30 m² · ≥6 months · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
 <div class="legend"><span>kr/m²:</span><span><i style="background:#1a9850"></i>&lt;250</span><span><i style="background:#91cf60"></i>250–350</span><span><i style="background:#fc8d59"></i>350–450</span><span><i style="background:#d73027"></i>&gt;450</span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
 <ol id="list"></ol>
@@ -35,11 +35,12 @@ L.circleMarker(K,{radius:7,color:'#fff',weight:2,fillColor:'#2563eb',fillOpacity
 const SC={qasa:'#7c3aed',bostadsförmedlingen:'#0e7490',bofrid:'#db2777',samtrygg:'#92400e',homeq:'#4338ca','wåhlin':'#475569',heimstaden:'#0f172a',stena:'#57534e',rikshem:'#9333ea'};
 const badge=src=>{const n=String(src||'').split(/[ –(]/)[0];const c=SC[n.toLowerCase()]||'#6b7280';const rest=String(src).slice(n.length).replace(/^\s*[–-]\s*/,'');return `<span style="background:${c};color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">${esc(n)}</span>${rest?' <span class=s>'+esc(rest)+'</span>':''}`};
 const m2badge=sz=>{const [r,m]=String(sz).split(',');return `<span style="background:#e2e8f0;color:#0f172a;border-radius:4px;padding:1px 6px;font-size:12px;font-weight:700">${esc((m||'').trim())}</span> <span class=s>${esc(r)}</span>`};
+const okLen=mi=>{const [a,b]=String(mi||'').split('→').map(x=>x.trim());const e=Date.parse(b);if(isNaN(e))return true;let st=Date.parse(a);if(isNaN(st))st=Date.now();return (e-st)/864e5>=180};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const BK=[[250,'#1a9850','<250'],[350,'#91cf60','250–350'],[450,'#fc8d59','350–450'],[1e9,'#d73027','>450']];
 const col=k=>BK.find(b=>k<b[0])[1];
 fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
-  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=30&&(parseFloat(String(p.size).split(',')[1])||0)>=30).sort((a,b)=>a.t-b.t);
+  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=30&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=30).sort((a,b)=>a.t-b.t);
   document.getElementById('meta').textContent=`${P.length} matches · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00`;
   const ol=document.getElementById('list'),mk=[];
   P.forEach((p,i)=>{
