@@ -20,7 +20,7 @@ a{color:#2563eb}
 .kt{font-size:11px;padding:1px 5px;font-weight:600}
 .leaflet-popup-content{margin:8px 10px;font-size:13px;line-height:1.35}
 </style></head><body>
-<header><h1>apartments ≤15k · ≤20 min to karlaplan</h1><p id="meta">loading…</p></header>
+<header><h1>apartments ≤15k · ≤30 min · ≥30 m² to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
 <div class="legend"><span>kr/m²:</span><span><i style="background:#1a9850"></i>&lt;250</span><span><i style="background:#91cf60"></i>250–350</span><span><i style="background:#fc8d59"></i>350–450</span><span><i style="background:#d73027"></i>&gt;450</span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
 <ol id="list"></ol>
@@ -36,7 +36,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const BK=[[250,'#1a9850','<250'],[350,'#91cf60','250–350'],[450,'#fc8d59','350–450'],[1e9,'#d73027','>450']];
 const col=k=>BK.find(b=>k<b[0])[1];
 fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
-  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=20).sort((a,b)=>a.t-b.t);
+  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=30&&(parseFloat(String(p.size).split(',')[1])||0)>=30).sort((a,b)=>a.t-b.t);
   document.getElementById('meta').textContent=`${P.length} matches · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00`;
   const ol=document.getElementById('list'),mk=[];
   P.forEach((p,i)=>{
