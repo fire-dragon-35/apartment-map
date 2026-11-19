@@ -26,7 +26,7 @@ a{color:#2563eb}
 <ol id="list"></ol>
 <script>
 const K=[59.3389,18.0907];
-const map=L.map('map',{zoomControl:false}).setView(K,12);
+const map=L.map('map',{zoomControl:false,renderer:L.canvas({tolerance:12})}).setView(K,12);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Esri, HERE, OpenStreetMap'}).addTo(map);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,opacity:.7}).addTo(map);
 [2,4,6].forEach(km=>{L.circle(K,{radius:km*1000,color:'#555',weight:1.5,opacity:.85,dashArray:'6 5',fill:false,interactive:false}).addTo(map);
@@ -46,7 +46,7 @@ fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
   document.getElementById('bk').innerHTML=BK.map(b=>`<span style="margin-right:8px"><i style="background:${b[1]}"></i>${b[2]}</span>`).join('');
   const ol=document.getElementById('list'),mk=[];
   P.forEach((p,i)=>{
-    const m=L.circleMarker([p.lat,p.lon],{radius:Math.max(4,Math.min(14,Math.sqrt(parseFloat(String(p.size).split(',')[1])||20)*1.25)),color:p.new?'#111':'#fff',weight:p.new?2:1.5,fillColor:col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
+    const m=L.circleMarker([p.lat,p.lon],{radius:Math.max(6,Math.min(14,Math.sqrt(parseFloat(String(p.size).split(',')[1])||20)*1.25)),color:p.new?'#111':'#fff',weight:p.new?2:1.5,fillColor:col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
       .bindPopup(`<div class="a">${esc(p.address)}${p.new?' <span style="background:#fde68a;border-radius:4px;padding:0 5px;font-size:11px">new</span>':''}</div>${esc(p.rent)} · ${m2badge(p.size)} · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²<br>${p.t} min · ${esc(mi(p['move in']))}<br>${badge(p.source)} · <a href="${esc(p.link)}" target="_blank">open</a>${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}`,{closeButton:false,maxWidth:260});
     mk.push(m);
     const li=document.createElement('li');li.id='r'+i;if(p.new)li.className='new';
