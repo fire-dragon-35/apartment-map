@@ -26,9 +26,9 @@ a{color:#2563eb}
 <script>
 const K=[59.3389,18.0907];
 const map=L.map('map',{zoomControl:false}).setView(K,12);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
 [2,4,6].forEach(km=>{L.circle(K,{radius:km*1000,color:'#444',weight:1,dashArray:'5 6',fill:false,interactive:false}).addTo(map);
-  L.marker([K[0]+km/110.57,K[1]],{icon:L.divIcon({className:'',html:`<span style="font-size:11px;color:#444;background:#fff9;padding:0 3px;border-radius:3px">${km} km</span>`}),interactive:false}).addTo(map)});
+  L.marker([K[0]+km/110.57,K[1]],{icon:L.divIcon({className:'',html:`<span style="white-space:nowrap;font-size:11px;color:#444;background:#fff9;padding:0 3px;border-radius:3px">${km} km</span>`}),interactive:false}).addTo(map)});
 L.circleMarker(K,{radius:7,color:'#fff',weight:2,fillColor:'#d7263d',fillOpacity:1}).addTo(map).bindTooltip('karlaplan',{permanent:true,direction:'right',offset:[8,0]});
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const col=t=>t<=20?'#1a7f37':'#d97706';
