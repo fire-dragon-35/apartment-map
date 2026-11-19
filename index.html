@@ -22,7 +22,7 @@ a{color:#2563eb}
 </style></head><body>
 <header><h1>apartments ≤15k · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
-<div class="legend"><span>kr/m²:</span><span><i style="background:#08306b"></i>&lt;250</span><span><i style="background:#2171b5"></i>250–350</span><span><i style="background:#6baed6"></i>350–450</span><span><i style="background:#c6dbef;border:1px solid #9bb"></i>&gt;450</span><span><i style="background:#d7263d;border-radius:2px"></i>karlaplan</span></div>
+<div class="legend"><span>kr/m²:</span><span><i style="background:#1a9850"></i>&lt;250</span><span><i style="background:#91cf60"></i>250–350</span><span><i style="background:#fc8d59"></i>350–450</span><span><i style="background:#d73027"></i>&gt;450</span><span><i style="background:#2563eb"></i>karlaplan</span></div>
 <ol id="list"></ol>
 <script>
 const K=[59.3389,18.0907];
@@ -31,9 +31,9 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,opacity:.7}).addTo(map);
 [2,4,6].forEach(km=>{L.circle(K,{radius:km*1000,color:'#888',weight:1,opacity:.6,dashArray:'4 6',fill:false,interactive:false}).addTo(map);
   L.marker([K[0]+km/110.57,K[1]],{icon:L.divIcon({className:'',html:`<span style="white-space:nowrap;font-size:11px;color:#777;background:#fffc;padding:0 3px;border-radius:3px">${km} km</span>`}),interactive:false}).addTo(map)});
-L.circleMarker(K,{radius:7,color:'#fff',weight:2,fillColor:'#d7263d',fillOpacity:1}).addTo(map).bindTooltip('karlaplan',{permanent:true,direction:'right',offset:[6,0],className:'kt'});
+L.circleMarker(K,{radius:7,color:'#fff',weight:2,fillColor:'#2563eb',fillOpacity:1}).addTo(map).bindTooltip('karlaplan',{permanent:true,direction:'right',offset:[6,0],className:'kt'});
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const BK=[[250,'#08306b','<250'],[350,'#2171b5','250–350'],[450,'#6baed6','350–450'],[1e9,'#c6dbef','>450']];
+const BK=[[250,'#1a9850','<250'],[350,'#91cf60','250–350'],[450,'#fc8d59','350–450'],[1e9,'#d73027','>450']];
 const col=k=>BK.find(b=>k<b[0])[1];
 fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
   const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).sort((a,b)=>a.t-b.t);
