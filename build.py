@@ -67,7 +67,8 @@ def main():
     for m in kept:
         kpm = round(m["r"] / m["m"]) if m["m"] else None
         flags = [m["f"]] if m["f"] else []
-        if kpm and kpm < 200 and m["src"] in SECOND_HAND and "first-hand" not in m["f"]:
+        note = m.get("n") or ""
+        if kpm and kpm < 200 and m["src"] in SECOND_HAND and "first-hand" not in note:
             flags.append("kr/m² far below second-hand market – verify")
         m["new"] = m["key"] not in prev
         m["kpm"] = kpm
@@ -90,6 +91,7 @@ def main():
                 "link": m["u"],
                 "new": "yes" if m["new"] else "",
                 "flag": m["flag"],
+                "note": note,
             }})
 
     json.dump({"type": "FeatureCollection", "features": feats}, open("apartments.geojson", "w"),
@@ -103,6 +105,8 @@ def main():
     out = [MAP_URL, f"{len(new)} new · {len(kept)} total on the map"]
     for m in new[:10]:
         line = f'{m["t"]} min · {m["a"]}, {m["ar"]} · {m["k"] or "?"} rok · {m["m"]} m² · {m["r"]} kr · {m["kpm"]} kr/m² · {mi(m)} · {m["src"]} · {m["u"]}'
+        if m.get("n"):
+            line += f' · {m["n"]}'
         if m["flag"]:
             line += f' · ⚠ {m["flag"]}'
         out.append(line)

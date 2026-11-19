@@ -39,7 +39,7 @@ async function slMinutes(lat, lon) {
   return null;
 }
 
-// item: {id, addr, area, lat, lon, rent, m2, rooms, start, end, published, url, flags:[]}
+// item: {id, addr, area, lat, lon, rent, m2, rooms, start, end, published, url, flags:[] (warnings), notes:[] (info)}
 async function run(source, fetchAll) {
   const res = await fetchAll();
   const { total, items } = res;
@@ -57,10 +57,10 @@ async function run(source, fetchAll) {
   // compact rows (the task copies this output into results/<source>.json, so keep it small)
   return JSON.stringify({
     source, total, fetched: seen, skipped: res.skipped || 0, run: new Date().toISOString(),
-    cols: ['id', 'a', 'ar', 'la', 'lo', 'r', 'm', 'k', 'st', 'en', 't', 'f', 'u'],
+    cols: ['id', 'a', 'ar', 'la', 'lo', 'r', 'm', 'k', 'st', 'en', 't', 'f', 'n', 'u'],
     rows: c.map(x => [String(x.id), x.addr, x.area || '', r(x.lat), r(x.lon), x.rent, x.m2, x.rooms ?? null,
       x.start && x.start > today ? x.start : (x.start ? 'now' : null), x.end || null, x.t,
-      (x.flags || []).join('; '), x.url || '']),
+      (x.flags || []).join('; '), (x.notes || []).join('; '), x.url || '']),
   });
 }
 

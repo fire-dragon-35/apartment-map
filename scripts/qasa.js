@@ -19,7 +19,8 @@ async function fetchQasa() {
         lat: L.point?.lat, lon: L.point?.lon, rent: n.monthlyCost, m2: n.squareMeters, rooms: n.roomCount,
         start: day(n.startDate), end: day(n.endDate), published: day(n.publishedAt),
         url: '',
-        flags: [n.firstHand ? 'first-hand' : '', n.studentHome ? 'student flat – requires student status' : ''].filter(Boolean),
+        flags: n.studentHome ? ['student flat – requires student status'] : [],
+        notes: n.firstHand ? ['first-hand'] : [],
       });
     }
     if (off + 100 >= total) break;

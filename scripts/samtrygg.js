@@ -8,7 +8,7 @@ async function fetchSamtrygg() {
     rent: Number(String(x.FormatedHGPrice || '').replace(/\D/g, '')) || null, m2: x.SquareMeters, rooms: x.NoOfRooms,
     start: ms(x.StartRentalDate), end: ms(x.EndRentalDate), published: ms(x.PublishedTs),
     url: x.RentalObjectLink,
-    flags: x.HasExtensionChance ? ['extension possible'] : [],
+    flags: [], notes: x.HasExtensionChance ? ['extension possible'] : [],
   }));
   return { total: items.length, items };
 }

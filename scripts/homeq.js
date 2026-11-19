@@ -16,8 +16,9 @@ async function fetchHomeQ() {
         id: x.id, addr: (x.title || '').trim(), area: (x.city || x.municipality || '').trim(),
         lat: x.location?.lat, lon: x.location?.lon, rent: x.rent, m2: x.area, rooms: x.rooms,
         start: day(x.date_access), end: null, published: null, url: x.uri,
-        flags: ['first-hand', x.audience === 'student' ? 'student flat – requires student status' : '',
+        flags: [x.audience === 'student' ? 'student flat – requires student status' : '',
           x.is_short_lease ? 'short lease – check length in ad' : ''].filter(Boolean),
+        notes: ['first-hand'],
       });
     }
     if (!res.length || page * 100 >= total) break;
