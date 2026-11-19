@@ -9,7 +9,7 @@
 *{box-sizing:border-box}body{margin:0;font:15px/1.4 system-ui,-apple-system,sans-serif;color:var(--ink)}
 header{padding:10px 12px 6px}h1{font-size:16px;margin:0}header p{margin:2px 0 0;color:var(--muted);font-size:12px}
 #map{height:55vh}
-.legend{display:flex;gap:12px;padding:6px 12px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:6px 12px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
 ol{list-style:none;margin:0;padding:0}
 li{display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
@@ -22,7 +22,7 @@ a{color:#2563eb}
 </style></head><body>
 <header><h1>apartments ≤15k · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
-<div class="legend"><span><i style="background:var(--near)"></i>≤20 min</span><span><i style="background:var(--far)"></i>20–30 min</span><span><i style="background:#d7263d;border-radius:2px"></i>karlaplan</span><span>yellow row = new</span></div>
+<div class="legend"><span>kr/m²:</span><span><i style="background:#08306b"></i>&lt;250</span><span><i style="background:#2171b5"></i>250–350</span><span><i style="background:#6baed6"></i>350–450</span><span><i style="background:#c6dbef;border:1px solid #9bb"></i>&gt;450</span><span><i style="background:#d7263d;border-radius:2px"></i>karlaplan</span></div>
 <ol id="list"></ol>
 <script>
 const K=[59.3389,18.0907];
@@ -33,18 +33,19 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_L
   L.marker([K[0]+km/110.57,K[1]],{icon:L.divIcon({className:'',html:`<span style="white-space:nowrap;font-size:11px;color:#777;background:#fffc;padding:0 3px;border-radius:3px">${km} km</span>`}),interactive:false}).addTo(map)});
 L.circleMarker(K,{radius:7,color:'#fff',weight:2,fillColor:'#d7263d',fillOpacity:1}).addTo(map).bindTooltip('karlaplan',{permanent:true,direction:'right',offset:[6,0],className:'kt'});
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const col=t=>t<=20?'#1a7f37':'#d97706';
+const BK=[[250,'#08306b','<250'],[350,'#2171b5','250–350'],[450,'#6baed6','350–450'],[1e9,'#c6dbef','>450']];
+const col=k=>BK.find(b=>k<b[0])[1];
 fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
   const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).sort((a,b)=>a.t-b.t);
   document.getElementById('meta').textContent=`${P.length} matches · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00`;
   const ol=document.getElementById('list'),mk=[];
   P.forEach((p,i)=>{
-    const m=L.circleMarker([p.lat,p.lon],{radius:p.new?8:6,color:'#fff',weight:1.5,fillColor:col(p.t),fillOpacity:.9}).addTo(map)
+    const m=L.circleMarker([p.lat,p.lon],{radius:p.new?8:6,color:p.new?'#111':'#fff',weight:p.new?2:1.5,fillColor:col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
       .bindPopup(`<b>${esc(p.address.split(',')[0])}</b><br>${esc(p.rent)} · ${esc(p.size)} · ${p.t} min<br><a href="${esc(p.link)}" target="_blank">open listing</a>`,{closeButton:false,maxWidth:200});
     m.on('click',()=>{sel(i);document.getElementById('r'+i).scrollIntoView({behavior:'smooth',block:'nearest'})});mk.push(m);
     const li=document.createElement('li');li.id='r'+i;if(p.new)li.className='new';
-    li.innerHTML=`<div class="min" style="background:${col(p.t)}">${p.t}<div style="font-size:10px;font-weight:400">min</div></div><div><div class="a">${esc(p.address)}</div>
-      <div>${esc(p.rent)} · ${esc(p.size)} · ${esc(p['kr/m²'])} kr/m²</div><div class="s">${esc(p['move in'])} · ${esc(p.source)} · <a href="${esc(p.link)}" target="_blank">open</a></div>${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}</div>`;
+    li.innerHTML=`<div class="min" style="background:#333">${p.t}<div style="font-size:10px;font-weight:400">min</div></div><div><div class="a">${esc(p.address)}</div>
+      <div>${esc(p.rent)} · ${esc(p.size)} · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²</div><div class="s">${esc(p['move in'])} · ${esc(p.source)} · <a href="${esc(p.link)}" target="_blank">open</a></div>${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}</div>`;
     li.onclick=e=>{if(e.target.tagName==='A')return;sel(i);map.setView([p.lat,p.lon],14);mk[i].openPopup();window.scrollTo({top:0,behavior:'smooth'})};
     ol.appendChild(li)});
   function sel(i){document.querySelectorAll('li.sel').forEach(x=>x.classList.remove('sel'));document.getElementById('r'+i).classList.add('sel')}
