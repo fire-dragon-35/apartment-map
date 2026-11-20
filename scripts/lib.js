@@ -4,9 +4,9 @@ var CFG = {
   karlaplan: [59.3389, 18.0907],
   maxRent: 17000,        // kr/month incl. platform fee
   maxKpm: 600,           // kr per m²
-  minM2: 25,
+  minM2: 20,
   maxKm: 8,              // straight-line pre-filter before asking SL
-  maxMin: 30,            // door-to-door, arrive 08:00 on a weekday
+  maxMin: 25,            // door-to-door, arrive 08:00 on a weekday
   latestStart: '2027-03-31',
   minDays: 180,          // contract length
 };
