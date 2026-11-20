@@ -20,7 +20,7 @@ a{color:#2563eb}
 .kt{font-size:11px;padding:1px 5px;font-weight:600}
 .leaflet-popup-content{margin:8px 10px;font-size:13px;line-height:1.35}
 </style></head><body>
-<header><h1>apartments ≤15k · ≥25 m² · ≥6 months · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
+<header><h1>apartments ≤17k · ≥30 m² · ≥6 months · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
 <div class="legend"><span>kr/m²</span><span id="bk"></span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
 <ol id="list"></ol>
@@ -41,7 +41,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const BK=[[250,'#22c55e','<250'],[300,'#a3e635','250–300'],[350,'#facc15','300–350'],[400,'#fb923c','350–400'],[1e9,'#ef4444','400+']];
 const col=k=>BK.find(b=>k<b[0])[1];
 fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
-  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=30&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=25).sort((a,b)=>a.t-b.t);
+  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=30&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=30).sort((a,b)=>a.t-b.t);
   document.getElementById('meta').textContent=`${P.length} matches · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00`;
   document.getElementById('bk').innerHTML=BK.map(b=>`<span style="margin-right:8px"><i style="background:${b[1]}"></i>${b[2]}</span>`).join('');
   const ol=document.getElementById('list'),mk=[];
