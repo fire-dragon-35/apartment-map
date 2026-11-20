@@ -2,7 +2,8 @@
 // and runs the result with javascript_tool in a tab open on that source's site.
 var CFG = {
   karlaplan: [59.3389, 18.0907],
-  maxRent: 17000,        // kr/month incl. platform fee
+  maxRent: 15000,        // kr/month incl. platform fee
+  maxKpm: 600,           // kr per m²
   minM2: 25,
   maxKm: 8,              // straight-line pre-filter before asking SL
   maxMin: 30,            // door-to-door, arrive 08:00 on a weekday
@@ -45,7 +46,7 @@ async function run(source, fetchAll) {
   const { total, items } = res;
   const seen = items.length;
   let c = items.filter(x =>
-    x.lat && x.lon && x.rent > 1000 && x.rent <= CFG.maxRent && (x.m2 || 0) >= CFG.minM2 &&
+    x.lat && x.lon && x.rent > 1000 && x.rent <= CFG.maxRent && (x.m2 || 0) >= CFG.minM2 && x.rent / x.m2 <= CFG.maxKpm &&
     dist(x.lat, x.lon) <= CFG.maxKm &&
     (!x.start || x.start <= CFG.latestStart) &&
     (!x.end || (new Date(x.end) - new Date(x.start && x.start > today ? x.start : today)) / 864e5 >= CFG.minDays));
