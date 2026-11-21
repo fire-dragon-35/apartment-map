@@ -45,8 +45,8 @@ Promise.all([fetch('apartments.geojson?'+Date.now()).then(r=>r.json()),fetch('fb
   const FB=F.map(p=>({address:(p.area??'?')+(p.address?', '+p.address:''),rent:p.rent?p.rent+' kr':'? kr',size:`${p.rooms?p.rooms+' rok':''}, ${p.m2?p.m2+' m²':'? m²'}`,
     'kr/m²':p.rent&&p.m2?Math.round(p.rent/p.m2):null,lat:p.lat,lon:p.lon,t:p.t??Infinity,approx:true,source:'facebook',link:p.url,
     'move in':`${p.start??''} → ${p.end??''}`,note:[p.furnished===true?'furnished':p.furnished===false?'unfurnished':'',p.summary].filter(Boolean).join(' · '),new:p.first_seen===fNew}));
-  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=25&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=20).concat(FB).sort((a,b)=>a.t-b.t);
-  document.getElementById('meta').textContent=`${P.length} matches (${FB.length} facebook) · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00 · ~ = facebook, from area centre`;
+  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=25&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=20).concat(FB.filter(p=>p.t<=25&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||20)>=20))).sort((a,b)=>a.t-b.t);
+  document.getElementById('meta').textContent=`${P.length} matches (${P.filter(p=>p.approx).length} facebook) · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00 · ~ = facebook, from area centre`;
   document.getElementById('bk').innerHTML=BK.map(b=>`<span style="margin-right:8px"><i style="background:${b[1]}"></i>${b[2]}</span>`).join('');
   const ol=document.getElementById('list'),mk=[];
   const tm=p=>p.t===Infinity?'? min':(p.approx?'~':'')+p.t+' min';
