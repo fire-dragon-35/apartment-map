@@ -78,7 +78,8 @@ def main():
     for p in L:
         if p.get('t') is not None:
             continue
-        pos = geocode(p)
+        # a hand-set lat/lon (e.g. to fix a bad geocode) is kept; only the travel time is added
+        pos = (p['lat'], p['lon']) if p.get('lat') and p.get('lon') else geocode(p)
         if not pos:
             print('no position for', p.get('area'), p.get('url'))
             continue
