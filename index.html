@@ -296,7 +296,7 @@ function drawRoute(r){
 }
 function resvag(r){
   if(!r)return '';
-  return r.map(([m,n,c,mins,stops])=>m==='walk'?(mins?`gång${NB}${mins}${NB}min`:null):`${esc(lineName(m,n))}${stops?` · ${stops}${NB}stopp`:''}`).filter(Boolean).concat('Karlaplan').join('<span class="chev">›</span>');
+  return r.map(([m,n,c,mins,stops])=>m==='walk'?(mins?`<span class="nb">gång${NB}${mins}${NB}min</span>`:null):`<span class="nb">${esc(lineName(m,n))}${stops?` · ${stops}${NB}stopp`:''}</span>`).filter(Boolean).concat('Karlaplan').join('<span class="chev">›</span>');
 }
 
 function select(i){
@@ -311,7 +311,13 @@ function select(i){
   const r=routeFor(p),pts=drawRoute(r);
   const sh=document.getElementById('sheet');if(sh.offsetHeight<innerHeight*.3&&!matchMedia('(min-width:900px)').matches)setSheet(innerHeight*.45);
   detail(p,r);
-  if(p.lat!=null)setTimeout(()=>map.fitBounds(L.latLngBounds([[p.lat,p.lon],K,...pts]),{...sheetPad(),maxZoom:15}),260);
+  if(p.lat!=null)setTimeout(()=>{map.once('moveend',keepCallout);map.fitBounds(L.latLngBounds([[p.lat,p.lon],K,...pts]),{...sheetPad(),maxZoom:15})},260);
+}
+function keepCallout(){
+  const el=document.querySelector('.callout');if(!el)return;const r=el.getBoundingClientRect(),m=12;
+  let dx=0;if(r.left<m)dx=r.left-m;else if(r.right>innerWidth-m)dx=r.right-(innerWidth-m);
+  const desk=matchMedia('(min-width:900px)').matches;if(desk&&r.left<424)dx=r.left-424;
+  if(dx)map.panBy([dx,0],{animate:true});
 }
 function clearSel(silent){
   if(sel!=null&&P[sel]&&P[sel].mk){P[sel].mk.setIcon(pinIcon(P[sel],false));P[sel].mk.setZIndexOffset(-(P[sel].m2||0)*10)}
