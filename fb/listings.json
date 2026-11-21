@@ -94,5 +94,37 @@
   "contact": "dm",
   "summary": "brf 2:a up to 1 year, all bills incl., 2 months deposit",
   "first_seen": "2026-11-21"
+ },
+ {
+  "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29784090074508403/",
+  "group": "Lägenheter och bostäder i Stockholm uthyres, bytes och sökes",
+  "posted": "2026-11-20",
+  "area": "Nacka centrum",
+  "address": null,
+  "rent": 14920,
+  "m2": 81,
+  "rooms": 3,
+  "start": "2027-01-01",
+  "end": null,
+  "furnished": true,
+  "contact": "dm",
+  "summary": "furnished 3:a near nacka forum, glazed balcony, internet/tv incl., jan–june 2027 with extension up to 1 year",
+  "first_seen": "2026-11-21"
+ },
+ {
+  "url": "https://www.facebook.com/groups/1691859567806459/posts/4721517414840644/",
+  "group": "Lägenheter i Stockholm",
+  "posted": "2026-11-19",
+  "area": "Stureby",
+  "address": null,
+  "rent": 7500,
+  "m2": 24,
+  "rooms": 1,
+  "start": "2026-12-01",
+  "end": null,
+  "furnished": true,
+  "contact": "dm",
+  "summary": "renovated furnished 1:a, 5 min to t-bana, el/heat/water incl., min 1 year, single person, 2 months deposit",
+  "first_seen": "2026-11-21"
  }
 ]
