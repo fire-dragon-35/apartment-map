@@ -5,7 +5,9 @@ into apartments.geojson and print the morning summary. Deterministic: same input
 "new" = listing id not present in the previous apartments.geojson (so it really means
 "not on the map yesterday"), not a guess from publish dates.
 """
-import json, glob, os, sys
+import datetime, json, glob, os, sys
+
+TODAY = datetime.date.today().isoformat()
 
 MAP_URL = "https://fire-dragon-35.github.io/apartment-map/"
 SECOND_HAND = {"Qasa", "Samtrygg"}
@@ -23,18 +25,20 @@ def link(src, m):
         return u
     return PREFIX[src](m) if src in PREFIX else u
 
-def load_prev_ids():
+def load_prev():
+    """id -> first_seen (YYYY-MM-DD) of yesterday's map; listings without one get today's date."""
     try:
         g = json.load(open("apartments.geojson"))
-        return {f["properties"].get("id") for f in g["features"] if f["properties"].get("id")}
+        return {f["properties"]["id"]: f["properties"].get("first_seen") or TODAY
+                for f in g["features"] if f["properties"].get("id")}
     except Exception:
-        return set()
+        return {}
 
 def main():
     files = sorted(glob.glob("results/*.json"))
     if not files:
         sys.exit("no results/*.json")
-    prev = load_prev_ids()
+    prev = load_prev()
     runs, rows = [], []
     for fn in files:
         r = json.load(open(fn))
@@ -92,6 +96,10 @@ def main():
                 "new": "yes" if m["new"] else "",
                 "flag": m["flag"],
                 "note": note,
+                # structured copies for the page (the strings above are for people / the summary)
+                "first_seen": prev.get(m["key"], TODAY),
+                "t": m["t"], "rent_kr": m["r"], "m2": m["m"], "rooms": rooms,
+                "start": m["st"], "end": m["en"], "area": m["ar"], "street": m["a"],
             }})
 
     json.dump({"type": "FeatureCollection", "features": feats}, open("apartments.geojson", "w"),

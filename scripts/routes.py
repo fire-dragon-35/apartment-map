@@ -1,6 +1,6 @@
 """SL route (fastest of 3 journeys, weekday arrive 08:00) from every listing to Karlaplan.
 
-Writes routes.json: {"lat,lon": [[mode, line, [[lat,lon],...]], ...]} for the map to draw on tap.
+Writes routes.json: {"lat,lon": [[mode, line, [[lat,lon],...], minutes, stops], ...]} for the map to draw on tap.
 mode: 'walk' | 'metro' | 'train' | 'tram' | 'bus' | 'boat' | 'other'. Already-known points are kept,
 points no longer listed are dropped. Run by .github/workflows/routes.yml.
 """
@@ -43,10 +43,13 @@ def route(lat, lon):
                 c = l.get('coords') or [l['origin']['coord'], l['destination']['coord']]
                 if len(c) < 2:
                     continue
+                mins = round((l.get('duration') or 0) / 60)
+                stops = max(len(l.get('stopSequence') or []) - 1, 0) if mode != 'walk' else 0
                 if out and out[-1][0] == 'walk' and mode == 'walk':
                     out[-1][2] += thin(c)
+                    out[-1][3] += mins
                 else:
-                    out.append([mode, tr.get('disassembledName') or '', thin(c)])
+                    out.append([mode, tr.get('disassembledName') or '', thin(c), mins, stops])
             return out
         except Exception as e:
             print('sl failed', lat, lon, e)
@@ -65,7 +68,8 @@ def main():
             if p.get('lat') and p.get('lon'):
                 pts.add(key(p['lat'], p['lon']))
     old = json.load(open('routes.json', encoding='utf-8')) if os.path.exists('routes.json') else {}
-    new = {k: old[k] for k in pts if k in old}
+    # entries from before minutes/stops were stored are fetched again
+    new = {k: old[k] for k in pts if k in old and all(len(l) >= 5 for l in old[k])}
     for k in sorted(pts - new.keys()):
         r = route(*k.split(','))
         if r:
