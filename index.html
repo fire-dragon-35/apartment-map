@@ -311,7 +311,7 @@ function select(i){
   const r=routeFor(p),pts=drawRoute(r);
   const sh=document.getElementById('sheet');if(sh.offsetHeight<innerHeight*.3&&!matchMedia('(min-width:900px)').matches)setSheet(innerHeight*.45);
   detail(p,r);
-  if(p.lat!=null)setTimeout(()=>{map.once('moveend',keepCallout);map.fitBounds(L.latLngBounds([[p.lat,p.lon],K,...pts]),{...sheetPad(),maxZoom:15})},260);
+  if(p.lat!=null)setTimeout(()=>{setTimeout(keepCallout,700);map.fitBounds(L.latLngBounds([[p.lat,p.lon],K,...pts]),{...sheetPad(),maxZoom:15})},260);
 }
 function keepCallout(){
   const el=document.querySelector('.callout');if(!el)return;const r=el.getBoundingClientRect(),m=12;
