@@ -12,6 +12,22 @@ Daily Stockholm apartment search → map at https://fire-dragon-35.github.io/apa
 3. **Build.** `python3 build.py` → writes `apartments.geojson` and prints the morning summary.
    "new" = not on yesterday's map. Duplicates across sources are merged.
 4. Commit + push `apartments.geojson` (not `results/`).
+5. **Facebook.** GitHub Actions (`.github/workflows/facebook.yml`, 06:30) fetches yesterday's posts
+   from the public groups in `fb/groups.txt` via Apify into `fb/posts.json`. Read every post's full
+   `text` and update `fb/listings.json` (a JSON list) by these rules – no guessing:
+   - skip posts that are someone *looking* for a home, swaps only, shared rooms, and posts already
+     in the list (same `url`)
+   - per offer add `{"url","group","posted","first_seen":today,"area","address","rent","m2","rooms",
+     "start","end","furnished","contact","summary"}`. `rent` = monthly kr incl. fees as stated,
+     `start`/`end` = YYYY-MM-DD or "now", `summary` = one short english line. Any field the post
+     does not state → `null`.
+   - drop offers where a *stated* value breaks `CFG` (rent > 17000, m² < 20, ends < 6 months after
+     start, start after 2027-03-31, clearly outside Stockholm / far suburbs). Keep nulls.
+   - drop obvious scams: central flat far below market, contact via outside site/email
+     (e.g. hyrabostads.se), "landlord abroad", pay before viewing. Say how many were dropped.
+   - remove entries with `first_seen` older than 14 days.
+   In the morning message add "facebook: N new" + one line per new offer
+   (area · rent · m² · start→end · url). Commit `fb/listings.json` with the rest.
 
 | source | open this page | script |
 |---|---|---|
@@ -34,5 +50,5 @@ for (let i = 0; i < 40 && window.__status === 'running'; i++) await new Promise(
 window.__status === 'done' ? window.__res : window.__status
 ```
 
-Not covered: Facebook groups, Bofrid (no coordinates, many duplicates), small landlords
+Not covered: private Facebook groups, Bofrid (no coordinates, many duplicates), small landlords
 (Wåhlin, Heimstaden, Stena, Rikshem – their Stockholm flats go via Bostadsförmedlingen or are far out).

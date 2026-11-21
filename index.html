@@ -24,6 +24,8 @@ a{color:#2563eb}
 <div id="map"></div>
 <div class="legend"><span>kr/m²</span><span id="bk"></span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
 <ol id="list"></ol>
+<h3 style="margin:16px 8px 4px;font-size:15px">facebook – check manually</h3>
+<ol id="fb"></ol>
 <script>
 const K=[59.3389,18.0907];
 const map=L.map('map',{zoomControl:false,renderer:L.canvas({tolerance:12})}).setView(K,12);
@@ -57,4 +59,10 @@ fetch('apartments.geojson?'+Date.now()).then(r=>r.json()).then(g=>{
   function sel(i){document.querySelectorAll('li.sel').forEach(x=>x.classList.remove('sel'));document.getElementById('r'+i).classList.add('sel')}
   mk.slice().map((m,i)=>[m,parseFloat(String(P[i].size).split(',')[1])||0]).sort((a,b)=>b[1]-a[1]).forEach(([m])=>m.bringToFront());
 }).catch(e=>{document.getElementById('meta').textContent='could not load data: '+e});
+
+fetch('fb/listings.json?'+Date.now()).then(r=>r.json()).then(L=>{
+  L.sort((a,b)=>(b.first_seen||'').localeCompare(a.first_seen||''));
+  const v=x=>x==null?'?':x;
+  document.getElementById('fb').innerHTML=L.map(p=>`<li style="margin:6px 0"><a href="${esc(p.url)}" target="_blank">${esc(v(p.area))}${p.address?', '+esc(p.address):''}</a> · ${v(p.rent)} kr · ${v(p.m2)} m² · ${v(p.start)} → ${p.end||'no end date'}<br><small>${esc(p.summary||'')} · ${esc(p.group||'')}</small></li>`).join('')||'<li>nothing yet</li>';
+}).catch(()=>{});
 </script></body></html>
