@@ -19,18 +19,21 @@ li.new{background:var(--new)}li.sel{outline:2px solid #2563eb;outline-offset:-2p
 a{color:#2563eb}
 .kt{font-size:11px;padding:1px 5px;font-weight:600}
 .leaflet-popup-content{margin:8px 10px;font-size:13px;line-height:1.35}
+.lg{background:#fffffff0;border-radius:8px;box-shadow:0 1px 4px #0003;padding:6px 8px;font:11px/1.3 system-ui,sans-serif;color:#444}
+.lg .bar{display:flex;margin:3px 0 1px}.lg .bar span{width:26px;height:8px}.lg .bar span:first-child{border-radius:4px 0 0 4px}.lg .bar span:last-child{border-radius:0 4px 4px 0}
+.lg .tk{display:flex;padding-left:20px}.lg .tk span{width:26px;font-size:10px;color:#777}
+.lg .ky{margin-top:4px;color:#666;font-size:10px}.lg .ky i{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-right:3px;background:#ccc}
 </style></head><body>
-<header><h1>apartments ≤17k · ≥20 m² · ≥6 months · ≤30 min to karlaplan</h1><p id="meta">loading…</p></header>
+<header><h1>apartments near karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
-<div class="legend"><span>kr/m²</span><span id="bk"></span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new · dashed blue = facebook (area centre)</span></div>
 <ol id="list"></ol>
 <script>
 const K=[59.3389,18.0907];
 const map=L.map('map',{zoomControl:false,renderer:L.canvas({tolerance:12})}).setView(K,12);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Esri, HERE, OpenStreetMap'}).addTo(map);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,opacity:.7}).addTo(map);
-[2,4,6].forEach(km=>{L.circle(K,{radius:km*1000,color:'#555',weight:1.5,opacity:.85,dashArray:'6 5',fill:false,interactive:false}).addTo(map);
-  L.marker([K[0]+km/110.57,K[1]],{icon:L.divIcon({className:'',html:`<span style="white-space:nowrap;font-size:11px;color:#333;font-weight:600;background:#fffc;padding:0 3px;border-radius:3px">${km} km</span>`}),interactive:false}).addTo(map)});
+[2,4,6].forEach(km=>{L.circle(K,{radius:km*1000,color:'#8a8a8a',weight:1,opacity:.7,dashArray:'4 4',fill:false,interactive:false}).addTo(map);
+  L.marker([K[0]+km/110.57,K[1]],{icon:L.divIcon({className:'',html:`<span style="white-space:nowrap;font-size:10px;color:#777;background:#fffd;padding:0 3px;border-radius:3px">${km} km</span>`}),interactive:false}).addTo(map)});
 L.circleMarker(K,{radius:7,color:'#fff',weight:2,fillColor:'#2563eb',fillOpacity:1}).addTo(map).bindTooltip('karlaplan',{permanent:true,direction:'right',offset:[6,0],className:'kt'});
 const SC={facebook:'#1877f2',qasa:'#7c3aed',bostadsförmedlingen:'#0e7490',bofrid:'#db2777',samtrygg:'#92400e',homeq:'#4338ca','wåhlin':'#475569',heimstaden:'#0f172a',stena:'#57534e',rikshem:'#9333ea'};
 const badge=src=>{const n=String(src||'').split(/[ –(]/)[0];const c=SC[n.toLowerCase()]||'#6b7280';return `<span style="background:${c};color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">${esc(n)}</span>`};
@@ -40,6 +43,10 @@ const mi=v=>{let [a,b]=String(v||'').split('→').map(x=>x.trim());a=(!a||/see a
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const BK=[[250,'#22c55e','<250'],[300,'#a3e635','250–300'],[350,'#facc15','300–350'],[400,'#fb923c','350–400'],[1e9,'#ef4444','400+']];
 const col=k=>BK.find(b=>k<b[0])[1];
+const lg=L.control({position:'bottomleft'});lg.onAdd=()=>{const d=L.DomUtil.create('div','lg');
+  d.innerHTML=`<b>kr/m²</b><div class="bar">${BK.map(b=>`<span style="background:${b[1]}"></span>`).join('')}</div><div class="tk">${BK.slice(0,-1).map(b=>`<span>${b[0]}</span>`).join('')}</div>
+  <div class="ky"><i style="border:2px solid #111"></i>new &nbsp; <i style="border:2px dashed #1877f2"></i>facebook (~ area centre) &nbsp; size = m²</div>`;return d};lg.addTo(map);
+
 Promise.all([fetch('apartments.geojson?'+Date.now()).then(r=>r.json()),fetch('fb/listings.json?'+Date.now()).then(r=>r.json()).catch(()=>[]),fetch('routes.json?'+Date.now()).then(r=>r.json()).catch(()=>({}))]).then(([g,F,R])=>{
   const RC={metro:{'10':'#0089ca','11':'#0089ca','13':'#d71d24','14':'#d71d24','17':'#148f42','18':'#148f42','19':'#148f42'},train:'#ec619f',tram:'#d77d00',bus:'#e3000f',boat:'#0e7490',other:'#6b7280'};
   const rl=L.layerGroup().addTo(map);
@@ -52,8 +59,7 @@ Promise.all([fetch('apartments.geojson?'+Date.now()).then(r=>r.json()),fetch('fb
     'kr/m²':p.rent&&p.m2?Math.round(p.rent/p.m2):null,lat:p.lat,lon:p.lon,t:p.t??Infinity,approx:true,source:'facebook',link:p.url,
     'move in':`${p.start??''} → ${p.end??''}`,note:[p.furnished===true?'furnished':p.furnished===false?'unfurnished':'',p.summary].filter(Boolean).join(' · '),new:p.first_seen===fNew}));
   const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=30&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=20).concat(FB.filter(p=>p.t<=30&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||20)>=20)).sort((a,b)=>a.t-b.t);
-  document.getElementById('meta').textContent=`${P.length} matches (${P.filter(p=>p.approx).length} facebook) · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00 · ~ = facebook, from area centre`;
-  document.getElementById('bk').innerHTML=BK.map(b=>`<span style="margin-right:8px"><i style="background:${b[1]}"></i>${b[2]}</span>`).join('');
+  document.getElementById('meta').innerHTML=`<b>${P.length}</b> matches · <b>${P.filter(p=>p.new).length}</b> new · ≤17k · ≥20 m² · ≥6 months · ≤30 min by SL (weekday 08:00)`;
   const ol=document.getElementById('list'),mk=[];
   const tm=p=>p.t===Infinity?'? min':(p.approx?'~':'')+p.t+' min';
   const kd=p=>p['kr/m²']==null?'':` · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²`;
