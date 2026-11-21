@@ -15,7 +15,7 @@ jobs:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: |
           urls=$(grep -v '^\s*$' fb/groups.txt | jq -R '{url: .}' | jq -s .)
-          body=$(jq -n --argjson u "$urls" '{startUrls: $u, resultsLimit: 200, onlyPostsNewerThan: "2 days"}')
+          body=$(jq -n --argjson u "$urls" '{startUrls: $u, resultsLimit: 200, onlyPostsNewerThan: "1 day"}')
           curl -sf -X POST -H 'Content-Type: application/json' -d "$body" \
             "https://api.apify.com/v2/acts/eiv~facebook-groups-scraper/run-sync-get-dataset-items?token=$APIFY_TOKEN&timeout=280" \
             -o fb/posts.json
