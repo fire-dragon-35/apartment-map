@@ -1,0 +1,29 @@
+name: facebook
+on:
+  schedule:
+    - cron: '30 5 * * *'   # 06:30 stockholm (winter)
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: fetch posts from apify
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          urls=$(grep -v '^\s*$' fb/groups.txt | jq -R '{url: .}' | jq -s .)
+          body=$(jq -n --argjson u "$urls" '{startUrls: $u, resultsLimit: 30, onlyPostsNewerThan: "2 days"}')
+          curl -sf -X POST -H 'Content-Type: application/json' -d "$body" \
+            "https://api.apify.com/v2/acts/eiv~facebook-groups-scraper/run-sync-get-dataset-items?token=$APIFY_TOKEN&timeout=280" \
+            -o fb/posts.json
+          echo "posts: $(jq length fb/posts.json)"
+      - name: commit
+        run: |
+          git config user.name 'github-actions'
+          git config user.email 'actions@github.com'
+          git add fb/posts.json
+          git diff --cached --quiet || git commit -m "facebook posts $(date +%F)"
+          git push
