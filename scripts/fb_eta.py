@@ -27,19 +27,23 @@ def queries(p):
     if p.get('address'):
         out += [f"{p['address']}, {n}" for n in names] or [p['address']]
     out += names
+    # "Nacka centrum" -> also try "Nacka"
+    out += [re.sub(r'\s+(centrum|c)$', '', n, flags=re.I) for n in names if re.search(r'\s+(centrum|c)$', n, re.I)]
     return out
 
 
 def geocode(p):
     for q in queries(p):
         u = 'https://nominatim.openstreetmap.org/search?' + urllib.parse.urlencode(
-            {'q': q, 'format': 'json', 'limit': 1, 'countrycodes': 'se', 'viewbox': VIEWBOX, 'bounded': 1})
+            {'q': q, 'format': 'json', 'limit': 10, 'countrycodes': 'se', 'viewbox': VIEWBOX, 'bounded': 1})
         time.sleep(1.1)  # nominatim usage policy: max 1 request/second
         try:
             r = get(u)
         except Exception as e:
             print('geocode failed', q, e)
             continue
+        # only places/areas – not a shop or clinic that happens to share the name
+        r = [x for x in r if x.get('class') in ('place', 'boundary')]
         if r:
             return round(float(r[0]['lat']), 4), round(float(r[0]['lon']), 4)
     return None
