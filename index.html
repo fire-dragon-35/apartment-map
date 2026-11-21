@@ -22,7 +22,7 @@ a{color:#2563eb}
 </style></head><body>
 <header><h1>apartments ≤17k · ≥20 m² · ≥6 months · ≤25 min to karlaplan</h1><p id="meta">loading…</p></header>
 <div id="map"></div>
-<div class="legend"><span>kr/m²</span><span id="bk"></span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new</span></div>
+<div class="legend"><span>kr/m²</span><span id="bk"></span><span><i style="background:#2563eb"></i>karlaplan</span><span>size = m² · black ring = new · dashed blue = facebook (area centre)</span></div>
 <ol id="list"></ol>
 <script>
 const K=[59.3389,18.0907];
@@ -41,31 +41,28 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const BK=[[250,'#22c55e','<250'],[300,'#a3e635','250–300'],[350,'#facc15','300–350'],[400,'#fb923c','350–400'],[1e9,'#ef4444','400+']];
 const col=k=>BK.find(b=>k<b[0])[1];
 Promise.all([fetch('apartments.geojson?'+Date.now()).then(r=>r.json()),fetch('fb/listings.json?'+Date.now()).then(r=>r.json()).catch(()=>[])]).then(([g,F])=>{
-  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=25&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=20).sort((a,b)=>a.t-b.t);
   const fNew=F.reduce((a,p)=>p.first_seen>a?p.first_seen:a,'');
-  document.getElementById('meta').textContent=`${P.length+F.length} matches (${F.length} facebook) · ${P.filter(p=>p.new).length+F.filter(p=>p.first_seen===fNew).length} new · travel = SL, weekday arrive 08:00`;
+  const FB=F.map(p=>({address:(p.area??'?')+(p.address?', '+p.address:''),rent:p.rent?p.rent+' kr':'? kr',size:`${p.rooms?p.rooms+' rok':''}, ${p.m2?p.m2+' m²':'? m²'}`,
+    'kr/m²':p.rent&&p.m2?Math.round(p.rent/p.m2):null,lat:p.lat,lon:p.lon,t:p.t??Infinity,approx:true,source:'facebook',link:p.url,
+    'move in':`${p.start??''} → ${p.end??''}`,note:[p.furnished===true?'furnished':p.furnished===false?'unfurnished':'',p.summary].filter(Boolean).join(' · '),new:p.first_seen===fNew}));
+  const P=g.features.filter(f=>f.geometry.type==='Point'&&f.properties.link).map(f=>{const p=f.properties;return{...p,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],t:parseInt(p['travel (weekday 8:00, SL)'])}}).filter(p=>p.t<=25&&okLen(p['move in'])&&(parseFloat(String(p.size).split(',')[1])||0)>=20).concat(FB).sort((a,b)=>a.t-b.t);
+  document.getElementById('meta').textContent=`${P.length} matches (${FB.length} facebook) · ${P.filter(p=>p.new).length} new · travel = SL, weekday arrive 08:00 · ~ = facebook, from area centre`;
   document.getElementById('bk').innerHTML=BK.map(b=>`<span style="margin-right:8px"><i style="background:${b[1]}"></i>${b[2]}</span>`).join('');
   const ol=document.getElementById('list'),mk=[];
+  const tm=p=>p.t===Infinity?'? min':(p.approx?'~':'')+p.t+' min';
+  const kd=p=>p['kr/m²']==null?'':` · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²`;
   P.forEach((p,i)=>{
-    const m=L.circleMarker([p.lat,p.lon],{radius:Math.max(6,Math.min(14,Math.sqrt(parseFloat(String(p.size).split(',')[1])||20)*1.25)),color:p.new?'#111':'#fff',weight:p.new?2:1.5,fillColor:col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
-      .bindPopup(`<div class="a">${esc(p.address)}${p.new?' <span style="background:#fde68a;border-radius:4px;padding:0 5px;font-size:11px">new</span>':''}</div>${esc(p.rent)} · ${m2badge(p.size)} · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²<br>${p.t} min · ${esc(mi(p['move in']))}<br>${badge(p.source)} · <a href="${esc(p.link)}" target="_blank">open</a>${p.note?`<div class="s">${esc(p.note)}</div>`:''}${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}`,{closeButton:false,maxWidth:260});
+    const body=`${esc(p.rent)} · ${m2badge(p.size)}${kd(p)}`;
+    const m=p.lat&&p.lon?L.circleMarker([p.lat,p.lon],{radius:Math.max(6,Math.min(14,Math.sqrt(parseFloat(String(p.size).split(',')[1])||20)*1.25)),color:p.approx?'#1877f2':p.new?'#111':'#fff',weight:p.approx||p.new?2:1.5,dashArray:p.approx?'3 3':null,fillColor:p['kr/m²']==null?'#9ca3af':col(+p['kr/m²']),fillOpacity:.95}).addTo(map)
+      .bindPopup(`<div class="a">${esc(p.address)}${p.new?' <span style="background:#fde68a;border-radius:4px;padding:0 5px;font-size:11px">new</span>':''}</div>${body}<br>${tm(p)}${p.approx?' (area centre)':''} · ${esc(mi(p['move in']))}<br>${badge(p.source)} · <a href="${esc(p.link)}" target="_blank">open</a>${p.note?`<div class="s">${esc(p.note)}</div>`:''}${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}`,{closeButton:false,maxWidth:260}):null;
     mk.push(m);
     const li=document.createElement('li');li.id='r'+i;if(p.new)li.className='new';
-    li.innerHTML=`<div class="min">${p.t} min</div><div><div class="a">${esc(p.address)}</div>
-      <div>${esc(p.rent)} · ${m2badge(p.size)} · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(+p['kr/m²'])};margin:0 3px 0 2px"></span>${esc(p['kr/m²'])} kr/m²</div><div class="s">${badge(p.source)} · ${esc(mi(p['move in']))} · <a href="${esc(p.link)}" target="_blank">open</a></div>${p.note?`<div class="s">${esc(p.note)}</div>`:''}${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}</div>`;
-    li.onclick=e=>{if(e.target.tagName==='A')return;sel(i);map.setView([p.lat,p.lon],14);mk[i].openPopup();window.scrollTo({top:0,behavior:'smooth'})};
-    ol.appendChild(li)});
-  F.sort((a,b)=>(b.first_seen||'').localeCompare(a.first_seen||'')).forEach(p=>{
-    const li=document.createElement('li');if(p.first_seen===fNew)li.className='new';
-    const k=p.rent&&p.m2?Math.round(p.rent/p.m2):null;
-    const st=p.start==null?'move-in date in post':p.start==='now'?'available now':'from '+p.start;
-    li.innerHTML=`<div class="min">? min</div><div><div class="a">${esc(p.area??'?')}${p.address?', '+esc(p.address):''}</div>
-      <div>${p.rent?esc(p.rent)+' kr':'? kr'} · <span style="background:#e2e8f0;color:#0f172a;border-radius:4px;padding:1px 6px;font-size:12px;font-weight:700">${p.m2?esc(p.m2)+' m²':'? m²'}</span>${p.rooms?' <span class=s>'+esc(p.rooms)+' rok</span>':''}${k?` · <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col(k)};margin:0 3px 0 2px"></span>${k} kr/m²`:''}</div>
-      <div class="s">${badge('facebook')} · ${esc(st)} · ${p.end?'until '+esc(p.end):'no end date'}${p.furnished===true?' · furnished':p.furnished===false?' · unfurnished':''} · <a href="${esc(p.url)}" target="_blank">open</a></div>${p.summary?`<div class="s">${esc(p.summary)}</div>`:''}</div>`;
-    li.onclick=e=>{if(e.target.tagName!=='A')window.open(p.url,'_blank')};
+    li.innerHTML=`<div class="min">${tm(p)}</div><div><div class="a">${esc(p.address)}</div>
+      <div>${body}</div><div class="s">${badge(p.source)} · ${esc(mi(p['move in']))} · <a href="${esc(p.link)}" target="_blank">open</a></div>${p.note?`<div class="s">${esc(p.note)}</div>`:''}${p.flag?`<div class="flag">⚠ ${esc(p.flag)}</div>`:''}</div>`;
+    li.onclick=e=>{if(e.target.tagName==='A')return;if(!m)return window.open(p.link,'_blank');sel(i);map.setView([p.lat,p.lon],14);m.openPopup();window.scrollTo({top:0,behavior:'smooth'})};
     ol.appendChild(li)});
   function sel(i){document.querySelectorAll('li.sel').forEach(x=>x.classList.remove('sel'));document.getElementById('r'+i).classList.add('sel')}
-  mk.slice().map((m,i)=>[m,parseFloat(String(P[i].size).split(',')[1])||0]).sort((a,b)=>b[1]-a[1]).forEach(([m])=>m.bringToFront());
+  mk.map((m,i)=>[m,parseFloat(String(P[i].size).split(',')[1])||0]).filter(x=>x[0]).sort((a,b)=>b[1]-a[1]).forEach(([m])=>m.bringToFront());
 }).catch(e=>{document.getElementById('meta').textContent='could not load data: '+e});
 
 </script></body></html>

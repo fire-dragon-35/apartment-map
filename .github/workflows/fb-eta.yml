@@ -1,0 +1,26 @@
+name: facebook eta
+# pins facebook listings at their area's centre and adds approximate SL travel time
+on:
+  push:
+    branches: [main]
+    paths: ['fb/listings.json', 'scripts/fb_eta.py', '.github/workflows/fb-eta.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: fb-eta
+jobs:
+  eta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: add position + travel time
+        run: python3 scripts/fb_eta.py
+      - name: commit
+        run: |
+          git config user.name 'github-actions'
+          git config user.email 'actions@github.com'
+          git add fb/listings.json
+          git diff --cached --quiet && exit 0
+          git commit -m "facebook eta $(date +%F)"
+          git pull --rebase
+          git push

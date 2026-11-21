@@ -26,6 +26,8 @@ Daily Stockholm apartment search → map at https://fire-dragon-35.github.io/apa
    - drop obvious scams: central flat far below market, contact via outside site/email
      (e.g. hyrabostads.se), "landlord abroad", pay before viewing. Say how many were dropped.
    - remove entries with `first_seen` older than 14 days.
+   - leave out `lat`/`lon`/`t`: after the push, `.github/workflows/fb-eta.yml` pins each new entry at
+     its area's centre (Nominatim) and adds the SL travel time, shown on the map as "~N min".
    In the morning message add "facebook: N new" + one line per new offer
    (area · rent · m² · start→end · url). Commit `fb/listings.json` with the rest.
 
