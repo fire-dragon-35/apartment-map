@@ -13,7 +13,10 @@
   "furnished": true,
   "contact": "dm",
   "summary": "2:a, balcony, ≥1 year with extension, el/heat/broadband incl., 8 min to t-centralen",
-  "first_seen": "2026-11-21"
+  "first_seen": "2026-11-21",
+  "lat": 59.2965,
+  "lon": 18.0529,
+  "t": 39
  },
  {
   "url": "https://www.facebook.com/groups/1666084590295034/posts/4861009614135833/",
@@ -29,7 +32,10 @@
   "furnished": null,
   "contact": "dm",
   "summary": "new 1:a, rented out while owner studies in rome this spring – length unclear, aimed at student/intern",
-  "first_seen": "2026-11-21"
+  "first_seen": "2026-11-21",
+  "lat": 59.3059,
+  "lon": 18.0255,
+  "t": 27
  },
  {
   "url": "https://www.facebook.com/groups/454007021327136/posts/29316275654673555/",
@@ -45,7 +51,10 @@
   "furnished": true,
   "contact": "dm",
   "summary": "furnished 2:a near t-bana, prefers long-term",
-  "first_seen": "2026-11-21"
+  "first_seen": "2026-11-21",
+  "lat": 59.2913,
+  "lon": 17.9667,
+  "t": 35
  },
  {
   "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29778013545116056/",
@@ -61,7 +70,10 @@
   "furnished": false,
   "contact": "dm",
   "summary": "unfurnished 2:a, balcony, 1 min to huvudsta t-bana, el extra, extension possible",
-  "first_seen": "2026-11-21"
+  "first_seen": "2026-11-21",
+  "lat": 59.3497,
+  "lon": 17.9871,
+  "t": 27
  },
  {
   "url": "https://www.facebook.com/groups/1691859567806459/posts/4724598384532547/",
@@ -77,7 +89,10 @@
   "furnished": null,
   "contact": "dm",
   "summary": "new build, 10 m² south balcony, can be rented up to 5 years",
-  "first_seen": "2026-11-21"
+  "first_seen": "2026-11-21",
+  "lat": 59.3111,
+  "lon": 18.2026,
+  "t": 53
  },
  {
   "url": "https://www.facebook.com/groups/1691859567806459/posts/4721047818220937/",
@@ -93,7 +108,10 @@
   "furnished": false,
   "contact": "dm",
   "summary": "brf 2:a up to 1 year, all bills incl., 2 months deposit",
-  "first_seen": "2026-11-21"
+  "first_seen": "2026-11-21",
+  "lat": 59.2762,
+  "lon": 18.1313,
+  "t": 33
  },
  {
   "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29784090074508403/",
@@ -109,7 +127,10 @@
   "furnished": true,
   "contact": "dm",
   "summary": "furnished 3:a near nacka forum, glazed balcony, internet/tv incl., jan–june 2027 with extension up to 1 year",
-  "first_seen": "2026-11-21"
+  "first_seen": "2026-11-21",
+  "lat": 59.3111,
+  "lon": 18.2026,
+  "t": 53
  },
  {
   "url": "https://www.facebook.com/groups/1691859567806459/posts/4721517414840644/",
@@ -125,6 +146,9 @@
   "furnished": true,
   "contact": "dm",
   "summary": "renovated furnished 1:a, 5 min to t-bana, el/heat/water incl., min 1 year, single person, 2 months deposit",
-  "first_seen": "2026-11-21"
+  "first_seen": "2026-11-21",
+  "lat": 59.2746,
+  "lon": 18.0558,
+  "t": 30
  }
 ]
