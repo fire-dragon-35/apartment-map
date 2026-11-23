@@ -1,4 +1,4 @@
-"""Checks the ✓ rules in DESIGN.md against index.html, using the repo's own data.
+"""Checks the ✓ rules in DESIGN.md (v3) against index.html, using the repo's own data.
 
 Run from the repo root:
     pip install playwright && playwright install chromium
@@ -7,7 +7,7 @@ Run from the repo root:
 Optional: LEAFLET_DIR=/path/to/leaflet/dist serves Leaflet locally (no network needed).
 Exit code 0 = all rules pass.
 """
-import math, os, pathlib, re, sys
+import os, pathlib, re, sys
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -17,16 +17,14 @@ NB = ' '
 MON = 'jan|feb|mar|apr|maj|jun|jul|aug|sep|okt|nov|dec'
 DATE = rf'\d{{1,2}}{NB}(?:{MON})(?:{NB}\d{{4}})?'
 FORMATS = {  # DESIGN.md §5
-    'adress': r'.+',
-    'omrade': r'.+',
+    'adress': r'.+', 'omrade': r'.+', 'kalla': r'.+',
     'restid': rf'~?\d+{NB}min',
-    'hyra':   rf'(?:\d+(?:\.\d)?k|\?){NB}kr',
+    'hyra': rf'(?:\d+(?:\.\d)?k|\?){NB}kr',
     'storlek': rf'(?:\d+|\?){NB}m²',
-    'rum':    rf'\d+(?:\.\d+)?{NB}rok',
-    'kpm':    rf'(?:\d{{1,3}}(?:{NB}\d{{3}})*|\?){NB}kr/m²',
-    'avtal':  rf'(?:nu|\?|{DATE}) → (?:tills vidare|{DATE}|\?)',
-    'kalla':  r'Qasa|Bostadsförmedlingen|Samtrygg|HomeQ|Facebook|.+',
-    'alder':  rf'idag|\d+{NB}d',
+    'rum': rf'\d+(?:\.\d+)?{NB}rok',
+    'kpm': rf'(?:\d{{1,3}}(?:{NB}\d{{3}})*|\?){NB}kr/m²',
+    'avtal': rf'(?:nu|\?|{DATE}) → (?:tills vidare|{DATE}|\?)',
+    'alder': rf'idag|\d+{NB}d',
 }
 
 failures = []
@@ -41,8 +39,8 @@ def route(r):
         return r.fulfill(path=str(f)) if f.is_file() else r.fulfill(status=404)
     if LEAFLET and 'unpkg.com/leaflet' in u:
         return r.fulfill(path=str(pathlib.Path(LEAFLET) / u.split('/dist/')[1]))
-    if 'arcgisonline' in u or 'fonts.g' in u:
-        return r.abort()  # tiles and fonts are irrelevant to the rules
+    if 'arcgisonline' in u:
+        return r.abort()  # tiles are irrelevant to the rules
     return r.continue_()
 
 with sync_playwright() as pw:
@@ -55,74 +53,91 @@ with sync_playwright() as pw:
     pg.goto(BASE + 'index.html')
     pg.wait_for_function('typeof app!=="undefined" && app.visible.length>0', timeout=15000)
     pg.wait_for_timeout(500)
+    js = pg.evaluate
     check('no script errors', not errors, '; '.join(errors))
 
-    js = pg.evaluate
     sel = lambda: js('app.selected?app.selected.id:null')
-    popup_open = lambda: js('app.map.map.hasLayer(app.map.popup)')
-    sheet_h = lambda: js("document.getElementById('sheet').offsetHeight")
-    def settle(ms=900): pg.wait_for_timeout(ms)
-    def clear():
-        js('app.map.close()'); settle(150)
-    # visible map area: between header and control row above the sheet
-    AREA = """(()=>{const t=document.querySelector('header').getBoundingClientRect().bottom,b=innerHeight-document.getElementById('sheet').offsetHeight-56;return [8,t,innerWidth-8,b]})()"""
-    in_area = lambda lid: js(f"""(()=>{{const [l,t,r,b]={AREA},l0=app.visible.find(x=>x.id==={lid}),p=app.map.map.latLngToContainerPoint(l0.latlng);return p.x>l&&p.x<r&&p.y>t&&p.y<b}})()""")
-    card_visible = lambda: js("""(()=>{const c=document.getElementById('c'+app.selected.id).getBoundingClientRect(),b=document.getElementById('sbody').getBoundingClientRect();return c.top>=b.top-2&&c.top<b.bottom-30})()""")
+    is_open = lambda: js('app.map.map.hasLayer(app.map.popup)')
+    def wait(ms=500): pg.wait_for_timeout(ms)
+    def close(): js('app.map.close()'); wait(300)  # Leaflet fades the popup out over 200 ms
+    def scroll_to(y): js(f'scrollTo(0,{y})'); wait(150)
 
-    # R1, R2: tap a card far down the list; its pin must end up visible with an open popup; sheet unchanged
+    # R1: plain scrolling document
+    r1 = js("""[...document.querySelectorAll('*')].every(e=>{const s=getComputedStyle(e);return s.position!=='fixed'&&s.position!=='sticky'&&(s.backdropFilter||'none')==='none'&&(s.webkitBackdropFilter||'none')==='none'})&&document.documentElement.scrollHeight>innerHeight""")
+    check('R1 normal scrolling page, no fixed/sticky/blur', r1)
+
+    # R2: tap every pin centre in the visible map; the tapped pin (or one drawn over that spot) opens; no scrolling
     ids = js('app.visible.map(l=>l.id)')
-    target = ids[len(ids) * 2 // 3]
-    h0 = sheet_h()
-    pg.click(f'#c{target}'); settle(1400)
-    check('R1 card tap shows its pin and popup', sel() == target and popup_open() and in_area(target), f'sel={sel()} popup={popup_open()}')
-    check('R2 sheet height unchanged', sheet_h() == h0, f'{h0} -> {sheet_h()}')
-
-    # R4
-    pg.click(f'#c{target}'); settle(300)
-    check('R4 second card tap clears', sel() is None and not popup_open())
-    pg.click(f'#c{target}'); settle(1400); pg.keyboard.press('Escape'); settle(300)
-    check('R4 Esc clears', sel() is None and not popup_open())
-    pg.click(f'#c{target}'); settle(1400)
-    empty = js(f"""(()=>{{const [l,t,r,b]={AREA};const pins=[...document.querySelectorAll('.pinhit')].map(e=>e.getBoundingClientRect()),pop=document.querySelector('.leaflet-popup').getBoundingClientRect();
-      for(let y=t+20;y<b-10;y+=12)for(let x=l+20;x<r-20;x+=12){{const hit=r2=>x>r2.left-4&&x<r2.right+4&&y>r2.top-4&&y<r2.bottom+4;if(!pins.some(hit)&&!hit(pop)&&!hit(document.querySelector('.kplabel').getBoundingClientRect()))return [x,y]}}return null}})()""")
-    if empty:
-        pg.touchscreen.tap(*empty); settle(400)
-    check('R4 empty map tap clears', empty is not None and sel() is None and not popup_open(), f'spot={empty}')
-
-    # R3: tap the centre of every pin in the visible area; the pin drawn on top there must be selected
-    bad = []
+    scroll_to(0)
+    bad, tapped = [], 0
     for lid in ids:
-        clear()
-        if not in_area(lid): continue
-        xy = js(f"(()=>{{const p=app.map.map.latLngToContainerPoint(app.visible.find(x=>x.id==={lid}).latlng);return [p.x,p.y]}})()")
-        top_id = js(f"""(()=>{{const e=document.elementFromPoint({xy[0]},{xy[1]})?.closest('.pinhit');if(!e)return null;for(const [id,m] of app.map.markers)if(m.getElement()===e)return id;return null}})()""")
-        if top_id is None: continue  # covered by UI (header, controls)
-        pg.touchscreen.tap(*xy); settle(500)
-        if not (sel() == top_id and popup_open() and card_visible()): bad.append(lid)
-    check('R3 pin tap selects the top pin, opens popup, shows card', not bad, f'pins {bad}')
-    clear()
+        close()
+        xy = js(f"""(()=>{{const r=document.getElementById('map').getBoundingClientRect(),l=app.visible.find(x=>x.id==={lid}),p=app.map.map.latLngToContainerPoint(l.latlng);
+            const x=r.left+p.x,y=r.top+p.y;return (x>r.left+8&&x<r.right-8&&y>r.top+8&&y<r.bottom-30)?[x,y]:null}})()""")
+        if not xy: continue
+        tapped += 1
+        y0, l0 = js('scrollY'), js("document.getElementById('list').scrollTop")
+        # pins whose drawn circle (plus Leaflet's 8 px tolerance) covers the tap, measured before the popup auto pans the map
+        under = js(f"""(()=>{{const r=document.getElementById('map').getBoundingClientRect();return app.visible.filter(l=>{{const p=app.map.map.latLngToContainerPoint(l.latlng);
+            return Math.hypot(r.left+p.x-{xy[0]},r.top+p.y-{xy[1]})<=l.radius+1.5+8}}).map(l=>l.id)}})()""")
+        pg.touchscreen.tap(*xy); wait(700)
+        s = sel()
+        hit = s in under
+        outlined = s is not None and js(f"document.querySelector('.card.sel')?.id==='c'+{s}")
+        still = js('scrollY') == y0 and js("document.getElementById('list').scrollTop") == l0
+        if not (hit and is_open() and outlined and still): bad.append(lid)
+    check(f'R2 pin tap opens popup, outlines card, no scroll ({tapped} pins)', tapped > 0 and not bad, f'pins {bad}')
+    close()
 
-    # R5
-    r5 = js("""[...document.querySelectorAll('#map .pin')].every(e=>e.children.length===0&&getComputedStyle(e).borderTopStyle==='solid')""")
-    check('R5 pins show only fill and size', r5)
+    # R3: card tap from far down the list
+    target = ids[len(ids) * 2 // 3]
+    pg.locator(f'#c{target}').scroll_into_view_if_needed(); wait(200)
+    pg.click(f'#c{target}'); wait(1500)
+    inmap = js(f"""(()=>{{const s=app.map.map.getSize(),p=app.map.map.latLngToContainerPoint(app.visible.find(x=>x.id==={target}).latlng);return p.x>0&&p.y>0&&p.x<s.x&&p.y<s.y}})()""")
+    check('R3 card tap: top of page, pin in map, zoom >= 14, popup open',
+          js('scrollY') == 0 and sel() == target and is_open() and inmap and js('app.map.map.getZoom()') >= 14,
+          f"scrollY={js('scrollY')} sel={sel()} zoom={js('app.map.map.getZoom()')}")
+    pg.locator(f'#c{target}').scroll_into_view_if_needed(); pg.click(f'#c{target}'); wait(300)
+    check('R3 second card tap closes', sel() is None and not is_open())
 
-    # R6: cards and an open popup
-    pg.click(f'#c{ids[0]}'); settle(1400)
+    # R4: close button, empty map, Esc
+    def open_one():
+        scroll_to(0); pg.click(f'#c{ids[0]}'); wait(1500); scroll_to(0)
+    open_one(); pg.click('.leaflet-popup-close-button'); wait(300)
+    check('R4 popup close button clears', sel() is None and not is_open())
+    open_one()
+    spot = js("""(()=>{const r=document.getElementById('map').getBoundingClientRect(),pop=document.querySelector('.leaflet-popup').getBoundingClientRect(),m=app.map.map;
+        for(let y=r.top+20;y<r.bottom-40;y+=10)for(let x=r.left+20;x<r.right-20;x+=10){
+          if(x>pop.left-10&&x<pop.right+10&&y>pop.top-10&&y<pop.bottom+20)continue;
+          const near=app.visible.some(l=>{const p=m.latLngToContainerPoint(l.latlng);return Math.hypot(r.left+p.x-x,r.top+p.y-y)<l.radius+14});
+          const kp=m.latLngToContainerPoint([59.3389,18.0907]);if(Math.hypot(r.left+kp.x-x,r.top+kp.y-y)<90)continue;
+          if(!near)return [x,y]}return null})()""")
+    if spot: pg.touchscreen.tap(*spot); wait(300)
+    check('R4 empty map tap clears', spot is not None and sel() is None and not is_open(), f'spot={spot}')
+    open_one(); pg.keyboard.press('Escape'); wait(300)
+    check('R4 Esc clears', sel() is None and not is_open())
+
+    # R5: pins carry only price colour and size; ring only on the selected pin
+    open_one()
+    r5 = js("""[...app.map.markers].every(([id,m])=>{const l=app.visible.find(x=>x.id===id),o=m.options,on=l===app.selected;
+        return o.fillColor===Fmt.priceColor(l.kpm)&&Math.abs(o.radius-l.radius)<1e-9&&(on?o.weight===3&&o.color==='#1C1C1E':o.weight===1.5&&o.color==='#fff')})""")
+    check('R5 pins: fill = price, radius = size, ring only when selected', r5)
+
+    # R6: every atom in cards and the open popup
     atoms = js("""[...document.querySelectorAll('.card [data-a], .leaflet-popup [data-a]')].map(e=>[e.dataset.a,e.textContent])""")
-    pop_atoms = js("document.querySelectorAll('.leaflet-popup [data-a]').length")
+    in_popup = js("document.querySelectorAll('.leaflet-popup [data-a]').length")
     wrong = [(a, t) for a, t in atoms if not re.fullmatch(FORMATS[a], t)]
-    check('R6 data formats (cards and popup)', not wrong and len(atoms) > 0 and pop_atoms > 0, str(wrong[:5]))
+    check('R6 data formats (cards and popup)', atoms and in_popup and not wrong, str(wrong[:5]))
 
-    # R10: route while open, none after close
-    drawn = js('app.map.route.getLayers().length')
-    clear()
+    # R10: route only while open
+    drawn = js('app.map.route.getLayers().length'); close()
     check('R10 route drawn only while popup is open', drawn > 0 and js('app.map.route.getLayers().length') == 0, f'drawn={drawn}')
 
-    # R12: one selection at a time
-    pg.click(f'#c{ids[0]}'); settle(1400); pg.click(f'#c{ids[1]}'); settle(1400)
-    one = js("document.querySelectorAll('.card.sel').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&document.querySelectorAll('.pinhit.on').length===1")
-    check('R12 one selection, one popup', one)
-    clear()
+    # R11: one selection at a time
+    open_one(); scroll_to(0); pg.locator(f'#c{ids[1]}').scroll_into_view_if_needed(); pg.click(f'#c{ids[1]}'); wait(1500)
+    one = js("""document.querySelectorAll('.card.sel').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&[...app.map.markers.values()].filter(m=>m.options.weight===3).length===1""")
+    check('R11 one popup, one outlined card, one ringed pin', one)
+    close()
 
     # R7
     txt = js('document.body.innerText')
@@ -130,17 +145,17 @@ with sync_playwright() as pw:
 
     # R8: nya count follows filters
     def nya_ok():
-        shown = js("(document.querySelector('.newchip')||{}).textContent||''")
+        shown = js("document.getElementById('nya').textContent")
         n = js('app.all.filter(l=>app.filters.passes(l)&&l.isNew).length')
-        return (shown == '' and n == 0) or shown == f'{n}{NB}nya', (shown, n)
+        return shown == f'{n}{NB}nya', (shown, n)
     ok1, d1 = nya_ok()
-    js("document.getElementById('f-min').value=12;document.getElementById('f-min').dispatchEvent(new Event('input'))")
+    js("const i=document.getElementById('f-min');i.value=12;i.dispatchEvent(new Event('input'))")
     ok2, d2 = nya_ok()
     check('R8 nya counts within filters', ok1 and ok2, f'{d1} {d2}')
 
-    # R9: restid = min(walk, SL), walk per DESIGN.md §6 (haversine × 1.3 / 80)
-    r9 = js("""app.all.every(l=>{const R=6371000,r=Math.PI/180,a=[l.lat,l.lon],k=[59.3389,18.0907],dp=(k[0]-a[0])*r,dl=(k[1]-a[1])*r;
-      const h=Math.sin(dp/2)**2+Math.cos(a[0]*r)*Math.cos(k[0]*r)*Math.sin(dl/2)**2,w=Math.max(1,Math.round(2*R*Math.asin(Math.sqrt(h))*1.3/80));
+    # R9: restid = min(walk, SL), walk = haversine × 1.3 / 80
+    r9 = js("""app.all.every(l=>{const R=6371000,r=Math.PI/180,k=[59.3389,18.0907],dp=(k[0]-l.lat)*r,dl=(k[1]-l.lon)*r;
+      const h=Math.sin(dp/2)**2+Math.cos(l.lat*r)*Math.cos(k[0]*r)*Math.sin(dl/2)**2,w=Math.max(1,Math.round(2*R*Math.asin(Math.sqrt(h))*1.3/80));
       return l.t===((l.sl==null||w<=l.sl)?w:l.sl)})""")
     check('R9 restid = min(walk, SL)', r9)
     b.close()

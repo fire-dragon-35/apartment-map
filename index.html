@@ -1,213 +1,116 @@
 <!DOCTYPE html>
 <html lang="sv"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lägenheter nära Karlaplan</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* tokens: DESIGN.md §3 */
-:root{
-  --p1:#34C759;--p2:#A3D63C;--p3:#FFCC00;--p4:#FF9500;--p5:#FF3B30;--pu:#AEAEB2;
-  --t1:#1C1C1E;--t2:#3A3A3C;--t3:#6C6C70;--decor:#AEAEB2;
-  --accent:#007AFF;--accent-text:#0066D6;--selected:#1C1C1E;
-  --fill:rgba(118,118,128,.14);--card:#fff;--sheet-bg:rgba(242,242,247,.86);--land:#F2F2EF;
-  --edge:1.5px;--sheet-h:30vh;--top:calc(env(safe-area-inset-top) + 12px);
-  --ease:cubic-bezier(.2,.8,.2,1);--dur:.2s;
-}
-@media (prefers-reduced-motion:reduce){:root{--dur:0s}}
+/* DESIGN.md §3 */
+:root{--t1:#1C1C1E;--t2:#3A3A3C;--t3:#6C6C70;--line:#E5E5EA;--accent:#007AFF;--new:#EEF5FF;--selected:#1C1C1E}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden}
-body{font:400 13px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;color:var(--t1);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;background:var(--land)}
-button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;text-align:inherit}
-a{color:var(--accent-text)}
-#map{position:fixed;inset:0;background:var(--land);font:inherit}
-.leaflet-control-attribution{font-size:9px;background:#fff9!important}
-
-/* tiers */
+body{margin:0 auto;max-width:720px;font:400 13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;color:var(--t1);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;text-align:left;cursor:pointer}
+a{color:var(--accent);text-decoration:none}
 .t1{font-size:15px;font-weight:600;color:var(--t1)}
-.t2{font-size:13px;font-weight:400;color:var(--t2)}
-.t3{font-size:12px;font-weight:400;color:var(--t3)}
-.sep{color:var(--decor);margin:0 5px}
+.t2{font-size:13px;color:var(--t2)}
+.t3{font-size:12px;color:var(--t3)}
 .nb{white-space:nowrap}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:0}
 
-/* glass */
-.glass{background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
-  border:.5px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 24px rgba(0,0,0,.10)}
+header{padding:12px 16px}
+h1{margin:0 0 2px;font-size:20px;font-weight:700}
+details{margin-top:6px}
+summary{cursor:pointer;color:var(--accent);font-size:13px}
+.frow{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:8px;margin-top:8px}
+.frow input{width:100%;margin:0;accent-color:var(--accent)}
+.frow output{text-align:right}
 
-/* pin: DESIGN.md §7.1, one drawing for map and legend */
-.pin{display:inline-block;flex:none;border-radius:50%;border:var(--edge) solid #fff}
-.pin.on{border-color:var(--selected)}
-.pin.sh{box-shadow:0 1px 3px rgba(0,0,0,.28)}
-.pinhit{display:flex;align-items:center;justify-content:center}
-.selmode .pinhit:not(.on){opacity:.3}
-.kp{width:15px;height:15px;border-radius:50%;background:var(--accent);border:var(--edge) solid #fff;box-shadow:0 0 0 var(--edge) var(--accent)}
-.kplabel{position:absolute;left:18px;top:-5px;font-size:12px;font-weight:600;border-radius:999px;padding:3px 8px;white-space:nowrap}
+#map{height:55vh;min-height:320px;background:#F2F2EF}
+.legend{padding:8px 16px;display:flex;flex-wrap:wrap;gap:4px 12px;border-bottom:1px solid var(--line);margin:0}
 
-/* header bar */
-header{position:fixed;top:var(--top);left:12px;right:12px;z-index:1000;border-radius:22px;padding:6px 6px 6px 10px}
-.hrow{display:flex;align-items:center;gap:6px}
-.chips{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{font-size:12px;color:var(--t1);background:var(--fill);border-radius:999px;padding:6px 10px;white-space:nowrap}
-.round{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center}
-.round span{width:32px;height:32px;border-radius:50%;background:var(--fill);display:flex;align-items:center;justify-content:center}
-.filters{display:none;flex-direction:column;gap:12px;padding:8px 10px 10px 4px}
-.filters.on{display:flex}
-.frow{display:flex;flex-direction:column;gap:4px}
-.frow label{display:flex;justify-content:space-between}
-.frow input{width:100%;accent-color:var(--accent);height:28px;margin:0}
-
-/* control row + legend */
-.ctl{position:fixed;left:12px;right:12px;bottom:calc(var(--sheet-h) + 12px);z-index:900;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
-.ctl>*{pointer-events:auto}
-.lpillbtn{border-radius:999px;height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
-.bars{display:flex;gap:2px}.bars i{width:16px;height:6px;border-radius:3px}
-.recenter{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-#legend{position:fixed;left:12px;bottom:calc(var(--sheet-h) + 68px);z-index:950;border-radius:22px;padding:14px 16px;display:none;flex-direction:column;gap:10px;max-width:300px}
-#legend.on{display:flex}
-.lg{display:flex;flex-direction:column;gap:6px}
-.lg b{font-size:12px;font-weight:600}
-.lgl{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
-.lgi{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
-
-/* sheet */
-#sheet{position:fixed;left:0;right:0;bottom:0;height:var(--sheet-h);z-index:1001;border-radius:28px 28px 0 0;display:flex;flex-direction:column;
-  background:var(--sheet-bg);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);border-top:.5px solid rgba(255,255,255,.9);box-shadow:0 -10px 30px rgba(0,0,0,.08)}
-#sheet.snap{transition:height var(--dur) var(--ease)}
-#sheet.snap~.ctl,#sheet.snap~#legend{transition:bottom var(--dur) var(--ease)}
-.grab{padding:8px 16px 10px;touch-action:none;cursor:grab;flex:none}
-.handle{width:36px;height:5px;border-radius:3px;background:rgba(60,60,67,.3);margin:0 auto 10px}
-.stitle{display:flex;align-items:center;gap:8px}
-.stitle h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.4px}
-.newchip{font-size:12px;font-weight:600;border-radius:999px;padding:5px 10px;background:var(--fill);color:var(--t1)}
-.newchip[aria-pressed="true"]{background:var(--accent);color:#fff}
-.sbody{flex:1;overflow:auto;padding:0 12px calc(env(safe-area-inset-bottom) + 16px);-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:8px}
-
-/* listing details: shared by card and popup */
-.card{display:grid;row-gap:5px;width:100%;padding:12px 14px;background:var(--card);border-radius:16px;box-shadow:0 .5px 0 rgba(0,0,0,.06);flex:none;scroll-margin:8px}
-.card.new{background:#E8F1FD}
-.card.sel{box-shadow:inset 0 0 0 var(--edge) var(--selected)}
-.cl{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
-.cl>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card{display:grid;row-gap:3px;width:100%;padding:12px 16px;border-bottom:1px solid var(--line)}
+.card.new{background:var(--new)}
+.card.sel{box-shadow:inset 0 0 0 2px var(--selected)}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.row>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{font-size:12px;color:var(--t2);background:var(--fill);border-radius:6px;padding:2px 7px}
-.pchip{display:inline-block;font-size:13px;font-weight:500;border-radius:6px;padding:0 6px;line-height:19px;white-space:nowrap}
-.schip{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:0 6px;line-height:18px;white-space:nowrap}
-.warnl{font-size:12px;font-weight:500;color:var(--t1);display:flex;align-items:center;gap:6px}
-.wb{width:13px;height:13px;border-radius:50%;background:var(--t1);color:#fff;font-size:9px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:none}
-.resvag{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
-.chev{color:var(--decor)}
-.lpill{display:inline-block;font-size:11px;font-weight:600;color:#fff;border-radius:999px;padding:1px 7px;white-space:nowrap;line-height:15px}
-.cta{display:flex;align-items:center;justify-content:center;height:40px;border-radius:12px;background:var(--accent);color:#fff!important;font-size:15px;font-weight:600;text-decoration:none}
-.empty{padding:32px 12px;text-align:center}
+.tag{font-size:12px;color:var(--t2);background:#F2F2F7;border-radius:6px;padding:1px 7px}
+.warn{font-size:12px;font-weight:600}
+.empty{padding:24px 16px}
 
-/* Leaflet popup + tooltip: DESIGN.md §7.9 */
-.lpop .leaflet-popup-content-wrapper{border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.16)}
-.lpop .leaflet-popup-content{margin:12px 14px;display:grid;row-gap:6px;font:inherit;line-height:1.35}
-.lpop .leaflet-popup-close-button{width:32px;height:32px;font-size:20px;line-height:30px}
-.ltip{font:600 12px/1.3 -apple-system,BlinkMacSystemFont,Inter,system-ui,sans-serif;border-radius:10px;padding:4px 8px}
-
-/* desktop: sheet becomes a left panel */
-@media (min-width:900px){
-  #sheet{left:12px;top:12px;bottom:12px;width:400px;height:auto!important;border-radius:28px}
-  .grab{cursor:default;padding-top:16px}.handle{display:none}
-  header{left:424px;max-width:520px}
-  .ctl{left:424px;bottom:12px!important}
-  #legend{left:424px;bottom:68px!important}
-}
+.leaflet-popup-content{margin:12px 14px;display:grid;row-gap:4px;font:inherit;min-width:220px}
+.leaflet-popup-content .row>span:first-child{white-space:normal}
+.route{color:var(--t2)}
+.pill{color:#fff;font-weight:600;font-size:11px;border-radius:999px;padding:0 6px}
+.open{font-size:15px;font-weight:600;margin-top:4px}
 </style></head><body>
-<div id="map" aria-label="Karta"></div>
 
-<header class="glass">
-  <div class="hrow">
-    <div class="chips" id="chips"></div>
-    <button class="round" id="fbtn" aria-label="Filter" aria-expanded="false"><span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#3A3A3C" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h7M13 4h1M2 12h1M7 12h7"/><circle cx="11" cy="4" r="2"/><circle cx="5" cy="12" r="2"/></svg></span></button>
-  </div>
-  <div class="filters" id="filters">
-    <div class="frow"><label for="f-min"><span class="t3">Restid</span><span class="t2" id="v-min"></span></label><input id="f-min" type="range" min="10" max="30" step="1"></div>
-    <div class="frow"><label for="f-rent"><span class="t3">Hyra</span><span class="t2" id="v-rent"></span></label><input id="f-rent" type="range" min="8000" max="17000" step="500"></div>
-    <div class="frow"><label for="f-m2"><span class="t3">Storlek</span><span class="t2" id="v-m2"></span></label><input id="f-m2" type="range" min="20" max="60" step="5"></div>
-  </div>
+<header>
+  <h1>Lägenheter nära Karlaplan</h1>
+  <div class="t3" id="meta"></div>
+  <details>
+    <summary>Filter</summary>
+    <label class="frow"><span class="t3">Restid</span><input id="f-min" type="range" min="10" max="30" step="1"><output class="t2" id="o-min"></output></label>
+    <label class="frow"><span class="t3">Hyra</span><input id="f-rent" type="range" min="8000" max="17000" step="500"><output class="t2" id="o-rent"></output></label>
+    <label class="frow"><span class="t3">Storlek</span><input id="f-m2" type="range" min="20" max="60" step="5"><output class="t2" id="o-m2"></output></label>
+    <label class="frow"><span class="t3">Bara nya</span><input id="f-new" type="checkbox" style="justify-self:start;width:auto"></label>
+  </details>
 </header>
-
-<section id="sheet" aria-label="Lista">
-  <div class="grab" id="grab"><div class="handle"></div><div id="shead"></div></div>
-  <div class="sbody" id="sbody"></div>
-</section>
-
-<div class="ctl">
-  <button class="lpillbtn glass" id="lbtn" aria-label="Visa teckenförklaring" aria-expanded="false"><span>&lt;250</span><span class="bars" id="bars"></span><span>400+ kr/m²</span></button>
-  <button class="recenter glass" id="rbtn" aria-label="Centrera på Karlaplan"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#007AFF" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><path d="M9 1v3M9 14v3M1 9h3M14 9h3"/></svg></button>
-</div>
-
-<div id="legend" class="glass" role="dialog" aria-label="Teckenförklaring"></div>
+<div id="map" aria-label="Karta"></div>
+<p class="legend t3" id="legend"></p>
+<main id="list"></main>
 
 <script>
 'use strict';
 
-/* ---------- constants ---------- */
+/* ---------- constants: DESIGN.md §3 ---------- */
 const KARLAPLAN=L.latLng(59.3389,18.0907);
-const NB=' ';
-const TODAY=new Date().toLocaleDateString('sv-SE');
-const YEAR=new Date().getFullYear();
+const NB=' ',SEP=' · ';
+const TODAY=new Date().toLocaleDateString('sv-SE'),YEAR=new Date().getFullYear();
 const MONTHS=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
-const PRICE=[[250,'var(--p1)','under 250'],[300,'var(--p2)','250 till 299'],[350,'var(--p3)','300 till 349'],[400,'var(--p4)','350 till 399'],[Infinity,'var(--p5)','400 och mer']];
-const PRICE_TONE=[['#34C759','#1E7B34'],['#A3D63C','#4A7208'],['#FFCC00','#7F6200'],['#FF9500','#9C4E00'],['#FF3B30','#B42318']];
-const SOURCE_COLOR={'Qasa':'#4B48C9','Bostadsförmedlingen':'#0A6F8E','Samtrygg':'#8A3FB5','HomeQ':'#1F7A5C','Facebook':'#1662C4'};
-const LINE_COLOR={metro:{'10':'#0072BC','11':'#0072BC','13':'#E3242B','14':'#E3242B','17':'#2EA84A','18':'#2EA84A','19':'#2EA84A'},train:'#EC619F',tram:'#F28C00',bus:'#E3242B',boat:'#00A3AD',other:'#3A3A3C'};
-const WALK={detour:1.3,metresPerMin:80};
+const PRICE=[[250,'#34C759','<250'],[300,'#A3D63C','250 till 299'],[350,'#FFCC00','300 till 349'],[400,'#FF9500','350 till 399'],[Infinity,'#FF3B30','400+ kr/m²']];
+const UNKNOWN='#AEAEB2';
+const LINES={metro:{10:'#0072BC',11:'#0072BC',13:'#E3242B',14:'#E3242B',17:'#2EA84A',18:'#2EA84A',19:'#2EA84A'},train:'#EC619F',tram:'#F28C00',bus:'#E3242B',boat:'#00A3AD'};
+const WALK_COLOR='#3A3A3C';
 const REDUCED=matchMedia('(prefers-reduced-motion:reduce)').matches;
-const isDesktop=()=>matchMedia('(min-width:900px)').matches;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ---------- formats: DESIGN.md §5 ---------- */
 const Fmt={
-  SEP:'<span class="sep">·</span>',
+  k:v=>Math.round(v/100)/10+'k',
   thousands:n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,NB),
-  k:v=>String(Math.round(v/100)/10)+'k',
-  priceColor:k=>k==null?'var(--pu)':PRICE.find(b=>k<b[0])[1],
+  priceColor:k=>k==null?UNKNOWN:PRICE.find(([max])=>k<max)[1],
   date(s){const d=new Date(s+'T00:00:00');return isNaN(d)?'?':d.getDate()+NB+MONTHS[d.getMonth()]+(d.getFullYear()!==YEAR?NB+d.getFullYear():'')},
-  atom:(name,html,cls='')=>html?`<span data-a="${name}"${cls?` class="${cls}"`:''}>${html}</span>`:'',
-  restid:l=>l.t==null?'?'+NB+'min':(l.approx?'~':'')+l.t+NB+'min',
+  restid:l=>(l.approx?'~':'')+l.t+NB+'min',
   hyra:l=>(l.rent?Fmt.k(l.rent):'?')+NB+'kr',
   storlek:l=>(l.m2||'?')+NB+'m²',
   rum:l=>l.rooms?l.rooms+NB+'rok':'',
-  kpm(l){const i=l.kpm==null?-1:PRICE.findIndex(b=>l.kpm<b[0]);
-    const tone=i<0?'background:rgba(174,174,178,.2);color:#6C6C70':`background:${PRICE_TONE[i][0]}33;color:${PRICE_TONE[i][1]}`;
-    return `<span class="pchip" style="${tone}">${l.kpm==null?'?':Fmt.thousands(l.kpm)}${NB}kr/m²</span>`},
-  kalla(l){const c=SOURCE_COLOR[l.source]||'#6C6C70';return `<span class="schip" style="color:${c};background:${c}1F">${esc(l.source)}</span>`},
-  avtal(l){const st=l.start==='now'||(l.start&&l.start<=TODAY)?'nu':l.start?Fmt.date(l.start):'?';return st+' → '+(l.end?Fmt.date(l.end):'tills vidare')},
+  kpm:l=>(l.kpm==null?'?':Fmt.thousands(l.kpm))+NB+'kr/m²',
+  avtal(l){const start=l.start==='now'||(l.start&&l.start<=TODAY)?'nu':l.start?Fmt.date(l.start):'?';return start+' → '+(l.end?Fmt.date(l.end):'tills vidare')},
   alder(l){if(!l.firstSeen)return '';const n=Math.round((Date.parse(TODAY)-Date.parse(l.firstSeen))/864e5);return n<=0?'idag':n+NB+'d'},
   omrade:l=>l.area&&l.area!=='Stockholm'&&l.area!==l.street?l.area:'',
-  lineName:(mode,line)=>mode==='metro'?'T'+line:line,
-  lineColor:(mode,line)=>mode==='metro'?(LINE_COLOR.metro[line]||'#0072BC'):(LINE_COLOR[mode]||LINE_COLOR.other),
+  line:(mode,line)=>({name:mode==='metro'?'T'+line:line,color:(mode==='metro'?LINES.metro[line]:LINES[mode])||WALK_COLOR}),
 };
 
 /* ---------- listing ---------- */
 class Listing{
-  static #uid=0;
-  static NOTE_RULES=[[/first-hand/i,'förstahand'],[/student/i,'studentlägenhet'],[/short|korttid/i,'korttid'],[/extension/i,'kan förlängas'],[/queue|kö|yrs/i,null]];
+  static #next=0;
+  static NOTES=[[/first-hand/i,'förstahand'],[/student/i,'studentlägenhet'],[/short|korttid/i,'korttid'],[/extension/i,'kan förlängas'],[/queue|kö|yrs/i,null]];
   static note(s){
     s=String(s??'').trim();if(!s)return null;
     const also=s.match(/also listed on (\S+)/i);if(also)return 'finns även på '+also[1];
-    const rule=Listing.NOTE_RULES.find(([re])=>re.test(s));
-    return rule?rule[1]:s.toLowerCase();
+    const rule=Listing.NOTES.find(([re])=>re.test(s));return rule?rule[1]:s.toLowerCase();
   }
   static fromGeo(f){
-    const p=f.properties,num=s=>parseFloat(String(s??'').replace(/[^\d.]/g,''))||null,split=(s,c)=>String(s??'').split(c).map(x=>x.trim()).filter(Boolean);
-    const size=String(p.size??'').split(','),moveIn=split(p['move in'],'→'),addr=split(p.address,',');
-    const flags=split(p.flag,';'),date=s=>/^\d{4}-/.test(s||'')?s:null;
-    return new Listing({
-      lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],street:p.street||addr[0]||'?',area:p.area||addr[1]||'',
+    const p=f.properties,num=s=>parseFloat(String(s??'').replace(/[^\d.]/g,''))||null,parts=(s,c)=>String(s??'').split(c).map(x=>x.trim()).filter(Boolean);
+    const size=String(p.size??'').split(','),moveIn=parts(p['move in'],'→'),addr=parts(p.address,','),flags=parts(p.flag,';');
+    const date=s=>/^\d{4}-/.test(s||'')?s:null;
+    return new Listing({lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],street:p.street||addr[0]||'?',area:p.area||addr[1]||'',
       sl:p.t??num(p['travel (weekday 8:00, SL)']),rent:p.rent_kr??num(p.rent),m2:p.m2??num(size[1]),rooms:p.rooms??num(size[0]),
       kpm:p['kr/m²']??null,source:p.source,link:p.link,firstSeen:p.first_seen||(p.new?TODAY:null),approx:false,
-      warn:flags.some(x=>/far below/i.test(x)),
       start:p.start!==undefined?p.start:(moveIn[0]==='now'?'now':date(moveIn[0])),end:p.end!==undefined?p.end:date(moveIn[1]),
-      notes:[...flags.filter(x=>!/far below/i.test(x)),...split(p.note,';')],
-    });
+      warn:flags.some(x=>/far below/i.test(x)),notes:[...flags.filter(x=>!/far below/i.test(x)),...parts(p.note,';')]});
   }
   static fromFacebook(p){
     return new Listing({lat:p.lat,lon:p.lon,street:p.area||'?',area:'',sl:p.t??null,rent:p.rent,m2:p.m2,rooms:p.rooms,
@@ -216,198 +119,147 @@ class Listing{
   }
   constructor(d){
     Object.assign(this,d);
-    this.id=Listing.#uid++;
+    this.id=Listing.#next++;
     this.notes=[...new Set(this.notes.map(Listing.note).filter(Boolean))];
     this.latlng=L.latLng(this.lat,this.lon);
-    /* DESIGN.md §6: restid is the faster of walking and SL */
-    this.walk=Math.max(1,Math.round(this.latlng.distanceTo(KARLAPLAN)*WALK.detour/WALK.metresPerMin));
+    /* DESIGN.md §6 */
+    this.walk=Math.max(1,Math.round(this.latlng.distanceTo(KARLAPLAN)*1.3/80));
     this.byFoot=this.sl==null||this.walk<=this.sl;
     this.t=this.byFoot?this.walk:this.sl;
   }
   get isNew(){return this.firstSeen===TODAY}
-  get contractOk(){if(!this.end)return true;const s=this.start&&this.start!=='now'&&this.start>TODAY?this.start:TODAY;return (Date.parse(this.end)-Date.parse(s))/864e5>=180}
-  get diameter(){const a=Math.sqrt(20),b=Math.sqrt(65),x=Math.min(1,Math.max(0,(Math.sqrt(this.m2||20)-a)/(b-a)));return Math.round(14+12*x)}
-  get zIndex(){return 100-(this.m2||20)} /* smaller pins above larger */
+  get contractOk(){if(!this.end)return true;const from=this.start&&this.start!=='now'&&this.start>TODAY?this.start:TODAY;return (Date.parse(this.end)-Date.parse(from))/864e5>=180}
+  get radius(){const a=Math.sqrt(20),b=Math.sqrt(65);return 6+6*Math.min(1,Math.max(0,(Math.sqrt(this.m2||20)-a)/(b-a)))}
   legs(routes){return this.byFoot?null:routes[this.lat.toFixed(4)+','+this.lon.toFixed(4)]||null}
 }
 
-/* ---------- shared markup ---------- */
+/* ---------- markup shared by card and popup: DESIGN.md §7 ---------- */
 const View={
-  pin:(kpm,d,{on=false,shadow=false}={})=>`<span class="pin${on?' on':''}${shadow?' sh':''}" style="width:${d}px;height:${d}px;background:${Fmt.priceColor(kpm)}"></span>`,
-  /* summary lines, tags and warning: used by card and popup */
-  summary(l){
-    const a=Fmt.atom,ar=Fmt.omrade(l);
-    const l2=[a('storlek',Fmt.storlek(l)),a('rum',Fmt.rum(l)),a('kpm',Fmt.kpm(l))].filter(Boolean).join(Fmt.SEP);
-    const l3=[a('avtal',Fmt.avtal(l),'t2'),a('kalla',Fmt.kalla(l)),a('alder',Fmt.alder(l))].filter(Boolean).join(Fmt.SEP);
-    return `<span class="cl"><span>${a('adress',esc(l.street),'t1')}${ar?' '+a('omrade',esc(ar),'t3'):''}</span>${a('restid',Fmt.restid(l),'t1 nb')}</span>
-      <span class="cl"><span class="t2">${l2}</span>${a('hyra',Fmt.hyra(l),'t1 nb')}</span>
-      <span class="cl"><span class="t3">${l3}</span></span>
+  atom:(name,text,cls='')=>text?`<span data-a="${name}"${cls?` class="${cls}"`:''}>${text}</span>`:'',
+  details(l){
+    const a=View.atom,area=Fmt.omrade(l);
+    const facts=[a('storlek',Fmt.storlek(l)),a('rum',Fmt.rum(l)),`<span class="nb"><i class="dot" style="background:${Fmt.priceColor(l.kpm)}"></i>${a('kpm',Fmt.kpm(l))}</span>`].filter(Boolean).join(SEP);
+    const context=[a('avtal',Fmt.avtal(l)),a('kalla',esc(l.source)),a('alder',Fmt.alder(l))].filter(Boolean).join(SEP);
+    return `<span class="row"><span>${a('adress',esc(l.street),'t1')}${area?' '+a('omrade',esc(area),'t3'):''}</span>${a('restid',Fmt.restid(l),'t1 nb')}</span>
+      <span class="row"><span class="t2">${facts}</span>${a('hyra',Fmt.hyra(l),'t1 nb')}</span>
+      <span class="t3">${context}</span>
       ${l.notes.length?`<span class="tags">${l.notes.map(n=>`<span class="tag">${esc(n)}</span>`).join('')}</span>`:''}
-      ${l.warn?'<span class="warnl"><i class="wb">!</i>långt under marknadspris, kontrollera</span>':''}`;
+      ${l.warn?'<span class="warn">! långt under marknadspris, kontrollera</span>':''}`;
   },
   route(l,legs){
-    const walk=n=>`<span class="t2 nb">gång${NB}${n}${NB}min</span>`;
-    const parts=l.byFoot?[walk(l.walk)]:(legs||[]).map(([mode,line,,mins,stops])=>mode==='walk'
-      ?(mins?walk(mins):null)
-      :`<span class="lpill" style="background:${Fmt.lineColor(mode,line)}">${esc(Fmt.lineName(mode,line))}${stops?` · ${stops}${NB}stopp`:''}</span>`).filter(Boolean);
-    return parts.length?`<div class="resvag">${[...parts,'<span class="t2">Karlaplan</span>'].join('<span class="chev">›</span>')}</div>`:'';
+    const walk=n=>`gång${NB}${n}${NB}min`;
+    const steps=l.byFoot?[walk(l.walk)]:(legs||[]).map(([mode,line,,mins,stops])=>{
+      if(mode==='walk')return mins?walk(mins):null;
+      const {name,color}=Fmt.line(mode,line);
+      return `<span class="pill" style="background:${color}">${esc(name)}</span>${stops?`${NB}·${NB}${stops}${NB}stopp`:''}`;
+    }).filter(Boolean);
+    return steps.length?`<span class="route t2">${[...steps,'Karlaplan'].join(' › ')}</span>`:'';
   },
-  popup:(l,legs)=>View.summary(l)+View.route(l,legs)+(l.link?`<a class="cta" href="${esc(l.link)}" target="_blank" rel="noopener">Öppna annons på ${esc(l.source)}</a>`:''),
+  popup:(l,legs)=>View.details(l)+View.route(l,legs)+(l.link?`<a class="open" href="${esc(l.link)}" target="_blank" rel="noopener">Öppna annons på ${esc(l.source)} ›</a>`:''),
 };
 
-/* ---------- filters (header) ---------- */
+/* ---------- filters ---------- */
 class Filters{
-  static KEY='lgh-f';
+  static KEY='lgh-filters';
   static SLIDERS=[['min',v=>`≤${NB}${v}${NB}min`],['rent',v=>`≤${NB}${Fmt.k(v)}${NB}kr`],['m2',v=>`≥${NB}${v}${NB}m²`]];
   constructor(onChange){
     this.state={min:30,rent:17000,m2:20,onlyNew:false};
-    try{const s=JSON.parse(localStorage.getItem(Filters.KEY)||'{}');delete s.onlyNew;Object.assign(this.state,s)}catch(e){}
+    try{Object.assign(this.state,JSON.parse(localStorage.getItem(Filters.KEY)||'{}'),{onlyNew:false})}catch{}
     for(const [key,label] of Filters.SLIDERS){
-      const input=$('f-'+key),out=$('v-'+key);
-      input.value=this.state[key];out.textContent=label(this.state[key]);
-      input.addEventListener('input',()=>{this.state[key]=+input.value;out.textContent=label(this.state[key]);this.#save();onChange()});
+      const input=$('f-'+key),show=()=>$('o-'+key).textContent=label(this.state[key]);
+      input.value=this.state[key];show();
+      input.addEventListener('input',()=>{this.state[key]=+input.value;show();this.#save();onChange()});
     }
-    $('fbtn').addEventListener('click',e=>e.currentTarget.setAttribute('aria-expanded',$('filters').classList.toggle('on')));
+    $('f-new').addEventListener('change',e=>{this.state.onlyNew=e.target.checked;onChange()});
   }
-  #save(){try{const {onlyNew,...s}=this.state;localStorage.setItem(Filters.KEY,JSON.stringify(s))}catch(e){}}
-  /* all filters except the "nya" toggle (R8 counts within these) */
+  #save(){try{const {onlyNew,...s}=this.state;localStorage.setItem(Filters.KEY,JSON.stringify(s))}catch{}}
+  /* everything except "Bara nya": R8 counts within these */
   passes(l){const s=this.state;return l.t<=s.min&&(!l.rent||l.rent<=s.rent)&&(!l.m2||l.m2>=s.m2)&&l.contractOk}
-  renderChips(){const s=this.state;$('chips').innerHTML=[`≤${NB}${Fmt.k(s.rent)}${NB}kr`,`≥${NB}${s.m2}${NB}m²`,`≥${NB}6${NB}mån`,`≤${NB}${s.min}${NB}min`].map(c=>`<span class="chip">${c}</span>`).join('')}
+  summary(){const s=this.state;return [`≤${NB}${Fmt.k(s.rent)}${NB}kr`,`≥${NB}${s.m2}${NB}m²`,`≥${NB}6${NB}mån`,`≤${NB}${s.min}${NB}min`].join(SEP)}
 }
 
-/* ---------- sheet: changes height only when dragged (R2) ---------- */
-class Sheet{
-  constructor(el,grab){
-    this.el=el;this.#set(this.stops()[1]);
-    let y0=null,h0=0,moved=false;
-    grab.addEventListener('pointerdown',e=>{if(isDesktop()||e.target.closest('button'))return;y0=e.clientY;h0=el.offsetHeight;moved=false;el.classList.remove('snap');grab.setPointerCapture(e.pointerId)});
-    grab.addEventListener('pointermove',e=>{if(y0==null)return;const dy=e.clientY-y0,[lo,,hi]=this.stops();moved||=Math.abs(dy)>4;this.#set(Math.max(lo,Math.min(hi,h0-dy)))});
-    const up=()=>{if(y0==null)return;y0=null;el.classList.add('snap');const h=el.offsetHeight,s=this.stops();
-      this.#set(moved?s.reduce((b,x)=>Math.abs(x-h)<Math.abs(b-h)?x:b):s[(s.findIndex(x=>Math.abs(x-h)<20)+1)%3])};
-    grab.addEventListener('pointerup',up);grab.addEventListener('pointercancel',up);
-  }
-  stops(){const hb=document.querySelector('header').getBoundingClientRect().bottom;return [96,Math.round(innerHeight*.30),Math.round(innerHeight-hb-8)]}
-  #set(h){document.documentElement.style.setProperty('--sheet-h',h+'px')}
-  /* how much of the map the sheet covers at the bottom */
-  get cover(){return isDesktop()?0:this.el.offsetHeight}
-}
-
-/* ---------- list ---------- */
-class ListView{
-  constructor(body,head,{onPick,onToggleNew}){
-    this.body=body;this.head=head;this.byId=new Map();
-    body.addEventListener('click',e=>{const c=e.target.closest('.card');if(c)onPick(this.byId.get(+c.dataset.id))});
-    head.addEventListener('click',e=>{if(e.target.closest('.newchip'))onToggleNew()});
-  }
-  render(items,newCount,onlyNew){
-    this.byId=new Map(items.map(l=>[l.id,l]));
-    this.head.innerHTML=`<div class="stitle"><h2>${items.length}${NB}träffar</h2>${newCount?`<button class="newchip" aria-pressed="${onlyNew}">${newCount}${NB}nya</button>`:''}</div>`;
-    this.body.innerHTML=items.length
-      ?items.map(l=>`<button class="card${l.isNew?' new':''}" id="c${l.id}" data-id="${l.id}" aria-pressed="false">${View.summary(l)}</button>`).join('')
-      :'<p class="t2 empty">Inga träffar med de här filtren</p>';
-  }
-  mark(l){
-    for(const c of this.body.querySelectorAll('.card.sel')){c.classList.remove('sel');c.setAttribute('aria-pressed','false')}
-    const c=l&&$('c'+l.id);if(!c)return;
-    c.classList.add('sel');c.setAttribute('aria-pressed','true');
-    c.scrollIntoView({block:'nearest',behavior:REDUCED?'auto':'smooth'});
-  }
-}
-
-/* ---------- map: Leaflet markers, popup and camera ---------- */
+/* ---------- map ---------- */
 class MapView{
-  constructor(el,sheet,{onSelect,onClear}){
-    this.sheet=sheet;this.onSelect=onSelect;this.onClear=onClear;
-    this.selected=null;this.routes={};this.markers=new Map();
-    this.map=L.map(el,{zoomControl:false,zoomSnap:.25}).setView(KARLAPLAN,13);
+  constructor(el,{onSelect,onClear}){
+    this.onSelect=onSelect;this.onClear=onClear;
+    this.selected=null;this.markers=new Map();this.routes={};
+    this.map=L.map(el,{zoomControl:false}).setView(KARLAPLAN,13);
+    /* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */
+    this.map.createPane('pins').style.zIndex=450;
+    this.canvas=L.canvas({pane:'pins',tolerance:8});
     for(const [layer,opacity] of [['Base',1],['Reference',.55]])
       L.tileLayer(`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_${layer}/MapServer/tile/{z}/{y}/{x}`,{maxZoom:17,opacity,attribution:layer==='Base'?'Esri, HERE, OpenStreetMap':''}).addTo(this.map);
-    L.marker(KARLAPLAN,{interactive:false,keyboard:false,zIndexOffset:5000,icon:L.divIcon({className:'',iconSize:[15,15],html:'<div class="kp"></div><span class="kplabel glass">Karlaplan</span>'})}).addTo(this.map);
+    for(const km of [2,4,6])L.circle(KARLAPLAN,{radius:km*1000,color:'#8E8E93',weight:1,dashArray:'4 4',fill:false,interactive:false}).addTo(this.map);
+    L.circleMarker(KARLAPLAN,{radius:7,color:'#fff',weight:2,fillColor:'#007AFF',fillOpacity:1,interactive:false})
+      .bindTooltip('Karlaplan',{permanent:true,direction:'right',offset:[8,0]}).addTo(this.map);
     this.pins=L.layerGroup().addTo(this.map);
     this.route=L.layerGroup().addTo(this.map);
-    this.popup=L.popup({className:'lpop',maxWidth:300,minWidth:260,autoPan:true})
-      .on('add',e=>e.target.getElement().querySelector('.leaflet-popup-close-button')?.setAttribute('aria-label','Stäng'))
-      .on('remove',()=>this.#cleared());
+    this.popup=L.popup({maxWidth:280,autoPanPadding:[16,16]}).on('remove',()=>this.#clear());
     this.hover=matchMedia('(hover:hover) and (pointer:fine)').matches;
   }
-  /* the part of the map left visible by header, sheet and control row */
-  #padding(){
-    const top=document.querySelector('header').getBoundingClientRect().bottom+12;
-    return {topLeft:L.point(isDesktop()?436:12,top),bottomRight:L.point(12,this.sheet.cover+68)};
-  }
-  #icon(l,on=false){const d=l.diameter+(on?4:0);return L.divIcon({className:'pinhit'+(on?' on':''),iconSize:[d+12,d+12],html:View.pin(l.kpm,d,{on,shadow:true})})}
-  setListings(items,routes){
+  #style(l,on){return {renderer:this.canvas,radius:l.radius,fillColor:Fmt.priceColor(l.kpm),fillOpacity:.9,color:on?'#1C1C1E':'#fff',weight:on?3:1.5,bubblingMouseEvents:false}}
+  show(items,routes){
     this.close();this.pins.clearLayers();this.markers.clear();this.routes=routes;
-    for(const l of items){
-      const m=L.marker(l.latlng,{icon:this.#icon(l),zIndexOffset:l.zIndex,title:l.street}).on('click',()=>this.select(l));
-      if(this.hover)m.bindTooltip(`${esc(l.street)} · ${Fmt.restid(l)} · ${Fmt.hyra(l)}`,{direction:'top',offset:[0,-l.diameter/2],className:'ltip'});
-      this.markers.set(l.id,m.addTo(this.pins));
+    /* larger first, so smaller pins are drawn on top */
+    for(const l of [...items].sort((a,b)=>(b.m2||0)-(a.m2||0))){
+      const m=L.circleMarker(l.latlng,this.#style(l,false)).on('click',()=>this.select(l)).addTo(this.pins);
+      if(this.hover)m.bindTooltip(`${esc(l.street)} · ${Fmt.restid(l)} · ${Fmt.hyra(l)}`,{direction:'top'});
+      this.markers.set(l.id,m);
     }
   }
-  fitAll(items){
-    const p=this.#padding();
-    this.map.fitBounds(L.latLngBounds([KARLAPLAN,...items.map(l=>l.latlng)]),{paddingTopLeft:p.topLeft,paddingBottomRight:p.bottomRight,maxZoom:14,animate:false});
-  }
-  /* map centre that puts latlng in the middle of the visible area at zoom z */
-  #centreFor(latlng,z){
-    const p=this.#padding(),shift=p.topLeft.subtract(p.bottomRight).divideBy(2);
-    return this.map.unproject(this.map.project(latlng,z).subtract(shift),z);
-  }
-  #inView(latlng){
-    const p=this.#padding(),pt=this.map.latLngToContainerPoint(latlng),s=this.map.getSize();
-    return this.map.getZoom()>=14&&L.bounds(p.topLeft,s.subtract(p.bottomRight)).contains(pt);
-  }
-  /* from the list (R1): bring the pin into view, then open it */
-  reveal(l){
-    if(this.#inView(l.latlng))return this.select(l);
-    this.map.once('moveend',()=>this.select(l));
-    this.map.flyTo(this.#centreFor(l.latlng,15),15,{animate:!REDUCED,duration:.6});
-  }
+  fit(items){this.map.fitBounds(L.latLngBounds([KARLAPLAN,...items.map(l=>l.latlng)]),{padding:[24,24],maxZoom:14,animate:false})}
   select(l){
     const m=this.markers.get(l.id);if(!m)return;
-    if(this.selected&&this.selected!==l)this.#unmark(this.selected);
+    if(this.selected&&this.selected!==l)this.markers.get(this.selected.id)?.setStyle(this.#style(this.selected,false));
     this.selected=l;
-    m.setIcon(this.#icon(l,true)).setZIndexOffset(6000);
-    this.map.getContainer().classList.add('selmode');
-    const p=this.#padding(),legs=l.legs(this.routes);
-    Object.assign(this.popup.options,{offset:[0,-l.diameter/2],autoPanPaddingTopLeft:p.topLeft,autoPanPaddingBottomRight:p.bottomRight});
+    m.setStyle(this.#style(l,true)).bringToFront();
+    const legs=l.legs(this.routes);
+    this.popup.options.offset=[0,-l.radius];
     this.popup.setLatLng(l.latlng).setContent(View.popup(l,legs)).openOn(this.map);
     this.#drawRoute(l,legs);
     this.onSelect(l);
   }
-  close(){this.map.closePopup(this.popup)}
-  recenter(){this.map.flyTo(this.#centreFor(KARLAPLAN,13),13,{animate:!REDUCED,duration:.6})}
-  #unmark(l){this.markers.get(l.id)?.setIcon(this.#icon(l)).setZIndexOffset(l.zIndex)}
-  #cleared(){
-    if(!this.selected)return;
-    this.#unmark(this.selected);this.selected=null;
-    this.route.clearLayers();this.map.getContainer().classList.remove('selmode');
-    this.onClear();
+  /* from the list (R3): centre on the pin, then open it */
+  focus(l){
+    this.map.once('moveend',()=>this.select(l));
+    this.map.setView(l.latlng,Math.max(this.map.getZoom(),14),{animate:!REDUCED});
   }
-  /* DESIGN.md §7.8 */
+  close(){this.map.closePopup(this.popup)}
+  #clear(){
+    if(!this.selected)return;
+    this.markers.get(this.selected.id)?.setStyle(this.#style(this.selected,false));
+    this.selected=null;this.route.clearLayers();this.onClear();
+  }
   #drawRoute(l,legs){
     this.route.clearLayers();
-    const walk={color:'#3A3A3C',weight:3,dashArray:'0 8',lineCap:'round',interactive:false};
-    if(!legs){L.polyline([l.latlng,KARLAPLAN],walk).addTo(this.route);return}
+    const walk={color:WALK_COLOR,weight:3,dashArray:'0 8',lineCap:'round',interactive:false};
+    if(!legs)return void L.polyline([l.latlng,KARLAPLAN],walk).addTo(this.route);
     for(const [mode,line,coords] of legs){
       if(!coords||coords.length<2)continue;
       if(mode==='walk'){L.polyline(coords,walk).addTo(this.route);continue}
-      const color=Fmt.lineColor(mode,line);
-      L.polyline(coords,{color:'#fff',weight:7,opacity:.9,lineCap:'round',lineJoin:'round',interactive:false}).addTo(this.route);
-      L.polyline(coords,{color,weight:4,lineCap:'round',lineJoin:'round',interactive:false}).addTo(this.route);
-      L.circleMarker(coords[0],{radius:4,color,weight:1.5,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(this.route);
+      L.polyline(coords,{color:'#fff',weight:7,opacity:.9,interactive:false}).addTo(this.route);
+      L.polyline(coords,{color:Fmt.line(mode,line).color,weight:4,interactive:false}).addTo(this.route);
     }
   }
 }
 
-/* ---------- legend ---------- */
-class Legend{
-  constructor(){
-    $('bars').innerHTML=PRICE.map(b=>`<i style="background:${b[1]}"></i>`).join('');
-    $('legend').innerHTML=`<div class="lg"><b>Pris per m²</b><div class="lgl">${PRICE.map((b,i)=>`<span class="lgi">${View.pin([200,275,325,375,450][i],14)}${b[2]}</span>`).join('')}<span class="lgi">${View.pin(null,14)}okänt</span></div></div>
-      <div class="lgl"><span class="lgi">${View.pin(null,14)}${View.pin(null,24)}större = fler m²</span></div>
-      <div class="t3">Restid med SL dörr till dörr, framme 08:00 nästa vardag</div>`;
-    $('lbtn').addEventListener('click',e=>e.currentTarget.setAttribute('aria-expanded',$('legend').classList.toggle('on')));
+/* ---------- list ---------- */
+class ListView{
+  constructor(el,onPick){
+    this.el=el;this.byId=new Map();
+    el.addEventListener('click',e=>{const c=e.target.closest('.card');if(c)onPick(this.byId.get(+c.dataset.id))});
+  }
+  show(items){
+    this.byId=new Map(items.map(l=>[l.id,l]));
+    this.el.innerHTML=items.length
+      ?items.map(l=>`<button class="card${l.isNew?' new':''}" id="c${l.id}" data-id="${l.id}" aria-pressed="false">${View.details(l)}</button>`).join('')
+      :'<p class="t2 empty">Inga träffar med de här filtren</p>';
+  }
+  /* outline only; never scrolls (R2) */
+  mark(l){
+    this.el.querySelector('.card.sel')?.classList.remove('sel');
+    this.el.querySelector('[aria-pressed="true"]')?.setAttribute('aria-pressed','false');
+    const c=l&&$('c'+l.id);if(c){c.classList.add('sel');c.setAttribute('aria-pressed','true')}
   }
 }
 
@@ -415,23 +267,25 @@ class Legend{
 class App{
   constructor(){
     this.all=[];this.visible=[];this.routes={};
-    this.sheet=new Sheet($('sheet'),$('grab'));
     this.filters=new Filters(()=>this.refresh());
-    this.list=new ListView($('sbody'),$('shead'),{onPick:l=>this.pick(l),onToggleNew:()=>{this.filters.state.onlyNew=!this.filters.state.onlyNew;this.refresh()}});
-    this.map=new MapView($('map'),this.sheet,{onSelect:l=>this.list.mark(l),onClear:()=>this.list.mark(null)});
-    new Legend();
-    $('rbtn').addEventListener('click',()=>this.map.recenter());
+    this.map=new MapView($('map'),{onSelect:l=>this.list.mark(l),onClear:()=>this.list.mark(null)});
+    this.list=new ListView($('list'),l=>this.pick(l));
+    $('legend').innerHTML=PRICE.map(([,c,label])=>`<span class="nb"><i class="dot" style="background:${c}"></i>${label}</span>`).join('')
+      +'<span>större prick = fler m²</span><span>restid: SL dörr till dörr, framme 08:00 nästa vardag</span>';
     addEventListener('keydown',e=>{if(e.key==='Escape')this.map.close()});
   }
   get selected(){return this.map.selected}
-  pick(l){l===this.selected?this.map.close():this.map.reveal(l)}
+  pick(l){
+    if(l===this.selected)return this.map.close();
+    scrollTo({top:0,behavior:REDUCED?'auto':'smooth'});
+    this.map.focus(l);
+  }
   refresh(){
     const f=this.filters,base=this.all.filter(l=>f.passes(l)),newCount=base.filter(l=>l.isNew).length;
-    if(!newCount)f.state.onlyNew=false;
     this.visible=base.filter(l=>!f.state.onlyNew||l.isNew).sort((a,b)=>a.t-b.t||(a.rent||0)-(b.rent||0));
-    f.renderChips();
-    this.map.setListings(this.visible,this.routes);
-    this.list.render(this.visible,newCount,f.state.onlyNew);
+    $('meta').innerHTML=`${this.visible.length}${NB}träffar${SEP}<span id="nya">${newCount}${NB}nya</span>${SEP}${f.summary()}`;
+    this.map.show(this.visible,this.routes);
+    this.list.show(this.visible);
   }
   async load(){
     const json=(url,fallback)=>fetch(url+'?'+Date.now()).then(r=>{if(!r.ok)throw new Error(url+' '+r.status);return r.json()}).catch(e=>{if(fallback===undefined)throw e;return fallback});
@@ -441,11 +295,8 @@ class App{
       this.all=[...geo.features.filter(f=>f.geometry?.type==='Point'&&f.properties.link).map(Listing.fromGeo),
                 ...fb.filter(p=>p.lat&&p.lon).map(Listing.fromFacebook)];
       this.refresh();
-      if(this.visible.length)this.map.fitAll(this.visible);
-    }catch(e){
-      $('shead').innerHTML='<div class="stitle"><h2>Kunde inte ladda</h2></div>';
-      $('sbody').innerHTML=`<p class="t3 empty">${esc(e.message||e)}</p>`;
-    }
+      if(this.visible.length)this.map.fit(this.visible);
+    }catch(e){$('meta').textContent='Kunde inte ladda';$('list').innerHTML=`<p class="t3 empty">${esc(e.message||e)}</p>`}
   }
 }
 
