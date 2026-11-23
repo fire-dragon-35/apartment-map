@@ -7,4 +7,4 @@ WorkingDirectory=@REPO@
 Environment=PATH=@NODE_BIN@:/usr/local/bin:/usr/bin:/bin
 ExecStart=@NPM@ run worker
 # a hung run is stopped; the timer starts the next one
-TimeoutStartSec=30min
+TimeoutStartSec=3h

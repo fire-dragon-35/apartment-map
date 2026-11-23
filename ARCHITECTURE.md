@@ -131,6 +131,18 @@ create table travel_times (
   primary key (place_id, dest_lat, dest_lon, profile)
 );
 
+-- travel time matrix (phase 1.5, §8): one row per destination cell, arrays aligned
+create table travel_matrix (
+  cell text not null,                 -- H3 cell (resolution 8) of the destination
+  profile text not null,              -- 'weekday_0800'
+  place_ids int[] not null,
+  minutes smallint[] not null,        -- restid from each place to the cell, §8
+  gtfs_hash text not null,            -- timetable the row was computed from
+  computed_at timestamptz not null default now(),
+  primary key (cell, profile),
+  check (cardinality(place_ids) = cardinality(minutes))
+);
+
 -- users
 create table profiles (id uuid primary key references auth.users, created_at timestamptz default now());
 create table destinations (
@@ -157,6 +169,7 @@ create table subscriptions (
 | --- | --- | --- | --- | --- |
 | listings, places | read active rows | read | read | write (service key) |
 | travel_times | read Karlaplan rows | read Karlaplan rows | read all | write |
+| travel_matrix | none | none | none (through the function) | read / write (service key) |
 | destinations, saved_searches | none | own rows, Karlaplan only | own rows | read |
 | subscriptions | none | own row (read) | own row (read) | write (stripe-webhook) |
 | runs, source_runs, fb_posts | none | none | none | read / write |
@@ -175,6 +188,7 @@ The paywall is enforced in the database (policy on `travel_times` and `destinati
 3. Duplicates: link listings of different sources with the same place (±50 m), m² (±2) and rent (±5 %) through `same_as`; the cheapest one is shown.
 4. Facebook: new posts are inserted into `fb_posts`; `extract-fb` fills `extracted` and creates or updates a listing.
 5. Travel times from every active place without a fresh Karlaplan row are computed (the free default) with the shared `TravelTimeService` (§8); the run log shows computed, reused and failed. A failure here never fails the run.
+   5b. The travel time matrix (§8, phase 1.5) is brought up to date: a full rebuild when the timetable or the grid changed, otherwise only the places that have no row. Logged as cells, places computed and seconds. A failure here never fails the run either.
 6. `runs.ok` set; `notify` runs.
 7. **Coverage check:** if a source is incomplete, returns 0, or returns less than half of the median of its last 7 complete runs (checked once 3 exist), the run is marked not ok and `npm run worker` exits non-zero. The email comes with `notify` (step 6); until then the failed systemd unit is the alert.
 8. **Raw retention:** files older than 30 days are deleted through the Storage API, except those a source run from the last 30 days still points at; source runs whose file was deleted get `raw_path = null`. A failure is logged and never fails the run.
@@ -212,6 +226,13 @@ Fetching is polite: one request at a time per site, a short pause between pages,
   * **Result per place:** `walk_min` as DESIGN.md §6, `transit_min` from SL, `minutes = min(walk, transit)`, `legs` = `[mode, line, coords, minutes, stops]` (mode `walk|metro|train|tram|bus|boat|other`, at most 60 points per leg rounded to 5 decimals, consecutive walking legs merged) or null when walking wins.
   * **Cache:** `travel_times`, keyed by place × destination cell (rounded to 3 decimals, about 100 m) × profile; a row younger than 7 days is reused. Everything is computed for the cell centre, so a cached row is right for every pin in the cell.
   * **`travel-times` function:** `POST { lat, lon, placeIds }` (at most 300 ids) returns `{ results: [{ placeId, minutes, walkMin, transitMin, legs }], failed: [placeId] }`: cached rows at once, only the missing ones computed. Karlaplan's cell is open to everyone; any other destination needs a signed-in user with `is_paying`, else **402** with a Swedish message. Reads run as the caller (row level security applies), writes use the service role. The gateway does not check the JWT (`verify_jwt = false`, because anonymous visitors use the Karlaplan cell and publishable keys are not JWTs); the function does its own check. The request logic is `handleTravelTimes` in `packages/shared/src/travel/handler.ts`, so test 4 runs it on Node.
+* **Phase 1.5 (custom pins fast): a matrix computed once a day on the laptop.** SL is one-to-one: 1 844 places took 14 minutes, so a pin would need minutes and could hit the edge function time limit. Instead the worker precomputes travel times from every active place to every cell of a grid, and a custom pin becomes one database read.
+  1. **Grid:** H3 resolution 8 (about 460 m edge) cells whose centre lies within 20 km of Karlaplan, about 2 270 cells (a cell here is 0.55 km²). A pin maps to its cell with `cellOf`. The parameters (`resolution`, `radiusKm`, centre) are in one place, `packages/shared/src/travel/grid.ts`; the worker, the function and the router input all derive from it. A pin outside the grid has no row and gets `failed` for every id.
+  2. **Router:** r5py (Conveyal R5) on the laptop, run by the worker as a subprocess (`apps/worker/router/`, Python, own `requirements.txt`, Java 21). Inputs, cached under `apps/worker/cache/` (gitignored): the Trafiklab *GTFS Regional* feed for `sl` (key `TRAFIKLAB_GTFS_KEY` in `.env`; checked at most once a day with a conditional request, because the key has a small monthly quota) and Geofabrik `sweden-latest.osm.pbf` cropped with osmium to the 20 km box plus a margin (downloaded again after 30 days). `setup.sh` installs the venv and, without a system Java, a user level JDK.
+  3. **Matrix:** origins are the active places at their exact coordinates, destinations the cell centres; weekday, departure window 07:30 to 08:00, median travel time, modes TRANSIT and WALK, for the next weekday like phase 1. The stored value stays DESIGN.md §6: `minutes = travelMinutes(walkMinutes(place, cellCentre), r5)`, with the walk as the fallback when R5 finds no trip. R5 returns raw transit minutes; the rule is applied in TypeScript, once, in `packages/shared`.
+  4. **Incremental and deterministic:** a full rebuild only when the timetable hash or the grid changes; otherwise only places without a row are computed (one-to-many) and appended to every cell row. Places that are no longer active are not rewritten; the read only asks for ids it wants. The timetable hash covers the feed's file names, sizes and CRCs except `feed_info.txt`, so a re-published identical feed does not trigger a rebuild. Every row carries `gtfs_hash` and `computed_at`. A row set is written with the reference cell last, so a run that dies half way is detected and repaired by the next one.
+  5. **Storage:** `travel_matrix` (§5), about 2 270 rows of about 1 900 pairs. Row level security is on and no policy exists: anon and signed-in users cannot read it; only the function's service client does.
+  6. **Function:** the Karlaplan cell is unchanged (SL with legs, cached in `travel_times`). A custom pin passes the same paywall, is mapped to its cell and answered from one `travel_matrix` row for the requested `placeIds`, with `legs: null` and `approx: true`; an id missing from the row, or a missing row, goes to `failed`, and SL is never called in bulk for a custom pin. A second request shape `{ lat, lon, placeId }` returns the exact SL trip with legs for one listing (the card the user opens), cached in `travel_times` as before, behind the same paywall. The page shows the approximate time in the list and replaces it with the exact one when a card opens.
 * **Phase 2 (when needed):** OpenTripPlanner with Trafiklab's open GTFS data for Stockholm and OpenStreetMap streets, on a small server. One request answers a pin to all places in about a second, with real walking times. Same function signature, so the page does not change.
 
 Karlaplan times are computed by the worker for every new place and are free; other pins require a paying user.
@@ -286,14 +307,14 @@ No unit tests per function. Five checks, each guarding something that would fail
 | **Source fixtures:** each adapter parses a saved real response into valid listings with the expected count | a site changing its format and the data quietly shrinking |
 | **Pipeline day:** a fake two day run on fixtures gives the right new, changed, removed and duplicate rows, and an incomplete source removes nothing | wrong "new" counts, ads vanishing, double listings |
 | **Page rules:** `tests/design_check.py` (ported to the React app) checks the ✓ rules in DESIGN.md | interaction and format regressions |
-| **Paywall:** an anonymous and a free user cannot read other pins' travel times or other users' rows, and get 402 from `travel-times` for a custom pin; a paying user gets results. Runs against local Supabase (`npx supabase start`) and is skipped, visibly, without it | data or paid features leaking |
+| **Paywall:** an anonymous and a free user cannot read other pins' travel times or other users' rows, and cannot read `travel_matrix`, and get 402 from `travel-times` for a custom pin; a paying user gets minutes from a fixture matrix row (bulk) or the exact cached SL trip (one listing). Runs against local Supabase (`npx supabase start`) and is skipped, visibly, without it | data or paid features leaking |
 | **Stripe webhook:** the same event twice gives one subscription row in the right state | double or lost subscriptions |
 
 Plus the type checker and linter. Everything else is covered by the coverage alerts in section 6.
 
 ## 14. Operations
 
-* **Secrets:** `.env` on the laptop (Supabase service key, Apify token); Supabase function secrets (Claude, Stripe, SMTP). Never in the repo.
+* **Secrets:** `.env` on the laptop (Supabase service key, Apify token, `TRAFIKLAB_GTFS_KEY`); Supabase function secrets (Claude, Stripe, SMTP). Never in the repo.
 * **Monitoring:** `source_runs` per source and day. The alert runs in Supabase, so it still works when the laptop is dead: a `pg_cron` job calls `worker_health_check()` every morning at 09:00 Stockholm time (the job fires at 07:00 and 08:00 UTC and the function acts only at 09:00 local, so daylight saving needs no change). It sends **one push through ntfy.sh** (`pg_net`) when no run finished ok in the last 36 hours, when the last run was not ok (a run unfinished after 3 hours counts as not ok), or when a source of the last run was incomplete, returned 0 ads or under half of the median of its 7 earlier complete runs. The message names each problem and the time of the last good run. Nothing is sent when all is well. The topic is a secret named `ntfy_topic` in Supabase Vault (`select vault.create_secret('<topic>', 'ntfy_topic')`), never in the repo; whoever knows it can read the alerts, so keep it random. Email via Resend is the alternative if push is not wanted (§17.3).
   Test it: `select worker_health_problems();` lists what is wrong now; `select worker_health_check(true);` sends if anything is.
 * **Backups:** Supabase daily backups; raw files 30 days in Storage (worker deletes older ones at the end of each run; a file a recent run still points at is kept).
@@ -314,6 +335,8 @@ apps/worker/src/store/        repository interfaces; Supabase implementation (th
 apps/worker/fixtures/         20 real items per source (photos removed), used by tests 1 and 2
 apps/worker/test/             tests 1 and 2 of §13 (node:test)
 apps/worker/systemd/          daily timer for this laptop + install.sh
+apps/worker/router/           r5py matrix builder (Python subprocess), requirements.txt, setup.sh
+apps/worker/cache/            GTFS, cropped OSM, JDK (gitignored)
 apps/web/                     React app (step 5)
 supabase/migrations/          SQL in §5
 supabase/functions/           travel-times (thin Deno wrapper); later extract-fb, stripe-webhook, notify (steps 3, 6)

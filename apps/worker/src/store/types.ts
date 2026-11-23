@@ -115,3 +115,30 @@ export interface Store {
   runs: RunRepository;
   raw: RawStore;
 }
+
+/** One row of travel_matrix: restid from each place to one destination cell. Arrays are aligned. */
+export interface MatrixRow {
+  cell: string;
+  placeIds: number[];
+  minutes: number[];
+  gtfsHash: string;
+  computedAt: Date;
+}
+
+export interface MatrixState {
+  /** every cell that has a row */
+  cells: string[];
+  /** timetable hash of the reference row; null when it does not exist */
+  gtfsHash: string | null;
+  /** places the reference row covers */
+  placeIds: Set<number>;
+}
+
+export interface MatrixRepository {
+  /** The reference cell is written last, so its row says what a finished build covers. */
+  state(profile: string, referenceCell: string): Promise<MatrixState>;
+  rows(cells: string[], profile: string): Promise<MatrixRow[]>;
+  /** Insert or replace, in the order given. */
+  save(rows: MatrixRow[], profile: string): Promise<void>;
+  remove(cells: string[], profile: string): Promise<void>;
+}

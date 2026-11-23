@@ -25,6 +25,7 @@ npm run worker                # the daily run: fetch, write to Supabase (needs .
 npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,mailpit,realtime,postgres-meta,supavisor
                               # local Supabase in Docker; applies supabase/migrations. Keys: npx supabase status -o env
 npm run db:types              # regenerate packages/shared/src/database.types.ts after a migration
+apps/worker/router/setup.sh   # once: Python venv with r5py + a user level JDK 21 for the travel time matrix
 apps/worker/systemd/install.sh  # daily 06:30 timer on this laptop (systemd user unit)
 ```
 

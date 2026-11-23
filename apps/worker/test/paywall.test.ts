@@ -1,13 +1,14 @@
 /**
  * Test 4 of 5 (ARCHITECTURE.md §13): an anonymous and a free user cannot read other pins' travel times or other
- * users' rows; the travel-times function answers 402 for them on a custom pin and works for a paying user.
+ * users' rows or the travel matrix; the travel-times function answers 402 for them on a custom pin and works for a
+ * paying user: minutes from the matrix in bulk, the exact cached SL trip for one listing.
  * Runs against LOCAL Supabase only (`npx supabase start`); without it the test is skipped, visibly.
  */
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { after, before, test } from 'node:test';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { handleTravelTimes, type Database } from '@lk/shared';
+import { cellOf, handleTravelTimes, MATRIX_PROFILE, type Database } from '@lk/shared';
 
 type Db = SupabaseClient<Database>;
 
@@ -55,6 +56,8 @@ before(async () => {
   const row = (d: { lat: number; lon: number }, minutes: number) =>
     ({ place_id: placeId, dest_lat: d.lat, dest_lon: d.lon, profile: 'weekday_0800', walk_min: 99, transit_min: minutes, minutes, legs: null, computed_at: now });
   assert.ifError((await service.from('travel_times').upsert([row(KARLAPLAN, 21), row(CUSTOM, 17)])).error);
+  // the matrix row of the custom pin's cell: 19 here, 17 in travel_times, so the two paths can be told apart
+  assert.ifError((await service.from('travel_matrix').upsert({ cell: cellOf(CUSTOM), profile: MATRIX_PROFILE, place_ids: [placeId], minutes: [19], gtfs_hash: 'test' })).error);
 
   const stamp = Date.now();
   const f = await signedIn(local.url, local.anon, `free-${stamp}@example.test`);
@@ -68,6 +71,7 @@ before(async () => {
 after(async () => {
   if (!local) return;
   await service.from('travel_times').delete().eq('place_id', placeId);
+  await service.from('travel_matrix').delete().eq('cell', cellOf(CUSTOM)).eq('profile', MATRIX_PROFILE);
   await service.from('places').delete().eq('id', placeId);
   for (const id of users) await service.auth.admin.deleteUser(id);   // cascades to subscriptions and destinations
 });
@@ -84,6 +88,14 @@ test('travel times: Karlaplan for everyone, other pins only for a paying user', 
   assert.deepEqual(await cells(paying), ['59.33,18.07', '59.339,18.091']);
 });
 
+test('the travel matrix is not readable through the API by anyone but the service role', { skip: SKIP }, async () => {
+  for (const [name, db] of [['anonymous', anon], ['free', free], ['paying', paying]] as const) {
+    const { data } = await db.from('travel_matrix').select('cell');
+    assert.deepEqual(data ?? [], [], `${name} reads no matrix rows`);
+  }
+  assert.equal((await service.from('travel_matrix').select('cell').eq('cell', cellOf(CUSTOM))).data!.length, 1, 'the service role does');
+});
+
 test('other users\' rows are not readable, and a free user cannot save a custom pin', { skip: SKIP }, async () => {
   for (const [name, db] of [['anonymous', anon], ['free', free]] as const) {
     assert.deepEqual((await db.from('destinations').select('id')).data ?? [], [], `${name} sees no destinations`);
@@ -98,11 +110,12 @@ test('other users\' rows are not readable, and a free user cannot save a custom 
 
 test('travel-times function: 402 on a custom pin unless paying; Karlaplan open', { skip: SKIP }, async () => {
   const noNetwork = (() => { throw new Error('no network in this test: answers come from the cache'); }) as unknown as typeof fetch;
-  const call = async (token: string | null, dest: { lat: number; lon: number }) => {
+  type Body = { error?: string; results?: { placeId: number; minutes: number; approx: boolean; legs: unknown }[]; failed?: number[] };
+  const call = async (token: string | null, dest: { lat: number; lon: number }, ids: object = { placeIds: [placeId] }) => {
     const headers: Record<string, string> = { 'content-type': 'application/json' };
     if (token) headers.authorization = `Bearer ${token}`;
     const res = await handleTravelTimes(
-      new Request('http://localhost/travel-times', { method: 'POST', headers, body: JSON.stringify({ ...dest, placeIds: [placeId] }) }),
+      new Request('http://localhost/travel-times', { method: 'POST', headers, body: JSON.stringify({ ...dest, ...ids }) }),
       {
         fetch: noNetwork,
         clients: auth => ({
@@ -110,7 +123,7 @@ test('travel-times function: 402 on a custom pin unless paying; Karlaplan open',
           service,
         }),
       });
-    return { status: res.status, body: (await res.json()) as { error?: string; results?: { placeId: number; minutes: number }[]; failed?: number[] } };
+    return { status: res.status, body: (await res.json()) as Body };
   };
 
   const anonymous = await call(null, CUSTOM);
@@ -124,8 +137,19 @@ test('travel-times function: 402 on a custom pin unless paying; Karlaplan open',
 
   const pays = await call(tokens.paying, CUSTOM);
   assert.equal(pays.status, 200);
-  assert.deepEqual(pays.body.results!.map(r => [r.placeId, r.minutes]), [[placeId, 17]]);
+  assert.deepEqual(pays.body.results!.map(r => [r.placeId, r.minutes, r.approx, r.legs]), [[placeId, 19, true, null]], 'minutes from the matrix row');
   assert.deepEqual(pays.body.failed, []);
+  const elsewhere = await call(tokens.paying, { lat: 59.36, lon: 18.2 }, { placeIds: [placeId, 999999999] });
+  assert.equal(elsewhere.status, 200);
+  assert.deepEqual([elsewhere.body.results, elsewhere.body.failed], [[], [placeId, 999999999]], 'no row for that cell: failed, and no SL call');
+
+  // one listing: the exact SL trip (here from travel_times), behind the same paywall
+  const one = { placeId };
+  assert.equal((await call(null, CUSTOM, one)).status, 402);
+  assert.equal((await call(tokens.free, CUSTOM, one)).status, 402);
+  const exact = await call(tokens.paying, CUSTOM, one);
+  assert.equal(exact.status, 200);
+  assert.deepEqual(exact.body.results!.map(r => [r.placeId, r.minutes, r.approx]), [[placeId, 17, false]]);
 
   const open = await call(null, { lat: 59.3389, lon: 18.0907 });   // Karlaplan, anonymous
   assert.equal(open.status, 200);

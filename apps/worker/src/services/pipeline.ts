@@ -7,6 +7,7 @@ import type { SourceResult } from '../sources/base.ts';
 import type { Store } from '../store/types.ts';
 import type { Clock } from './clock.ts';
 import { duplicateLinks } from './duplicates.ts';
+import type { MatrixService, MatrixSummary } from './matrix.ts';
 import { pruneRaw } from './retention.ts';
 import { SourceSync, type SyncCounts } from './sync.ts';
 
@@ -26,6 +27,8 @@ export interface RunSummary {
   runId: number; ok: boolean; problems: string[]; sources: SourceSummary[]; linked: number; rawPruned: number;
   /** null when travel times are not configured or the step failed */
   travel: TravelSummary | null;
+  /** the travel time matrix for custom pins (§8, phase 1.5); null when not configured or the step failed */
+  matrix: MatrixSummary | null;
 }
 
 const median = (xs: number[]) => {
@@ -40,6 +43,7 @@ export class Pipeline {
       fetchers: Fetcher[]; http: HttpClient; store: Store; clock: Clock; log?: (msg: string) => void;
       /** Travel times from every active place to this destination (Karlaplan, the free default) */
       travel?: { service: TravelTimeService; destination: LatLon };
+      matrix?: MatrixService;
     },
   ) {}
 
@@ -55,10 +59,11 @@ export class Pipeline {
     const problems = sources.flatMap(s => this.#problems(s));
     const linked = await this.#linkDuplicates();
     const travel = await this.#travelTimes(log);
+    const matrix = await this.#matrix(log);
     const ok = problems.length === 0;
     await store.runs.finish(runId, ok);
     const rawPruned = await this.#pruneRaw(log);
-    return { runId, ok, problems, sources: sources.map(s => s.summary), linked, rawPruned, travel };
+    return { runId, ok, problems, sources: sources.map(s => s.summary), linked, rawPruned, travel, matrix };
   }
 
   async #source(f: Fetcher, http: HttpClient, sync: SourceSync, runId: number, log: (m: string) => void) {
@@ -115,6 +120,20 @@ export class Pipeline {
       return { computed, reused, failed: failed.length };
     } catch (e) {
       log(`travel times failed (ignored): ${e instanceof Error ? e.message : String(e)}`);
+      return null;
+    }
+  }
+
+  /** The matrix for custom pins (§6 step 5b). A failure here never fails the run. */
+  async #matrix(log: (m: string) => void): Promise<MatrixSummary | null> {
+    const { matrix, store } = this.deps;
+    if (!matrix) return null;
+    try {
+      const m = await matrix.update(await store.places.active());
+      log(`travel matrix: ${m.full ? 'full rebuild' : 'incremental'}, ${m.cells} cells, ${m.computed} places computed, ${m.seconds} s`);
+      return m;
+    } catch (e) {
+      log(`travel matrix failed (ignored): ${e instanceof Error ? e.message : String(e)}`);
       return null;
     }
   }

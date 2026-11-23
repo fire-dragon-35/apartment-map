@@ -2,12 +2,17 @@
  * The logic of the travel-times edge function (ARCHITECTURE.md §8), as a plain Request → Response function so the
  * function stays a thin wrapper and the Paywall test can run it on Node against local Supabase.
  *
- * POST { lat, lon, placeIds } → { results: [{ placeId, minutes, walkMin, transitMin, legs }], failed: [placeId] }
+ * POST { lat, lon, placeIds } → { results: [{ placeId, minutes, walkMin, transitMin, legs, approx }], failed: [placeId] }
+ *   Karlaplan's cell: exact SL trips with legs (cached). A custom pin: minutes from the travel matrix (one read),
+ *   legs null, approx true; SL is never called in bulk for it.
+ * POST { lat, lon, placeId }  → the same shape for one listing: the exact SL trip with legs, cached.
  * Karlaplan's cell is open to everyone; any other destination needs a signed in, paying user (402 otherwise).
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../database.types.ts';
 import { isKarlaplan } from '../domain/travel.ts';
+import { cellOf, MATRIX_PROFILE } from './grid.ts';
+import { MatrixReader } from './matrix.ts';
 import { SupabaseTravelCache } from './cache.ts';
 import { TravelTimeService } from './service.ts';
 
@@ -36,13 +41,17 @@ export async function handleTravelTimes(req: Request, deps: HandlerDeps): Promis
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
   if (req.method !== 'POST') return json(405, { error: 'POST krävs' });
 
-  let body: { lat?: unknown; lon?: unknown; placeIds?: unknown };
+  let body: { lat?: unknown; lon?: unknown; placeIds?: unknown; placeId?: unknown };
   try { body = await req.json(); } catch { return json(400, { error: 'Ogiltig JSON' }); }
-  const { lat, lon, placeIds } = body;
+  const { lat, lon } = body;
   if (!finite(lat) || !finite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return json(400, { error: 'lat och lon krävs' });
+  const single = body.placeId !== undefined;
+  if (single && body.placeIds !== undefined) return json(400, { error: 'Ange placeId eller placeIds, inte båda' });
+  const placeIds = single ? [body.placeId] : body.placeIds;
   if (!Array.isArray(placeIds) || !placeIds.length || placeIds.length > MAX_IDS || !placeIds.every(Number.isInteger)) {
-    return json(400, { error: `placeIds: 1 till ${MAX_IDS} id` });
+    return json(400, { error: single ? 'placeId måste vara ett heltal' : `placeIds: 1 till ${MAX_IDS} id` });
   }
+  const ids = placeIds as number[];
   const dest = { lat, lon };
 
   try {
@@ -57,15 +66,24 @@ export async function handleTravelTimes(req: Request, deps: HandlerDeps): Promis
       if (paying !== true) return json(402, { error: 'Egna platser ingår i prenumerationen. Karlaplan är gratis.' });
     }
 
-    const { data: places, error } = await user.from('places').select('id, lat, lon').in('id', placeIds as number[]);
+    // a custom pin in bulk: one read of its cell's matrix row, no SL
+    if (!single && !isKarlaplan(dest)) {
+      const found = await new MatrixReader(service).minutes(cellOf(dest), MATRIX_PROFILE, ids);
+      return json(200, {
+        results: ids.filter(id => found.has(id)).map(id => ({ placeId: id, minutes: found.get(id)!, walkMin: null, transitMin: null, legs: null, approx: true })),
+        failed: ids.filter(id => !found.has(id)),
+      });
+    }
+
+    const { data: places, error } = await user.from('places').select('id, lat, lon').in('id', ids);
     if (error) throw new Error(error.message);
     const known = places.map(p => ({ id: p.id, lat: Number(p.lat), lon: Number(p.lon) }));
 
-    const service_ = new TravelTimeService({ fetch: deps.fetch, cache: new SupabaseTravelCache(user, service), now: deps.now ?? (() => new Date()) });
-    const outcome = await service_.compute(known, dest);
-    const unknown = (placeIds as number[]).filter(id => !known.some(p => p.id === id));
+    const travel = new TravelTimeService({ fetch: deps.fetch, cache: new SupabaseTravelCache(user, service), now: deps.now ?? (() => new Date()) });
+    const outcome = await travel.compute(known, dest);
+    const unknown = ids.filter(id => !known.some(p => p.id === id));
     return json(200, {
-      results: outcome.results.map(r => ({ placeId: r.placeId, minutes: r.minutes, walkMin: r.walkMin, transitMin: r.transitMin, legs: r.legs })),
+      results: outcome.results.map(r => ({ placeId: r.placeId, minutes: r.minutes, walkMin: r.walkMin, transitMin: r.transitMin, legs: r.legs, approx: false })),
       failed: [...outcome.failed, ...unknown],
     });
   } catch (e) {

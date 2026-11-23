@@ -217,6 +217,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"travel_matrix": {
+                  Row: {
+                    "cell": string,"computed_at": string,"gtfs_hash": string,"minutes": (number)[],"place_ids": (number)[],"profile": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cell": string,"computed_at"?: string,"gtfs_hash": string,"minutes": (number)[],"place_ids": (number)[],"profile": string
+                  }
+                  Update: {
+                    "cell"?: string,"computed_at"?: string,"gtfs_hash"?: string,"minutes"?: (number)[],"place_ids"?: (number)[],"profile"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"travel_times": {
                   Row: {
                     "computed_at": string,"dest_lat": number,"dest_lon": number,"legs": Json | null,"minutes": number,"place_id": number,"profile": string,"transit_min": number | null,"walk_min": number
@@ -256,6 +270,12 @@ isOneToOne: false
                            },
 "is_paying":
 { Args: { "uid": string }; Returns: boolean
+                           },
+"worker_health_check":
+{ Args: { "force"?: boolean }; Returns: string
+                           },
+"worker_health_problems":
+{ Args: Record<PropertyKey, never>; Returns: (string)[]
                            }
           }
           Enums: {

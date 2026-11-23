@@ -8,3 +8,5 @@ export * from './travel/sl.ts';
 export * from './travel/service.ts';
 export * from './travel/cache.ts';
 export * from './travel/handler.ts';
+export * from './travel/grid.ts';
+export * from './travel/matrix.ts';
