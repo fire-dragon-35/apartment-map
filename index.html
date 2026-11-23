@@ -7,127 +7,131 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* DESIGN.md tokens */
+/* tokens: DESIGN.md §4 */
 :root{
   --p1:#34C759;--p2:#A3D63C;--p3:#FFCC00;--p4:#FF9500;--p5:#FF3B30;--pu:#AEAEB2;
   --t1:#1C1C1E;--t2:#3A3A3C;--t3:#6C6C70;--decor:#AEAEB2;
-  --accent:#007AFF;--accent-text:#0066D6;--warn:#FF3B30;--warn-text:#C4231A;
-  --tint-new:rgba(0,122,255,.08);--fill:rgba(118,118,128,.16);--selected:#1C1C1E;
-  --land:#F2F2EF;--ring:#A1A1A6;
+  --accent:#007AFF;--accent-text:#0066D6;--selected:#1C1C1E;
+  --fill:rgba(118,118,128,.14);--card:#fff;--sheet-bg:rgba(242,242,247,.86);--land:#F2F2EF;
   --edge:1.5px;--sheet-h:45vh;--top:calc(env(safe-area-inset-top) + 12px);
+  --ease:cubic-bezier(.2,.8,.2,1);--dur:.2s;
 }
+@media (prefers-reduced-motion:reduce){:root{--dur:0s}}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden}
 body{font:400 13px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;color:var(--t1);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;background:var(--land)}
-button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;text-align:inherit}
 a{color:var(--accent-text)}
 #map{position:fixed;inset:0;background:var(--land)}
 .leaflet-control-attribution{font-size:9px;background:#fff9!important}
 .leaflet-div-icon{background:none;border:0}
 
-/* type */
+/* tiers: DESIGN.md §3.1 */
 .t1{font-size:15px;font-weight:600;color:var(--t1)}
 .t2{font-size:13px;font-weight:400;color:var(--t2)}
 .t3{font-size:12px;font-weight:400;color:var(--t3)}
-.dot-sep{color:var(--decor);margin:0 4px}
-.pd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:0}
+.sep{color:var(--decor);margin:0 5px}
 .nb{white-space:nowrap}
 
-/* glass */
-.glass{background:rgba(255,255,255,.38);-webkit-backdrop-filter:blur(14px) saturate(190%);backdrop-filter:blur(14px) saturate(190%);
-  border:.5px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 24px rgba(0,0,0,.12)}
-.glass-sheet{background:rgba(255,255,255,.68);-webkit-backdrop-filter:blur(24px) saturate(190%);backdrop-filter:blur(24px) saturate(190%);border-top:.5px solid rgba(255,255,255,.9);box-shadow:0 -10px 30px rgba(0,0,0,.08)}
+/* glass: DESIGN.md §4.4 */
+.glass{background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
+  border:.5px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 24px rgba(0,0,0,.10)}
 
-/* header */
-header{position:fixed;top:var(--top);left:12px;right:12px;z-index:1000;border-radius:22px;padding:12px 12px 12px 16px;display:flex;flex-direction:column;gap:8px}
-.hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
-h1{margin:0;font-size:17px;font-weight:600;letter-spacing:-.2px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:12px;color:var(--t3);background:var(--fill);border-radius:999px;padding:4px 10px}
-.round{width:44px;height:44px;margin:-6px;display:flex;align-items:center;justify-content:center}
+/* pin: DESIGN.md §2 (shared by map, card, legend) */
+.pin{position:relative;display:inline-block;flex:none;border-radius:50%;border:var(--edge) solid #fff}
+.pin.ap{border-style:dashed}
+.pin.on{border-color:var(--selected)}
+.pin.sh{box-shadow:0 1px 3px rgba(0,0,0,.28)}
+.pin .core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.25)}
+.pin .bw{position:absolute;right:-5px;top:-5px;border-radius:50%;background:var(--t1);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--edge) #fff;line-height:1}
+.pinw{width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.selmode .pinw:not(.on){opacity:.3}
+.kp{width:15px;height:15px;border-radius:50%;background:var(--accent);border:var(--edge) solid #fff;box-shadow:0 0 0 var(--edge) var(--accent)}
+.kplabel{position:absolute;left:18px;top:-5px;font-size:12px;font-weight:600;border-radius:999px;padding:3px 8px;white-space:nowrap}
+.lpill{display:inline-block;font-size:11px;font-weight:600;color:#fff;border-radius:999px;padding:1px 7px;white-space:nowrap;line-height:15px}
+.map-lpill{transform:translate(-50%,-50%);box-shadow:0 0 0 var(--edge) #fff}
+
+/* header bar: DESIGN.md §6.1 */
+header{position:fixed;top:var(--top);left:12px;right:12px;z-index:1000;border-radius:22px;padding:6px 6px 6px 10px}
+.hrow{display:flex;align-items:center;gap:6px}
+.chips{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{font-size:12px;color:var(--t1);background:var(--fill);border-radius:999px;padding:6px 10px;white-space:nowrap}
+.round{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center}
 .round span{width:32px;height:32px;border-radius:50%;background:var(--fill);display:flex;align-items:center;justify-content:center}
-.filters{display:none;flex-direction:column;gap:12px;padding-top:4px}
+.filters{display:none;flex-direction:column;gap:12px;padding:8px 10px 10px 4px}
 .filters.on{display:flex}
 .frow{display:flex;flex-direction:column;gap:4px}
 .frow label{display:flex;justify-content:space-between}
-.frow input{width:100%;accent-color:var(--accent);height:28px}
+.frow input{width:100%;accent-color:var(--accent);height:28px;margin:0}
 
-/* map controls */
-.ctl{position:fixed;left:12px;right:12px;bottom:calc(var(--sheet-h) + 12px);z-index:900;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;transition:bottom .25s}
+/* control row: DESIGN.md §6.3 */
+.ctl{position:fixed;left:12px;right:12px;bottom:calc(var(--sheet-h) + 12px);z-index:900;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
 .ctl>*{pointer-events:auto}
-.pill{border-radius:999px;min-height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t3)}
-.bars{display:flex;gap:2px}.bars i{width:18px;height:6px;border-radius:3px}
-.recenter{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-#legend{position:fixed;left:12px;bottom:calc(var(--sheet-h) + 68px);z-index:950;border-radius:20px;padding:14px 16px;display:none;flex-direction:column;gap:8px;max-width:300px;transition:bottom .25s}
+.lpillbtn{border-radius:999px;height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.bars{display:flex;gap:2px}.bars i{width:16px;height:6px;border-radius:3px}
+.recenter{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#3A3A3C}
+#tbtn[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+#legend{position:fixed;left:12px;bottom:calc(var(--sheet-h) + 68px);z-index:950;border-radius:22px;padding:14px 16px;display:none;flex-direction:column;gap:10px;max-width:300px}
 #legend.on{display:flex}
-#legend .lt{font-size:12px;font-weight:600;color:var(--t1)}
-#legend .ll{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--t2);align-items:center}
-.mk{display:inline-block;border-radius:50%;vertical-align:-2px;margin-right:4px}
+.lg{display:flex;flex-direction:column;gap:6px}
+.lg b{font-size:12px;font-weight:600}
+.lgl{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.lgi{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
 
-/* sheet */
-#sheet{position:fixed;left:0;right:0;bottom:0;height:var(--sheet-h);z-index:1001;border-radius:28px 28px 0 0;display:flex;flex-direction:column;transition:height .25s}
-#sheet.drag,#sheet.drag~.ctl,.dragging #legend{transition:none}
-.grab{padding:8px 20px 8px;touch-action:none;cursor:grab;flex:none}
+/* sheet: DESIGN.md §5, §6.5 */
+#sheet{position:fixed;left:0;right:0;bottom:0;height:var(--sheet-h);z-index:1001;border-radius:28px 28px 0 0;display:flex;flex-direction:column;
+  background:var(--sheet-bg);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);border-top:.5px solid rgba(255,255,255,.9);box-shadow:0 -10px 30px rgba(0,0,0,.08)}
+#sheet.snap{transition:height var(--dur) var(--ease)}
+#sheet.snap~.ctl,#sheet.snap~#legend{transition:bottom var(--dur) var(--ease)}
+.grab{padding:8px 16px 10px;touch-action:none;cursor:grab;flex:none}
 .handle{width:36px;height:5px;border-radius:3px;background:rgba(60,60,67,.3);margin:0 auto 10px}
 .stitle{display:flex;align-items:center;gap:8px}
 .stitle h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.4px}
-.newpill{font-size:12px;font-weight:600;color:var(--accent-text);background:rgba(0,122,255,.10);border-radius:999px;padding:3px 9px}
-.caption{margin:4px 0 0}
-.sbody{flex:1;overflow:auto;padding:4px 8px calc(env(safe-area-inset-bottom) + 16px);-webkit-overflow-scrolling:touch}
+.newchip{font-size:12px;font-weight:600;border-radius:999px;padding:5px 10px;background:var(--fill);color:var(--t1)}
+.newchip[aria-pressed="true"]{background:var(--accent);color:#fff}
+.sbody{flex:1;overflow:auto;padding:0 12px calc(env(safe-area-inset-bottom) + 16px);-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:8px}
 
-/* list rows */
-.row{display:block;width:100%;text-align:left;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:3px}
-.row.new{background:var(--tint-new)}
-.row.sel{box-shadow:inset 0 0 0 var(--edge) var(--selected)}
-.rl{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.rl>span:first-child{min-width:0}
-.badges{display:inline-flex;gap:2px;align-items:center;vertical-align:1px;margin-left:4px}
-.bnew{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block}
-.pbadges .bnew{box-shadow:0 0 0 var(--edge) #fff}
-.bwarn{width:13px;height:13px;border-radius:50%;background:var(--warn);color:#fff;font:700 9px/10px Inter,sans-serif;text-align:center;box-shadow:0 0 0 var(--edge) #fff;display:inline-flex;align-items:center;justify-content:center}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+/* card: DESIGN.md §6.6 */
+.card{background:var(--card);border-radius:16px;box-shadow:0 .5px 0 rgba(0,0,0,.06);flex:none}
+.card.new{background:#E8F1FD}
+.card.new .schip,.card.new .pchip{box-shadow:0 0 0 .5px rgba(255,255,255,.6)}
+.card.sel{box-shadow:inset 0 0 0 var(--edge) var(--selected)}
+.sum{display:grid;grid-template-columns:1fr;row-gap:5px;width:100%;padding:12px 14px;align-items:baseline}
+.cl{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.cl>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
 .tag{font-size:12px;color:var(--t2);background:var(--fill);border-radius:6px;padding:2px 7px}
-.warnl{font-size:12px;font-weight:500;color:var(--warn-text);display:flex;align-items:center;gap:6px;margin-top:3px}
+.pchip{display:inline-block;font-size:13px;font-weight:500;border-radius:6px;padding:0 6px;line-height:19px;white-space:nowrap}
+.schip{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:0 6px;line-height:18px;white-space:nowrap}
+.tag.new{color:var(--accent-text);background:rgba(0,122,255,.10);font-weight:600}
+.warnl{font-size:12px;font-weight:500;color:var(--t1);display:flex;align-items:center;gap:6px}
+.wb{width:13px;height:13px;border-radius:50%;background:var(--t1);color:#fff;font-size:9px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.exp{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--dur) var(--ease)}
+.card.sel .exp{grid-template-rows:1fr}
+.exp>div{overflow:hidden}
+.expin{margin:0 14px 14px 14px;padding-top:12px;border-top:.5px solid rgba(60,60,67,.18);display:flex;flex-direction:column;gap:12px}
+.resvag{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.chev{color:var(--decor)}
+.cta{display:flex;align-items:center;justify-content:center;height:44px;border-radius:12px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;text-decoration:none}
 .empty{padding:32px 12px;text-align:center}
-
-/* detail card */
-.det{padding:4px 12px 0;display:flex;flex-direction:column;gap:12px}
-.dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.dhead h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.4px}
-.close{width:44px;height:44px;margin:-7px -7px 0 0;display:flex;align-items:center;justify-content:center;flex:none}
-.close span{width:30px;height:30px;border-radius:50%;background:var(--fill);display:flex;align-items:center;justify-content:center}
-.dl{display:grid;grid-template-columns:72px 1fr;gap:10px 12px;align-items:baseline}
-.cta{display:flex;align-items:center;justify-content:center;height:48px;border-radius:14px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;text-decoration:none;margin-top:4px}
-.chev{color:var(--decor);margin:0 4px}
-
-/* map marks */
-.pinw{position:relative;width:44px;height:44px}
-.pin{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.28)}
-.pbadges{position:absolute;display:flex;gap:2px;align-items:center}
-.selmode .pinw:not(.on){opacity:.3}
-.kp{width:15px;height:15px;border-radius:50%;background:var(--accent);border:var(--edge) solid #fff;box-shadow:0 0 0 var(--edge) var(--accent)}
-.kplabel{position:absolute;left:16px;top:-5px;font-size:12px;font-weight:600;border-radius:12px;padding:3px 8px;white-space:nowrap}
-.ringlbl{font-size:11px;font-weight:600;color:var(--t3);background:var(--land);padding:0 3px;border-radius:3px;white-space:nowrap;transform:translate(-50%,-50%);display:inline-block}
-.callout{position:absolute;transform:translate(-50%,-100%);border-radius:12px;padding:6px 10px;white-space:nowrap;font-size:15px;font-weight:600}
-.lpill{display:inline-block;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:#fff;border-radius:999px;padding:1px 7px;box-shadow:0 0 0 var(--edge) #fff;white-space:nowrap}
 
 /* desktop: sheet becomes a left panel */
 @media (min-width:900px){
   #sheet{left:12px;top:12px;bottom:12px;width:400px;height:auto!important;border-radius:28px}
-  .grab{cursor:default}.handle{display:none}
-  header{left:424px;max-width:560px}
-  .ctl{left:424px;bottom:12px}
-  #legend{left:424px;bottom:68px}
+  .grab{cursor:default;padding-top:16px}.handle{display:none}
+  header{left:424px;max-width:520px}
+  .ctl{left:424px;bottom:12px!important}
+  #legend{left:424px;bottom:68px!important}
 }
 </style></head><body>
 <div id="map" aria-label="Karta"></div>
 
 <header class="glass">
   <div class="hrow">
-    <h1>Lägenheter nära Karlaplan</h1>
+    <div class="chips" id="chips"></div>
     <button class="round" id="fbtn" aria-label="Filter" aria-expanded="false"><span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#3A3A3C" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h7M13 4h1M2 12h1M7 12h7"/><circle cx="11" cy="4" r="2"/><circle cx="5" cy="12" r="2"/></svg></span></button>
   </div>
-  <div class="chips" id="chips"></div>
   <div class="filters" id="filters">
     <div class="frow"><label for="fmin"><span class="t3">Restid</span><span class="t2" id="vmin"></span></label><input id="fmin" type="range" min="10" max="30" step="1"></div>
     <div class="frow"><label for="frent"><span class="t3">Hyra</span><span class="t2" id="vrent"></span></label><input id="frent" type="range" min="8000" max="17000" step="500"></div>
@@ -135,52 +139,52 @@ h1{margin:0;font-size:17px;font-weight:600;letter-spacing:-.2px}
   </div>
 </header>
 
-<div id="legend" class="glass" role="dialog" aria-label="Teckenförklaring">
-  <div class="lt">Pris per m²</div>
-  <div class="ll" id="lgprice"></div>
-  <div class="ll"><span><i class="mk" style="width:10px;height:10px;background:var(--pu)"></i><i class="mk" style="width:16px;height:16px;background:var(--pu)"></i>Storlek: större prick = fler m²</span></div>
-  <div class="ll"><span><i class="mk" style="width:14px;height:14px;background:var(--pu);border:var(--edge) dashed #fff;box-shadow:0 1px 3px rgba(0,0,0,.28)"></i>Streckad kant: ungefärligt läge (Facebook)</span></div>
-  <div class="ll"><span><i class="bnew" style="margin-right:6px"></i>Blå prick: ny idag</span></div>
-  <div class="ll"><span><i class="bwarn" style="margin-right:6px">!</i>kontrollera annonsen</span></div>
-  <div class="t3">Restid med SL dörr till dörr, framme 08:00 nästa vardag</div>
-</div>
-
-<div class="ctl" id="ctl">
-  <button class="pill glass" id="lbtn" aria-label="Visa teckenförklaring" aria-expanded="false"><span>&lt;250</span><span class="bars" id="bars"></span><span>400+ kr/m²</span></button>
-  <button class="recenter glass" id="rbtn" aria-label="Centrera på Karlaplan"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#007AFF" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><path d="M9 1v3M9 14v3M1 9h3M14 9h3"/></svg></button>
-</div>
-
-<section id="sheet" class="glass-sheet" aria-label="Lista">
-  <div class="grab" id="grab">
-    <div class="handle"></div>
-    <div id="shead"></div>
-  </div>
+<section id="sheet" aria-label="Lista">
+  <div class="grab" id="grab"><div class="handle"></div><div id="shead"></div></div>
   <div class="sbody" id="sbody"></div>
 </section>
+
+<div class="ctl" id="ctl">
+  <button class="lpillbtn glass" id="lbtn" aria-label="Visa teckenförklaring" aria-expanded="false"><span>&lt;250</span><span class="bars" id="bars"></span><span>400+ kr/m²</span></button>
+  <span style="display:flex;gap:8px">
+  <button class="recenter glass" id="tbtn" aria-label="Visa resväg på kartan" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="14" r="2"/><circle cx="14" cy="4" r="2"/><path d="M6 14h4a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h4" stroke-dasharray="0"/></svg></button>
+  <button class="recenter glass" id="rbtn" aria-label="Centrera på Karlaplan"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#007AFF" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><path d="M9 1v3M9 14v3M1 9h3M14 9h3"/></svg></button>
+  </span>
+</div>
+
+<div id="legend" class="glass" role="dialog" aria-label="Teckenförklaring"></div>
 
 <script>
 const K=[59.3389,18.0907];
 const MON=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
 const PRICE=[[250,'var(--p1)','under 250'],[300,'var(--p2)','250 till 299'],[350,'var(--p3)','300 till 349'],[400,'var(--p4)','350 till 399'],[1e9,'var(--p5)','400 och mer']];
 const SL={metro:{'10':'#0072BC','11':'#0072BC','13':'#E3242B','14':'#E3242B','17':'#2EA84A','18':'#2EA84A','19':'#2EA84A'},train:'#EC619F',tram:'#F28C00',bus:'#E3242B',boat:'#00A3AD',other:'#3A3A3C'};
-const NB=' ';
+const NB='\u00a0';
 const TODAY=new Date().toLocaleDateString('sv-SE');
 const YEAR=new Date().getFullYear();
+const DESK=()=>matchMedia('(min-width:900px)').matches;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pc=k=>k==null?'var(--pu)':PRICE.find(b=>k<b[0])[1];
 const thou=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,NB);
-const sep='<span class="dot-sep">·</span>';
+const SEP='<span class="sep">·</span>';
+/* soft price chip: 20 % tint of the pin colour, text in a darker shade of the same hue (passes 4.5:1) */
+const PTONE=[['#34C759','#1E7B34'],['#A3D63C','#4A7208'],['#FFCC00','#7F6200'],['#FF9500','#9C4E00'],['#FF3B30','#B42318']];
+const ptone=k=>{if(k==null)return 'background:rgba(174,174,178,.2);color:#6C6C70';const i=PRICE.findIndex(b=>k<b[0]);return `background:${PTONE[i][0]}33;color:${PTONE[i][1]}`};
+const SRC={'Qasa':'#4B48C9','Bostadsförmedlingen':'#0A6F8E','Samtrygg':'#8A3FB5','HomeQ':'#1F7A5C','Facebook':'#1662C4'};
+const fk=v=>String(Math.round(v/100)/10)+'k';
 
-/* atoms (DESIGN.md §2) */
+/* atoms: DESIGN.md §3.2 */
 const A={
   restid:p=>p.t==null?'?'+NB+'min':(p.approx?'~':'')+p.t+NB+'min',
-  hyra:p=>{if(!p.rent)return '?'+NB+'kr';const v=Math.round(p.rent/100)/10;return (Number.isInteger(v)?v:String(v).replace('.',','))+'k'+NB+'kr'},
-  storlek:p=>p.m2?p.m2+NB+'m²':'?'+NB+'m²',
-  rum:p=>p.rooms?String(p.rooms).replace('.',',')+NB+'rok':'',
-  kpm:p=>`<span class="nb"><i class="pd" style="background:${pc(p.kpm)}"></i>${p.kpm==null?'?':thou(p.kpm)}${NB}kr/m²</span>`,
+  hyra:p=>p.rent?fk(p.rent)+NB+'kr':'?'+NB+'kr',
+  storlek:p=>(p.m2||'?')+NB+'m²',
+  rum:p=>p.rooms?String(p.rooms)+NB+'rok':'',
+  kpm:p=>`<span class="pchip" style="${ptone(p.kpm)}">${p.kpm==null?'?':thou(p.kpm)}${NB}kr/m²</span>`,
+  kalla:p=>{const c=SRC[p.source]||'#6C6C70';return `<span class="schip" style="color:${c};background:${c}1F">${esc(p.source)}</span>`},
   date:s=>{const d=new Date(s+'T00:00:00');if(isNaN(d))return '?';return d.getDate()+NB+MON[d.getMonth()]+(d.getFullYear()!==YEAR?NB+d.getFullYear():'')},
-  avtal:p=>{const st=p.start==='now'||(p.start&&p.start<=TODAY)?'nu':p.start?A.date(p.start):'?';return `<span class="nb">${st} → ${p.end?A.date(p.end):'tills vidare'}</span>`},
+  avtal:p=>{const st=p.start==='now'||(p.start&&p.start<=TODAY)?'nu':p.start?A.date(p.start):'?';return st+' → '+(p.end?A.date(p.end):'tills vidare')},
   alder:p=>{if(!p.first_seen)return '';const n=Math.round((Date.parse(TODAY)-Date.parse(p.first_seen))/864e5);return n<=0?'idag':n+NB+'d'},
+  omrade:p=>p.area&&p.area!=='Stockholm'&&p.area!==p.street?p.area:'',
 };
 
 /* data → one shape for both sources */
@@ -217,167 +221,224 @@ function fromFb(p){
     warn:false,notes:[p.furnished===true?'möblerad':p.furnished===false?'omöblerad':null].filter(Boolean),approx:true};
 }
 const lenOk=p=>{if(!p.end)return true;const s=p.start&&p.start!=='now'&&p.start>TODAY?p.start:TODAY;return (Date.parse(p.end)-Date.parse(s))/864e5>=180};
+const isNew=p=>p.first_seen===TODAY;
+/* walking vs SL: restid is the fastest of the two */
+const WALK_DETOUR=1.3,WALK_M_PER_MIN=80;
+function distM(a,b){const R=6371000,r=Math.PI/180,dp=(b[0]-a[0])*r,dl=(b[1]-a[1])*r;
+  const h=Math.sin(dp/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dl/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function fastest(p){
+  p.sl=p.t;
+  p.walk=p.lat!=null?Math.max(1,Math.round(distM([p.lat,p.lon],K)*WALK_DETOUR/WALK_M_PER_MIN)):null;
+  p.byFoot=p.walk!=null&&(p.sl==null||p.walk<=p.sl);
+  if(p.byFoot)p.t=p.walk;
+  return p;
+}
 
-/* filters (header chips + filter panel) */
-const F={min:30,rent:17000,m2:20};
-try{Object.assign(F,JSON.parse(localStorage.getItem('lgh-f')||'{}'))}catch(e){}
-const fk=v=>(v/1000+'').replace('.',',')+'k';
+/* pin: DESIGN.md §2, one drawing everywhere */
+const diam=m2=>{const a=Math.sqrt(20),b=Math.sqrt(65),x=Math.min(1,Math.max(0,(Math.sqrt(m2||20)-a)/(b-a)));return Math.round(14+12*x)};
+function pinHtml(p,{d=14,on=false,shadow=false}={}){
+  return `<span class="pin${on?' on':''}${shadow?' sh':''}" style="width:${d}px;height:${d}px;background:${pc(p.kpm)}"></span>`;
+}
+
+/* state */
+const F={min:30,rent:17000,m2:20,onlyNew:false};
+try{const s=JSON.parse(localStorage.getItem('lgh-f')||'{}');delete s.onlyNew;Object.assign(F,s)}catch(e){}
+const saveF=()=>{try{const {onlyNew,...s}=F;localStorage.setItem('lgh-f',JSON.stringify(s))}catch(e){}};
+let ALL=[],R={},P=[],sel=null,NEWN=0;
 
 /* map */
-const map=L.map('map',{zoomControl:false,attributionControl:true}).setView(K,13);
+const map=L.map('map',{zoomControl:false,attributionControl:true,zoomSnap:.25}).setView(K,13);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Esri, HERE, OpenStreetMap'}).addTo(map);
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,opacity:.7}).addTo(map);
-[2,4,6].forEach(km=>{
-  L.circle(K,{radius:km*1000,color:'#A1A1A6',weight:1,dashArray:'4 4',fill:false,interactive:false}).addTo(map);
-  L.marker([K[0]+km/111.2,K[1]],{interactive:false,keyboard:false,icon:L.divIcon({className:'',iconSize:[0,0],html:`<span class="ringlbl">${km}${NB}km</span>`})}).addTo(map);
-});
-L.marker(K,{interactive:false,keyboard:false,zIndexOffset:2000,icon:L.divIcon({className:'',iconSize:[15,15],iconAnchor:[7.5,7.5],html:`<div class="kp"></div><span class="kplabel glass">Karlaplan</span>`})}).addTo(map);
-
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,opacity:.55}).addTo(map);
+L.marker(K,{interactive:false,keyboard:false,zIndexOffset:5000,icon:L.divIcon({className:'',iconSize:[15,15],iconAnchor:[7.5,7.5],html:`<div class="kp"></div><span class="kplabel glass">Karlaplan</span>`})}).addTo(map);
 const routeL=L.layerGroup().addTo(map),pinL=L.layerGroup().addTo(map);
-let ALL=[],R={},P=[],sel=null,callout=null;
-const diam=m2=>{const a=Math.sqrt(20),b=Math.sqrt(65),x=Math.min(1,Math.max(0,(Math.sqrt(m2||20)-a)/(b-a)));return Math.round(14+12*x)};
-const isNew=p=>p.first_seen===TODAY;
-const badgeHtml=p=>(isNew(p)?'<i class="bnew"></i>':'')+(p.warn?'<i class="bwarn">!</i>':'');
 
+function zFor(p){return 100-(p.m2||20)}
 function pinIcon(p,on){
-  const d=diam(p.m2)+(on?4:0),edge=on?`var(--edge) solid var(--selected)`:`var(--edge) ${p.approx?'dashed':'solid'} #fff`;
-  const b=badgeHtml(p);
-  return L.divIcon({className:'',iconSize:[44,44],iconAnchor:[22,22],
-    html:`<div class="pinw${on?' on':''}"><div class="pin" style="width:${d}px;height:${d}px;background:${pc(p.kpm)};border:${edge}"></div>${b?`<div class="pbadges" style="left:${Math.round(22+d*.354-4)}px;top:${Math.round(22-d*.354-5)}px">${b}</div>`:''}</div>`});
+  const d=diam(p.m2)+(on?4:0);
+  return L.divIcon({className:'',iconSize:[44,44],iconAnchor:[22,22],html:`<div class="pinw${on?' on':''}">${pinHtml(p,{d,on,shadow:true})}</div>`});
 }
 
-function sheetPad(){const desk=matchMedia('(min-width:900px)').matches;const hb=document.querySelector('header').getBoundingClientRect().bottom;
-  return desk?{paddingTopLeft:[436,hb+12],paddingBottomRight:[24,24]}:{paddingTopLeft:[24,hb+24],paddingBottomRight:[24,document.getElementById('sheet').offsetHeight+24]}}
+/* the visible map area, between header bar and sheet */
+function viewRect(){
+  const hb=document.querySelector('header').getBoundingClientRect().bottom;
+  if(DESK())return {l:424+12,t:hb+12,r:innerWidth-12,b:innerHeight-68};
+  return {l:12,t:hb+12,r:innerWidth-12,b:innerHeight-document.getElementById('sheet').offsetHeight-68};
+}
+/* DESIGN.md §0.1: pan only if hidden, never zoom */
+function revealPin(p){
+  if(p.lat==null)return;
+  const pt=map.latLngToContainerPoint([p.lat,p.lon]),v=viewRect(),m=24;
+  let dx=0,dy=0;
+  if(pt.x<v.l+m)dx=pt.x-(v.l+m);else if(pt.x>v.r-m)dx=pt.x-(v.r-m);
+  if(pt.y<v.t+m)dy=pt.y-(v.t+m);else if(pt.y>v.b-m)dy=pt.y-(v.b-m);
+  if(dx||dy)map.panBy([dx,dy],{animate:!matchMedia('(prefers-reduced-motion:reduce)').matches,duration:.3});
+}
 
 function render(){
-  P=ALL.filter(p=>p.t!=null&&p.t<=F.min&&(!p.rent||p.rent<=F.rent)&&(!p.m2||p.m2>=F.m2)&&lenOk(p)).sort((a,b)=>a.t-b.t||(a.rent||0)-(b.rent||0));
+  sel=null;routeL.clearLayers();document.getElementById('map').classList.remove('selmode');
+  const base=ALL.filter(p=>p.t!=null&&p.t<=F.min&&(!p.rent||p.rent<=F.rent)&&(!p.m2||p.m2>=F.m2)&&lenOk(p));
+  NEWN=base.filter(isNew).length;
+  if(!NEWN)F.onlyNew=false; /* never leave the user stuck in an empty "nya" view */
+  P=base.filter(p=>!F.onlyNew||isNew(p)).sort((a,b)=>a.t-b.t||(a.rent||0)-(b.rent||0));
   document.getElementById('chips').innerHTML=[`≤${NB}${fk(F.rent)}${NB}kr`,`≥${NB}${F.m2}${NB}m²`,`≥${NB}6${NB}mån`,`≤${NB}${F.min}${NB}min`].map(c=>`<span class="chip">${c}</span>`).join('');
   pinL.clearLayers();
-  P.forEach((p,i)=>{p.i=i;if(p.lat==null||p.lon==null)return;
-    p.mk=L.marker([p.lat,p.lon],{icon:pinIcon(p,false),zIndexOffset:-(p.m2||0)*10+(isNew(p)||p.warn?1000:0),keyboard:false}).on('click',()=>select(i)).addTo(pinL)});
-  if(sel!=null)clearSel(true);
-  list();
+  P.forEach((p,i)=>{p.i=i;p.mk=null;if(p.lat==null||p.lon==null)return;
+    p.mk=L.marker([p.lat,p.lon],{icon:pinIcon(p,false),zIndexOffset:zFor(p),keyboard:false,interactive:false}).addTo(pinL)});
+  head();list();
 }
 
-function head(html){document.getElementById('shead').innerHTML=html}
+function head(){
+  const nn=NEWN;
+  document.getElementById('shead').innerHTML=`<div class="stitle"><h2>${P.length}${NB}träffar</h2>${nn?`<button class="newchip" id="nbtn" aria-pressed="${F.onlyNew}">${nn}${NB}nya</button>`:''}</div>`;
+  const nb=document.getElementById('nbtn');if(nb)nb.onclick=()=>{F.onlyNew=!F.onlyNew;render()};
+}
+
+function cardHtml(p){
+  /* data-a names each atom (DESIGN.md §5) so tests/design_check.py can verify formats */
+  const at=(a,html,cls='')=>html?`<span data-a="${a}"${cls?` class="${cls}"`:''}>${html}</span>`:'';
+  const ar=A.omrade(p);
+  const l2=[at('storlek',A.storlek(p)),at('rum',A.rum(p)),at('kpm',A.kpm(p))].filter(Boolean).join(SEP);
+  const l3=[at('avtal',A.avtal(p),'t2'),at('kalla',A.kalla(p)),at('alder',A.alder(p))].filter(Boolean).join(SEP);
+  return `<div class="card${isNew(p)?' new':''}" id="c${p.i}">
+    <button class="sum" data-i="${p.i}" aria-expanded="false">
+      <span class="cl cl1"><span>${at('adress',esc(p.street),'t1')}${ar?' '+at('omrade',esc(ar),'t3'):''}</span>${at('restid',A.restid(p),'t1 nb')}</span>
+      <span class="cl"><span class="t2">${l2}</span>${at('hyra',A.hyra(p),'t1 nb')}</span>
+      <span class="cl"><span class="t3">${l3}</span></span>
+      ${p.notes.length?`<span class="tags">${p.notes.map(n=>`<span class="tag">${esc(n)}</span>`).join('')}</span>`:''}
+      ${p.warn?`<span class="warnl"><i class="wb">!</i>långt under marknadspris, kontrollera</span>`:''}
+    </button>
+    <div class="exp"><div><div class="expin" id="x${p.i}"></div></div></div>
+  </div>`;
+}
 function list(){
-  const nn=P.filter(isNew).length;
-  head(`<div class="stitle"><h2>${P.length}${NB}träffar</h2>${nn?`<span class="newpill">${nn}${NB}nya</span>`:''}</div><p class="t3 caption">Sorterat på restid · SL dörr till dörr, framme 08:00 nästa vardag</p>`);
   const b=document.getElementById('sbody');
   if(!P.length){b.innerHTML='<p class="t2 empty">Inga träffar med de här filtren</p>';return}
-  b.innerHTML=P.map(p=>{
-    const l2=[A.storlek(p),A.rum(p),A.kpm(p)].filter(Boolean).join(sep);
-    const l3=[`<span class="t2">${A.avtal(p)}</span>`,esc(p.source),A.alder(p)].filter(Boolean).join(sep);
-    return `<button class="row${isNew(p)?' new':''}" data-i="${p.i}">
-      <span class="rl"><span><span class="t1">${esc(p.street)}</span>${p.area&&p.area!=='Stockholm'?` <span class="t3">${esc(p.area)}</span>`:''}${badgeHtml(p)?`<span class="badges">${badgeHtml(p)}</span>`:''}</span><span class="t1 nb">${A.restid(p)}</span></span>
-      <span class="rl"><span class="t2">${l2}</span><span class="t1 nb">${A.hyra(p)}</span></span>
-      <span class="t3">${l3}</span>
-      ${p.notes.length?`<span class="tags">${p.notes.map(n=>`<span class="tag">${esc(n)}</span>`).join('')}</span>`:''}
-      ${p.warn?`<span class="warnl"><i class="bwarn">!</i>långt under marknadspris, kontrollera</span>`:''}
-    </button>`}).join('');
-  b.querySelectorAll('.row').forEach(r=>r.onclick=()=>select(+r.dataset.i));
+  b.innerHTML=P.map(cardHtml).join('');
+  b.querySelectorAll('.sum').forEach(s=>s.onclick=()=>toggle(+s.dataset.i,'list'));
 }
 
-function routeFor(p){return R[(+p.lat).toFixed(4)+','+(+p.lon).toFixed(4)]||null}
+/* route */
+const routeFor=p=>R[(+p.lat).toFixed(4)+','+(+p.lon).toFixed(4)]||null;
 const lineName=(m,n)=>m==='metro'?'T'+n:n;
 const lineCol=(m,n)=>m==='metro'?(SL.metro[n]||'#0072BC'):(SL[m]||SL.other);
-
-function drawRoute(r){
-  routeL.clearLayers();if(!r)return [];
-  const pts=[];
-  r.forEach(([m,n,c,mins,stops])=>{pts.push(...c);
-    if(m==='walk'){L.polyline(c,{color:'#3A3A3C',weight:3,dashArray:'0 9',lineCap:'round',interactive:false}).addTo(routeL);return}
-    const col=lineCol(m,n);
-    L.polyline(c,{color:'#fff',weight:9,lineCap:'round',lineJoin:'round',interactive:false}).addTo(routeL);
-    L.polyline(c,{color:col,weight:5,lineCap:'round',lineJoin:'round',interactive:false}).addTo(routeL);
-    L.circleMarker(c[0],{radius:5,color:col,weight:1.5,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(routeL);
-    if(n)L.marker(c[Math.floor(c.length/2)],{interactive:false,keyboard:false,zIndexOffset:1500,icon:L.divIcon({className:'',iconSize:[0,0],html:`<span class="lpill" style="background:${col}">${esc(lineName(m,n))}${stops?` · ${stops}${NB}stopp`:''}</span>`})}).addTo(routeL);
+const linePill=(m,n,stops,cls='')=>`<span class="lpill ${cls}" style="background:${lineCol(m,n)}">${esc(lineName(m,n))}${stops?` · ${stops}${NB}stopp`:''}</span>`;
+/* route, simplified: walks are straight dotted hops, transit is smoothed, no map labels */
+const WALK_STYLE={color:'#3A3A3C',weight:3,dashArray:'0 8',lineCap:'round',interactive:false};
+function drawRoute(r,p){
+  routeL.clearLayers();if(!r)return;
+  let cur=[p.lat,p.lon];
+  r.filter(l=>l[0]!=='walk'&&l[2]&&l[2].length>1).forEach(([m,n,c])=>{
+    const col=lineCol(m,n),a=c[0],b=c[c.length-1];
+    L.polyline([cur,a],WALK_STYLE).addTo(routeL);
+    L.polyline(c,{color:'#fff',weight:7,opacity:.9,smoothFactor:4,lineCap:'round',lineJoin:'round',interactive:false}).addTo(routeL);
+    L.polyline(c,{color:col,weight:4,smoothFactor:4,lineCap:'round',lineJoin:'round',interactive:false}).addTo(routeL);
+    L.circleMarker(a,{radius:4,color:col,weight:1.5,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(routeL);
+    cur=b;
   });
-  return pts;
+  L.polyline([cur,K],WALK_STYLE).addTo(routeL);
 }
-function resvag(r){
+function drawWalk(p){
+  routeL.clearLayers();
+  L.polyline([[p.lat,p.lon],K],WALK_STYLE).addTo(routeL);
+}
+function resvag(r,p){
+  if(p&&p.byFoot)return `<div class="resvag"><span class="t2 nb">gång${NB}${p.walk}${NB}min</span><span class="chev">›</span><span class="t2">Karlaplan</span></div>`;
   if(!r)return '';
-  return r.map(([m,n,c,mins,stops])=>m==='walk'?(mins?`<span class="nb">gång${NB}${mins}${NB}min</span>`:null):`<span class="nb">${esc(lineName(m,n))}${stops?` · ${stops}${NB}stopp`:''}</span>`).filter(Boolean).concat('Karlaplan').join('<span class="chev">›</span>');
+  const parts=r.map(([m,n,c,mins,stops])=>m==='walk'?(mins?`<span class="t2 nb">gång${NB}${mins}${NB}min</span>`:null):linePill(m,n,stops)).filter(Boolean);
+  parts.push('<span class="t2">Karlaplan</span>');
+  return `<div class="resvag">${parts.join('<span class="chev">›</span>')}</div>`;
 }
 
-function select(i){
+/* route toggle: routes are drawn only when the user turns them on */
+let ROUTES=false;try{ROUTES=localStorage.getItem('lgh-routes')==='1'}catch(e){}
+function showRoute(p,r){routeL.clearLayers();if(!ROUTES||!p)return;if(p.byFoot)drawWalk(p);else drawRoute(r,p)}
+/* selection: DESIGN.md §7 */
+function toggle(i,from){sel===i?clear():select(i,from)}
+function select(i,from){
   const p=P[i];if(!p)return;
-  if(sel!=null&&P[sel]&&P[sel].mk)P[sel].mk.setIcon(pinIcon(P[sel],false));
+  if(sel!=null)unmark(sel);
   sel=i;document.getElementById('map').classList.add('selmode');
-  if(p.mk){p.mk.setIcon(pinIcon(p,true));p.mk.setZIndexOffset(3000)}
-  if(callout)map.removeLayer(callout);
-  const d=diam(p.m2)+4;
-  callout=p.lat!=null?L.marker([p.lat,p.lon],{interactive:false,keyboard:false,zIndexOffset:4000,icon:L.divIcon({className:'',iconSize:[0,0],
-    html:`<div class="callout glass" style="top:-${d/2+8}px">${esc(p.street)}${sep}${A.restid(p)}${sep}${A.hyra(p)}</div>`})}).addTo(map):null;
-  const r=routeFor(p),pts=drawRoute(r);
-  const sh=document.getElementById('sheet');if(sh.offsetHeight<innerHeight*.3&&!matchMedia('(min-width:900px)').matches)setSheet(innerHeight*.45);
-  detail(p,r);
-  if(p.lat!=null)setTimeout(()=>{setTimeout(keepCallout,700);map.fitBounds(L.latLngBounds([[p.lat,p.lon],K,...pts]),{...sheetPad(),maxZoom:15})},260);
+  if(p.mk){p.mk.setIcon(pinIcon(p,true));p.mk.setZIndexOffset(6000)}
+  const r=p.byFoot?null:routeFor(p);showRoute(p,r);
+  const c=document.getElementById('c'+i);
+  document.getElementById('x'+i).innerHTML=resvag(r,p)+(p.link?`<a class="cta" href="${esc(p.link)}" target="_blank" rel="noopener">Öppna annons på ${esc(p.source)}</a>`:'');
+  c.classList.add('sel');c.querySelector('.sum').setAttribute('aria-expanded','true');
+  const b=document.getElementById('sbody');
+  const top=c.getBoundingClientRect().top-b.getBoundingClientRect().top+b.scrollTop-8;
+  const bottom=top+c.querySelector('.sum').offsetHeight+130; /* 130 = expanded part */
+  if(from==='map'||top<b.scrollTop||bottom>b.scrollTop+b.clientHeight)
+    b.scrollTo({top,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+  revealPin(p);
 }
-function keepCallout(){
-  const el=document.querySelector('.callout');if(!el)return;const r=el.getBoundingClientRect(),m=12;
-  let dx=0;if(r.left<m)dx=r.left-m;else if(r.right>innerWidth-m)dx=r.right-(innerWidth-m);
-  const desk=matchMedia('(min-width:900px)').matches;if(desk&&r.left<424)dx=r.left-424;
-  if(dx)map.panBy([dx,0],{animate:true});
+function unmark(i){
+  const p=P[i];if(!p)return;
+  if(p.mk){p.mk.setIcon(pinIcon(p,false));p.mk.setZIndexOffset(zFor(p))}
+  const c=document.getElementById('c'+i);
+  if(c){const x=c.querySelector('.exp');x.style.transition='none';c.classList.remove('sel');void x.offsetHeight;x.style.transition='';c.querySelector('.sum').setAttribute('aria-expanded','false')}
 }
-function clearSel(silent){
-  if(sel!=null&&P[sel]&&P[sel].mk){P[sel].mk.setIcon(pinIcon(P[sel],false));P[sel].mk.setZIndexOffset(-(P[sel].m2||0)*10+(isNew(P[sel])||P[sel].warn?1000:0))}
-  sel=null;document.getElementById('map').classList.remove('selmode');
-  routeL.clearLayers();if(callout){map.removeLayer(callout);callout=null}
-  if(!silent)list();
+function clear(){
+  if(sel==null)return;
+  unmark(sel);sel=null;
+  document.getElementById('map').classList.remove('selmode');routeL.clearLayers();
 }
-function detail(p,r){
-  head(`<div class="dhead"><div><h2>${esc(p.street)}</h2>${p.area&&p.area!=='Stockholm'?`<div class="t3">${esc(p.area)}</div>`:''}</div><button class="close" id="cbtn" aria-label="Stäng"><span><svg width="12" height="12" viewBox="0 0 12 12" stroke="#3A3A3C" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"/></svg></span></button></div>`);
-  document.getElementById('cbtn').onclick=()=>clearSel();
-  const rows=[['Restid',`<span class="t1">${A.restid(p)}</span>`],r?['Resväg',`<span class="t2">${resvag(r)}</span>`]:null,['Hyra',`<span class="t1">${A.hyra(p)}</span>`],
-    ['Storlek',`<span class="t2">${[A.storlek(p),A.rum(p)].filter(Boolean).join(sep)}</span>`],['Pris',`<span class="t2">${A.kpm(p)}</span>`],
-    ['Avtal',`<span class="t2">${A.avtal(p)}</span>`],['Källa',`<span class="t3">${[esc(p.source),A.alder(p)].filter(Boolean).join(sep)}</span>`]].filter(Boolean);
-  document.getElementById('sbody').innerHTML=`<div class="det">
-    <div class="dl">${rows.map(([l,v])=>`<span class="t3">${l}</span><span>${v}</span>`).join('')}</div>
-    ${p.notes.length?`<div class="tags">${p.notes.map(n=>`<span class="tag">${esc(n)}</span>`).join('')}</div>`:''}
-    ${p.warn?`<div class="warnl"><i class="bwarn">!</i>långt under marknadspris, kontrollera</div>`:''}
-    ${p.link?`<a class="cta" href="${esc(p.link)}" target="_blank" rel="noopener">Öppna annons på ${esc(p.source)}</a>`:''}
-  </div>`;
-  document.getElementById('sbody').scrollTop=0;
+/* map taps: the pin whose centre is nearest the tap wins (pins overlap, so DOM hit testing is unreliable) */
+function pinAt(pt){
+  let best=null,bd=Infinity;
+  P.forEach(p=>{if(!p.mk)return;const c=map.latLngToContainerPoint([p.lat,p.lon]);const d=Math.hypot(c.x-pt.x,c.y-pt.y);
+    const r=diam(p.m2)/2+(sel===p.i?2:0)+10; /* visible radius + 10 px slack */
+    if(d<=r&&(d<bd-0.5||(Math.abs(d-bd)<=0.5&&zFor(p)>zFor(best)))){best=p;bd=d}});
+  return best;
 }
-map.on('click',()=>{if(sel!=null)clearSel()});
+map.on('click',e=>{const p=pinAt(e.containerPoint);if(p)toggle(p.i,'map');else clear()});
+{const tb=document.getElementById('tbtn');tb.setAttribute('aria-pressed',ROUTES);
+ tb.onclick=()=>{ROUTES=!ROUTES;tb.setAttribute('aria-pressed',ROUTES);try{localStorage.setItem('lgh-routes',ROUTES?'1':'0')}catch(e){}
+   const p=sel!=null?P[sel]:null;showRoute(p,p&&!p.byFoot?routeFor(p):null)}}
+addEventListener('keydown',e=>{if(e.key==='Escape')clear()});
 
-/* sheet heights: liten / halv / hel */
+/* sheet: user drag only (DESIGN.md §0.2) */
 const sheet=document.getElementById('sheet');
-const H=()=>{const hb=document.querySelector('header').getBoundingClientRect().bottom;return [112,Math.round(innerHeight*.45),Math.round(innerHeight-hb-8)]};
-function setSheet(h){document.documentElement.style.setProperty('--sheet-h',h+'px')}
+const H=()=>{const hb=document.querySelector('header').getBoundingClientRect().bottom;return [96,Math.round(innerHeight*.45),Math.round(innerHeight-hb-8)]};
+const setSheet=h=>document.documentElement.style.setProperty('--sheet-h',h+'px');
 (()=>{let y0=null,h0=0,moved=false;const g=document.getElementById('grab');
-  g.addEventListener('pointerdown',e=>{if(matchMedia('(min-width:900px)').matches||e.target.closest('button'))return;y0=e.clientY;h0=sheet.offsetHeight;moved=false;sheet.classList.add('drag');document.body.classList.add('dragging');g.setPointerCapture(e.pointerId)});
+  g.addEventListener('pointerdown',e=>{if(DESK()||e.target.closest('button'))return;y0=e.clientY;h0=sheet.offsetHeight;moved=false;sheet.classList.remove('snap');g.setPointerCapture(e.pointerId)});
   g.addEventListener('pointermove',e=>{if(y0==null)return;const dy=e.clientY-y0;if(Math.abs(dy)>4)moved=true;const [a,,c]=H();setSheet(Math.max(a,Math.min(c,h0-dy)))});
-  const up=()=>{if(y0==null)return;y0=null;sheet.classList.remove('drag');document.body.classList.remove('dragging');const h=sheet.offsetHeight,s=H();
+  const up=()=>{if(y0==null)return;y0=null;sheet.classList.add('snap');const h=sheet.offsetHeight,s=H();
     const t=moved?s.reduce((b,x)=>Math.abs(x-h)<Math.abs(b-h)?x:b):s[(s.findIndex(x=>Math.abs(x-h)<20)+1)%3]??s[1];setSheet(t)};
   g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);
 })();
 setSheet(Math.round(innerHeight*.45));
 
-/* controls */
+/* legend: DESIGN.md §6.4, real pins */
+const demo=(o={})=>({kpm:null,m2:20,approx:false,warn:false,first_seen:null,...o});
 document.getElementById('bars').innerHTML=PRICE.map(b=>`<i style="background:${b[1]}"></i>`).join('');
-document.getElementById('lgprice').innerHTML=PRICE.map(b=>`<span class="nb"><i class="pd" style="background:${b[1]}"></i>${b[2]}</span>`).join('')+`<span class="nb"><i class="pd" style="background:var(--pu)"></i>okänt</span>`;
+document.getElementById('legend').innerHTML=`
+  <div class="lg"><b>Pris per m²</b><div class="lgl">${PRICE.map((b,i)=>`<span class="lgi">${pinHtml(demo({kpm:[200,275,325,375,450][i]}))}${b[2]}</span>`).join('')}<span class="lgi">${pinHtml(demo())}okänt</span></div></div>
+  <div class="lgl"><span class="lgi">${pinHtml(demo(),{d:14})}${pinHtml(demo(),{d:24})}större = fler m²</span></div>
+  <div class="t3">Restid med SL dörr till dörr, framme 08:00 nästa vardag</div>`;
 const lbtn=document.getElementById('lbtn'),lg=document.getElementById('legend');
 lbtn.onclick=()=>{const on=lg.classList.toggle('on');lbtn.setAttribute('aria-expanded',on)};
-document.getElementById('rbtn').onclick=()=>map.flyToBounds(L.latLng(K).toBounds(5000),{...sheetPad(),duration:.6});
+document.getElementById('rbtn').onclick=()=>{const v=viewRect(),cx=(v.l+v.r)/2-innerWidth/2,cy=(v.t+v.b)/2-innerHeight/2;
+  map.flyTo(map.unproject(map.project(K,13).subtract([cx,cy]),13),13,{duration:.6})};
+
+/* filters */
 const fbtn=document.getElementById('fbtn'),fp=document.getElementById('filters');
 fbtn.onclick=()=>{const on=fp.classList.toggle('on');fbtn.setAttribute('aria-expanded',on)};
 [['fmin','min',v=>`≤${NB}${v}${NB}min`],['frent','rent',v=>`≤${NB}${fk(v)}${NB}kr`],['fm2','m2',v=>`≥${NB}${v}${NB}m²`]].forEach(([id,k,f])=>{
   const el=document.getElementById(id),out=document.getElementById('v'+id.slice(1));el.value=F[k];out.textContent=f(F[k]);
-  el.oninput=()=>{F[k]=+el.value;out.textContent=f(F[k]);try{localStorage.setItem('lgh-f',JSON.stringify(F))}catch(e){};render()};
+  el.oninput=()=>{F[k]=+el.value;out.textContent=f(F[k]);saveF();render()};
 });
 
-/* load */
+/* load: fit once (DESIGN.md §7) */
 Promise.all([
   fetch('apartments.geojson?'+Date.now()).then(r=>r.json()),
   fetch('fb/listings.json?'+Date.now()).then(r=>r.json()).catch(()=>[]),
   fetch('routes.json?'+Date.now()).then(r=>r.json()).catch(()=>({}))
 ]).then(([g,fb,routes])=>{
   R=routes;
-  ALL=g.features.filter(f=>f.geometry&&f.geometry.type==='Point'&&f.properties.link).map(fromGeo).concat(fb.filter(p=>p.lat&&p.lon).map(fromFb));
+  ALL=g.features.filter(f=>f.geometry&&f.geometry.type==='Point'&&f.properties.link).map(fromGeo).concat(fb.filter(p=>p.lat&&p.lon).map(fromFb)).map(fastest);
   render();
   const pts=P.filter(p=>p.lat!=null).map(p=>[p.lat,p.lon]);
-  if(pts.length)map.fitBounds(L.latLngBounds([K,...pts]),{...sheetPad(),maxZoom:14});
-}).catch(e=>{head('<div class="stitle"><h2>Kunde inte ladda</h2></div>');document.getElementById('sbody').innerHTML=`<p class="t3 empty">${esc(e)}</p>`});
+  if(pts.length){const v=viewRect();map.fitBounds(L.latLngBounds([K,...pts]),{paddingTopLeft:[v.l,v.t],paddingBottomRight:[innerWidth-v.r,innerHeight-v.b],maxZoom:14,animate:false})}
+}).catch(e=>{document.getElementById('shead').innerHTML='<div class="stitle"><h2>Kunde inte ladda</h2></div>';document.getElementById('sbody').innerHTML=`<p class="t3 empty">${esc(e)}</p>`});
 </script></body></html>
