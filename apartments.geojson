@@ -22,7 +22,16 @@
 "link": "https://qasa.com/se/sv/home/1373601",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 10,
+"rent_kr": 5615,
+"m2": 21,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Värtavägen"
 }
 },
 {
@@ -46,7 +55,16 @@
 "link": "https://qasa.com/se/sv/home/1494106",
 "new": "",
 "flag": "kr/m² far below second-hand market – verify",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 10,
+"rent_kr": 9535,
+"m2": 50,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Storegatan"
 }
 },
 {
@@ -70,7 +88,16 @@
 "link": "https://qasa.com/se/sv/home/1502858",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 10,
+"rent_kr": 14621,
+"m2": 38,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Furusundsgatan"
 }
 },
 {
@@ -78,23 +105,32 @@
 "geometry": {
 "type": "Point",
 "coordinates": [
-18.1025,
-59.3467
+18.0997,
+59.3463
 ]
 },
 "properties": {
-"id": "Bostadsförmedlingen:308835",
-"address": "Värtavägen 60, Ladugårdsgärdet",
+"id": "Qasa:1500139",
+"address": "Smedsbacksgatan, Stockholm",
 "travel (weekday 8:00, SL)": "11 min",
-"rent": "5451 kr",
-"size": "1 rok, 23 m²",
-"kr/m²": 237,
-"move in": "see ad → indefinite",
-"source": "Bostadsförmedlingen",
-"link": "https://bostad.stockholm.se/bostad/202620508/",
-"new": "",
-"flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 3–9 yrs queue"
+"rent": "15892 kr",
+"size": "2 rok, 44 m²",
+"kr/m²": 361,
+"move in": "2026-12-01 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1500139",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 11,
+"rent_kr": 15892,
+"m2": 44,
+"rooms": 2,
+"start": "2026-12-01",
+"end": null,
+"area": "Stockholm",
+"street": "Smedsbacksgatan"
 }
 },
 {
@@ -118,31 +154,16 @@
 "link": "https://qasa.com/se/sv/home/1499616",
 "new": "",
 "flag": "",
-"note": ""
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
-18.0999,
-59.3479
-]
-},
-"properties": {
-"id": "Qasa:1493120",
-"address": "Smedsbacksgatan, Stockholm",
-"travel (weekday 8:00, SL)": "12 min",
-"rent": "16952 kr",
-"size": "2 rok, 43 m²",
-"kr/m²": 394,
-"move in": "2026-12-01 → indefinite",
-"source": "Qasa",
-"link": "https://qasa.com/se/sv/home/1493120",
-"new": "",
-"flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 12,
+"rent_kr": 15150,
+"m2": 26,
+"rooms": 1,
+"start": "2027-01-01",
+"end": "2027-12-31",
+"area": "Stockholm",
+"street": "Kommendörsgatan"
 }
 },
 {
@@ -166,7 +187,16 @@
 "link": "https://qasa.com/se/sv/home/1501726",
 "new": "",
 "flag": "kr/m² far below second-hand market – verify",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 13,
+"rent_kr": 15892,
+"m2": 125,
+"rooms": 3.5,
+"start": "now",
+"end": "2027-09-01",
+"area": "Stockholm",
+"street": "Kommendörsgatan"
 }
 },
 {
@@ -190,7 +220,16 @@
 "link": "https://qasa.com/se/sv/home/1483596",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 14,
+"rent_kr": 13773,
+"m2": 26,
+"rooms": 1,
+"start": "2027-01-01",
+"end": null,
+"area": "Stockholm",
+"street": "Sandhamnsgatan"
 }
 },
 {
@@ -214,7 +253,16 @@
 "link": "https://qasa.com/se/sv/home/1508108",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 14,
+"rent_kr": 16559,
+"m2": 29,
+"rooms": 1,
+"start": "2026-12-01",
+"end": "2027-12-01",
+"area": "Stockholm",
+"street": "Kommendörsgatan"
 }
 },
 {
@@ -222,23 +270,32 @@
 "geometry": {
 "type": "Point",
 "coordinates": [
-18.0607,
-59.3333
+18.095,
+59.3539
 ]
 },
 "properties": {
-"id": "Bostadsförmedlingen:308801",
-"address": "Bryggargatan 3, Norrmalm",
+"id": "Qasa:1503188",
+"address": "Älvkarleövägen, Stockholm",
 "travel (weekday 8:00, SL)": "15 min",
-"rent": "11647 kr",
-"size": "1 rok, 49 m²",
-"kr/m²": 238,
-"move in": "see ad → indefinite",
-"source": "Bostadsförmedlingen",
-"link": "https://bostad.stockholm.se/bostad/202619086/",
-"new": "",
+"rent": "16952 kr",
+"size": "2 rok, 45 m²",
+"kr/m²": 377,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1503188",
+"new": "yes",
 "flag": "",
-"note": "first-hand; similar flats went to 15–21 yrs queue"
+"note": "",
+"first_seen": "2026-11-23",
+"t": 15,
+"rent_kr": 16952,
+"m2": 45,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Älvkarleövägen"
 }
 },
 {
@@ -262,7 +319,16 @@
 "link": "https://bostad.stockholm.se/bostad/202620611/",
 "new": "",
 "flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 7–10 yrs queue"
+"note": "first-hand; similar flats went to 7–10 yrs queue",
+"first_seen": "2026-11-23",
+"t": 16,
+"rent_kr": 13660,
+"m2": 51,
+"rooms": 3,
+"start": null,
+"end": null,
+"area": "Hjorthagen",
+"street": "Slåttervallsgatan 10"
 }
 },
 {
@@ -286,7 +352,16 @@
 "link": "https://qasa.com/se/sv/home/1506441",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 16,
+"rent_kr": 16422,
+"m2": 35,
+"rooms": 1.5,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Roslagsgatan"
 }
 },
 {
@@ -310,7 +385,16 @@
 "link": "https://bostad.stockholm.se/bostad/202620570/",
 "new": "",
 "flag": "",
-"note": "first-hand; similar flats went to 16–24 yrs queue"
+"note": "first-hand; similar flats went to 16–24 yrs queue",
+"first_seen": "2026-11-23",
+"t": 17,
+"rent_kr": 15532,
+"m2": 54,
+"rooms": 2,
+"start": null,
+"end": null,
+"area": "Norra Djurgården",
+"street": "Bobergsgatan 93"
 }
 },
 {
@@ -334,7 +418,16 @@
 "link": "https://qasa.com/se/sv/home/1472839",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 17,
+"rent_kr": 15574,
+"m2": 40,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Krångedevägen"
 }
 },
 {
@@ -342,23 +435,32 @@
 "geometry": {
 "type": "Point",
 "coordinates": [
-18.089,
-59.3534
+18.0946,
+59.3528
 ]
 },
 "properties": {
-"id": "Qasa:1482468",
-"address": "Lövängsgatan, Stockholm",
-"travel (weekday 8:00, SL)": "19 min",
-"rent": "15362 kr",
-"size": "2.5 rok, 57 m²",
-"kr/m²": 270,
-"move in": "2027-02-01 → 2028-01-31",
+"id": "Qasa:1231198",
+"address": "Krångedevägen, Stockholm",
+"travel (weekday 8:00, SL)": "17 min",
+"rent": "15892 kr",
+"size": "2 rok, 40 m²",
+"kr/m²": 397,
+"move in": "now → 2027-12-01",
 "source": "Qasa",
-"link": "https://qasa.com/se/sv/home/1482468",
-"new": "",
+"link": "https://qasa.com/se/sv/home/1231198",
+"new": "yes",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 17,
+"rent_kr": 15892,
+"m2": 40,
+"rooms": 2,
+"start": "now",
+"end": "2027-12-01",
+"area": "Stockholm",
+"street": "Krångedevägen"
 }
 },
 {
@@ -382,7 +484,49 @@
 "link": "https://qasa.com/se/sv/home/1480666",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 19,
+"rent_kr": 15892,
+"m2": 33,
+"rooms": 1,
+"start": "2026-11-27",
+"end": "2027-05-27",
+"area": "Stockholm",
+"street": "Kungsholmsgatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0649,
+59.317
+]
+},
+"properties": {
+"id": "Qasa:1512840",
+"address": "Wollmar Yxkullsgatan, Stockholm",
+"travel (weekday 8:00, SL)": "19 min",
+"rent": "16104 kr",
+"size": "3 rok, 93 m²",
+"kr/m²": 173,
+"move in": "2027-02-01 → 2027-07-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1512840",
+"new": "yes",
+"flag": "kr/m² far below second-hand market – verify",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 19,
+"rent_kr": 16104,
+"m2": 93,
+"rooms": 3,
+"start": "2027-02-01",
+"end": "2027-07-31",
+"area": "Stockholm",
+"street": "Wollmar Yxkullsgatan"
 }
 },
 {
@@ -406,31 +550,16 @@
 "link": "https://qasa.com/se/sv/home/1506964",
 "new": "",
 "flag": "",
-"note": ""
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
-18.0697,
-59.3173
-]
-},
-"properties": {
-"id": "Qasa:1477560",
-"address": "Skaraborgsgatan, Stockholm",
-"travel (weekday 8:00, SL)": "20 min",
-"rent": "14833 kr",
-"size": "1 rok, 25 m²",
-"kr/m²": 593,
-"move in": "now → indefinite",
-"source": "Qasa",
-"link": "https://qasa.com/se/sv/home/1477560",
-"new": "",
-"flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 20,
+"rent_kr": 12184,
+"m2": 32,
+"rooms": 1,
+"start": "2026-12-01",
+"end": "2027-05-31",
+"area": "Stockholm",
+"street": "Ringvägen"
 }
 },
 {
@@ -454,7 +583,16 @@
 "link": "https://qasa.com/se/sv/home/1500623",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 20,
+"rent_kr": 16157,
+"m2": 30,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Frejgatan"
 }
 },
 {
@@ -478,7 +616,16 @@
 "link": "https://qasa.com/se/sv/home/1506451",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 20,
+"rent_kr": 16210,
+"m2": 32,
+"rooms": 1,
+"start": "2027-01-01",
+"end": null,
+"area": "Stockholm",
+"street": "Drottninggatan"
 }
 },
 {
@@ -502,7 +649,16 @@
 "link": "https://qasa.com/se/sv/home/973520",
 "new": "",
 "flag": "kr/m² far below second-hand market – verify",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 21,
+"rent_kr": 6297,
+"m2": 35,
+"rooms": 1,
+"start": "now",
+"end": "2027-08-31",
+"area": "Stockholm",
+"street": "Björkundssligen"
 }
 },
 {
@@ -526,7 +682,16 @@
 "link": "https://qasa.com/se/sv/home/1501065",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 21,
+"rent_kr": 14375,
+"m2": 50,
+"rooms": 2,
+"start": "2027-02-01",
+"end": "2027-08-31",
+"area": "Stockholm",
+"street": "Kungsbro strand"
 }
 },
 {
@@ -548,9 +713,18 @@
 "move in": "now → indefinite",
 "source": "Qasa",
 "link": "https://qasa.com/se/sv/home/1508195",
-"new": "yes",
+"new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 21,
+"rent_kr": 15892,
+"m2": 33,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Norrtullsgatan"
 }
 },
 {
@@ -574,7 +748,16 @@
 "link": "https://qasa.com/se/sv/home/1433882",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 21,
+"rent_kr": 16422,
+"m2": 32,
+"rooms": 1.5,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Odengatan"
 }
 },
 {
@@ -598,7 +781,16 @@
 "link": "https://qasa.com/se/sv/home/1511185",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 22,
+"rent_kr": 8031,
+"m2": 27,
+"rooms": 1,
+"start": "2027-01-01",
+"end": null,
+"area": "Stockholm",
+"street": "Hornsgatan"
 }
 },
 {
@@ -622,7 +814,16 @@
 "link": "https://qasa.com/se/sv/home/1510295",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 22,
+"rent_kr": 10595,
+"m2": 44,
+"rooms": 2,
+"start": "now",
+"end": "2027-05-31",
+"area": "Johanneshov",
+"street": "Bildhuggarvägen"
 }
 },
 {
@@ -646,7 +847,49 @@
 "link": "https://qasa.com/se/sv/home/1474262",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 22,
+"rent_kr": 12978,
+"m2": 25,
+"rooms": 1,
+"start": "2026-12-01",
+"end": null,
+"area": "Stockholm",
+"street": "Krukmakargatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0519,
+59.317
+]
+},
+"properties": {
+"id": "Qasa:1512107",
+"address": "Krukmakargatan, Stockholm",
+"travel (weekday 8:00, SL)": "22 min",
+"rent": "13370 kr",
+"size": "1 rok, 26 m²",
+"kr/m²": 514,
+"move in": "2026-12-01 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1512107",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 22,
+"rent_kr": 13370,
+"m2": 26,
+"rooms": 1,
+"start": "2026-12-01",
+"end": null,
+"area": "Stockholm",
+"street": "Krukmakargatan"
 }
 },
 {
@@ -670,7 +913,16 @@
 "link": "https://qasa.com/se/sv/home/1510034",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 22,
+"rent_kr": 15892,
+"m2": 27,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Västmannagatan"
 }
 },
 {
@@ -694,7 +946,16 @@
 "link": "https://qasa.com/se/sv/home/1509330",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 22,
+"rent_kr": 16422,
+"m2": 28,
+"rooms": 1,
+"start": "2027-01-10",
+"end": "2028-01-10",
+"area": "Stockholm",
+"street": "Hantverkargatan"
 }
 },
 {
@@ -718,55 +979,16 @@
 "link": "https://qasa.com/se/sv/home/1469957",
 "new": "",
 "flag": "",
-"note": ""
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
-18.0257,
-59.3338
-]
-},
-"properties": {
-"id": "Bostadsförmedlingen:308867",
-"address": "Sankt Göransgatan 95, Kungsholmen",
-"travel (weekday 8:00, SL)": "23 min",
-"rent": "7387 kr",
-"size": "1 rok, 25 m²",
-"kr/m²": 295,
-"move in": "see ad → indefinite",
-"source": "Bostadsförmedlingen",
-"link": "https://bostad.stockholm.se/bostad/202620512/",
-"new": "",
-"flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 3–9 yrs queue"
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
-18.0257,
-59.3338
-]
-},
-"properties": {
-"id": "Bostadsförmedlingen:308865",
-"address": "Sankt Göransgatan 95, Kungsholmen",
-"travel (weekday 8:00, SL)": "23 min",
-"rent": "7785 kr",
-"size": "1 rok, 28 m²",
-"kr/m²": 278,
-"move in": "see ad → indefinite",
-"source": "Bostadsförmedlingen",
-"link": "https://bostad.stockholm.se/bostad/202620511/",
-"new": "",
-"flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 3–9 yrs queue"
+"note": "",
+"first_seen": "2026-11-23",
+"t": 22,
+"rent_kr": 16581,
+"m2": 49,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Frejgatan"
 }
 },
 {
@@ -788,33 +1010,18 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620629/",
-"new": "yes",
-"flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 6–10 yrs queue"
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
-18.0257,
-59.3338
-]
-},
-"properties": {
-"id": "Bostadsförmedlingen:308864",
-"address": "Sankt Göransgatan 95, Kungsholmen",
-"travel (weekday 8:00, SL)": "23 min",
-"rent": "8651 kr",
-"size": "1 rok, 35 m²",
-"kr/m²": 247,
-"move in": "see ad → indefinite",
-"source": "Bostadsförmedlingen",
-"link": "https://bostad.stockholm.se/bostad/202620514/",
 "new": "",
 "flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 3–9 yrs queue"
+"note": "first-hand; similar flats went to 6–10 yrs queue",
+"first_seen": "2026-11-23",
+"t": 23,
+"rent_kr": 8647,
+"m2": 34,
+"rooms": 2,
+"start": null,
+"end": null,
+"area": "Södermalm",
+"street": "Vartoftagatan 47B"
 }
 },
 {
@@ -838,7 +1045,16 @@
 "link": "https://bostad.stockholm.se/bostad/202620487/",
 "new": "",
 "flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 3–9 yrs queue"
+"note": "first-hand; similar flats went to 3–9 yrs queue",
+"first_seen": "2026-11-23",
+"t": 23,
+"rent_kr": 9150,
+"m2": 25,
+"rooms": 1,
+"start": null,
+"end": null,
+"area": "Norra Djurgården",
+"street": "Bigarråvägen 3"
 }
 },
 {
@@ -860,9 +1076,51 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620644/",
-"new": "yes",
+"new": "",
 "flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 7–10 yrs queue"
+"note": "first-hand; similar flats went to 7–10 yrs queue",
+"first_seen": "2026-11-23",
+"t": 23,
+"rent_kr": 9869,
+"m2": 39,
+"rooms": 3,
+"start": null,
+"end": null,
+"area": "Södermalm",
+"street": "Götgatan 78"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0143,
+59.3379
+]
+},
+"properties": {
+"id": "Qasa:1474074",
+"address": "Sankt Göransgatan, Stockholm",
+"travel (weekday 8:00, SL)": "23 min",
+"rent": "11654 kr",
+"size": "1 rok, 23 m²",
+"kr/m²": 507,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1474074",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 23,
+"rent_kr": 11654,
+"m2": 23,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Sankt Göransgatan"
 }
 },
 {
@@ -886,7 +1144,16 @@
 "link": "https://qasa.com/se/sv/home/1500681",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 23,
+"rent_kr": 13455,
+"m2": 25,
+"rooms": 1,
+"start": "2027-02-01",
+"end": null,
+"area": "Stockholm",
+"street": "Tavastgatan"
 }
 },
 {
@@ -910,79 +1177,16 @@
 "link": "https://qasa.com/se/sv/home/1502172",
 "new": "",
 "flag": "",
-"note": ""
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
-18.0517,
-59.3365
-]
-},
-"properties": {
-"id": "Qasa:1487843",
-"address": "Kammakargatan, Stockholm",
-"travel (weekday 8:00, SL)": "23 min",
-"rent": "15892 kr",
-"size": "1 rok, 33 m²",
-"kr/m²": 482,
-"move in": "now → indefinite",
-"source": "Qasa",
-"link": "https://qasa.com/se/sv/home/1487843",
-"new": "",
-"flag": "",
-"note": ""
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
-18.0152,
-59.3377
-]
-},
-"properties": {
-"id": "Bostadsförmedlingen:308862",
-"address": "Sankt Göransgatan 151, Stadshagen",
-"travel (weekday 8:00, SL)": "24 min",
-"rent": "6035 kr",
-"size": "1 rok, 22 m²",
-"kr/m²": 274,
-"move in": "see ad → indefinite",
-"source": "Bostadsförmedlingen",
-"link": "https://bostad.stockholm.se/bostad/202620434/",
-"new": "",
-"flag": "student flat – requires student status",
-"note": "first-hand; similar flats went to 3–9 yrs queue"
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
-18.089,
-59.3152
-]
-},
-"properties": {
-"id": "Bostadsförmedlingen:308854",
-"address": "Beckbrännarbacken 3, Södermalm",
-"travel (weekday 8:00, SL)": "24 min",
-"rent": "8476 kr",
-"size": "1 rok, 47 m²",
-"kr/m²": 180,
-"move in": "see ad → indefinite",
-"source": "Bostadsförmedlingen",
-"link": "https://bostad.stockholm.se/bostad/202620462/",
-"new": "",
-"flag": "",
-"note": "first-hand; similar flats went to 15–21 yrs queue"
+"note": "",
+"first_seen": "2026-11-23",
+"t": 23,
+"rent_kr": 15648,
+"m2": 29,
+"rooms": 1,
+"start": "2027-02-01",
+"end": "2027-08-31",
+"area": "Stockholm",
+"street": "Fredmansgatan"
 }
 },
 {
@@ -1006,7 +1210,16 @@
 "link": "https://qasa.com/se/sv/home/1415965",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 24,
+"rent_kr": 10748,
+"m2": 39,
+"rooms": 1.5,
+"start": "2027-01-15",
+"end": "2027-07-31",
+"area": "Stockholm",
+"street": "Östgötagatan"
 }
 },
 {
@@ -1030,7 +1243,16 @@
 "link": "https://qasa.com/se/sv/home/1479938",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 24,
+"rent_kr": 15892,
+"m2": 35,
+"rooms": 1,
+"start": "2026-12-01",
+"end": null,
+"area": "Stockholm",
+"street": "Åsögatan"
 }
 },
 {
@@ -1054,7 +1276,16 @@
 "link": "https://qasa.com/se/sv/home/1493722",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 24,
+"rent_kr": 16100,
+"m2": 40,
+"rooms": 2,
+"start": "2026-12-01",
+"end": null,
+"area": "Lidingö",
+"street": "Bodalsvägen"
 }
 },
 {
@@ -1078,7 +1309,16 @@
 "link": "https://qasa.com/se/sv/home/1449610",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 25,
+"rent_kr": 15892,
+"m2": 51,
+"rooms": 2,
+"start": "2027-03-01",
+"end": null,
+"area": "Enskede",
+"street": "Palmfeltsvägen"
 }
 },
 {
@@ -1102,7 +1342,1435 @@
 "link": "https://qasa.com/se/sv/home/673572",
 "new": "",
 "flag": "",
-"note": ""
+"note": "",
+"first_seen": "2026-11-23",
+"t": 25,
+"rent_kr": 16267,
+"m2": 38,
+"rooms": 1.5,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Västgötagatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0417,
+59.3877
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:308927",
+"address": "Gärdes backe 1E, Mörbylund",
+"travel (weekday 8:00, SL)": "26 min",
+"rent": "10433 kr",
+"size": "1 rok, 35 m²",
+"kr/m²": 298,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620471/",
+"new": "yes",
+"flag": "",
+"note": "first-hand; similar flats went to 6–12 yrs queue",
+"first_seen": "2026-11-23",
+"t": 26,
+"rent_kr": 10433,
+"m2": 35,
+"rooms": 1,
+"start": null,
+"end": null,
+"area": "Mörbylund",
+"street": "Gärdes backe 1E"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0007,
+59.3069
+]
+},
+"properties": {
+"id": "Qasa:1503673",
+"address": "Erik Segersälls Väg, Hägersten",
+"travel (weekday 8:00, SL)": "26 min",
+"rent": "14303 kr",
+"size": "2 rok, 43 m²",
+"kr/m²": 333,
+"move in": "2027-01-31 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1503673",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 26,
+"rent_kr": 14303,
+"m2": 43,
+"rooms": 2,
+"start": "2027-01-31",
+"end": null,
+"area": "Hägersten",
+"street": "Erik Segersälls Väg"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0152,
+59.3324
+]
+},
+"properties": {
+"id": "Qasa:1501781",
+"address": "Creutzgatan, Stockholm",
+"travel (weekday 8:00, SL)": "26 min",
+"rent": "14833 kr",
+"size": "1 rok, 35 m²",
+"kr/m²": 424,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1501781",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 26,
+"rent_kr": 14833,
+"m2": 35,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Creutzgatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0791,
+59.3128
+]
+},
+"properties": {
+"id": "Qasa:1487258",
+"address": "Bondegatan, Stockholm",
+"travel (weekday 8:00, SL)": "26 min",
+"rent": "15044 kr",
+"size": "1 rok, 29 m²",
+"kr/m²": 519,
+"move in": "2027-02-01 → 2028-02-01",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1487258",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 26,
+"rent_kr": 15044,
+"m2": 29,
+"rooms": 1,
+"start": "2027-02-01",
+"end": "2028-02-01",
+"area": "Stockholm",
+"street": "Bondegatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0765,
+59.2962
+]
+},
+"properties": {
+"id": "Qasa:1453250",
+"address": "Skulptörvägen, Johanneshov",
+"travel (weekday 8:00, SL)": "26 min",
+"rent": "15362 kr",
+"size": "2 rok, 52 m²",
+"kr/m²": 295,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1453250",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 26,
+"rent_kr": 15362,
+"m2": 52,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Johanneshov",
+"street": "Skulptörvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0795,
+59.3127
+]
+},
+"properties": {
+"id": "Qasa:1492280",
+"address": "Bondegatan, Stockholm",
+"travel (weekday 8:00, SL)": "26 min",
+"rent": "15892 kr",
+"size": "1 rok, 28 m²",
+"kr/m²": 568,
+"move in": "2027-01-01 → 2028-01-01",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1492280",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 26,
+"rent_kr": 15892,
+"m2": 28,
+"rooms": 1,
+"start": "2027-01-01",
+"end": "2028-01-01",
+"area": "Stockholm",
+"street": "Bondegatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0023,
+59.3462
+]
+},
+"properties": {
+"id": "Qasa:1326331",
+"address": "Johan Enbergs väg, Solna",
+"travel (weekday 8:00, SL)": "27 min",
+"rent": "11654 kr",
+"size": "1 rok, 20 m²",
+"kr/m²": 583,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1326331",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 27,
+"rent_kr": 11654,
+"m2": 20,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Solna",
+"street": "Johan Enbergs väg"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0735,
+59.2959
+]
+},
+"properties": {
+"id": "Qasa:1506301",
+"address": "Skulptörvägen, Johanneshov",
+"travel (weekday 8:00, SL)": "27 min",
+"rent": "13667 kr",
+"size": "2.5 rok, 62 m²",
+"kr/m²": 220,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1506301",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 27,
+"rent_kr": 13667,
+"m2": 62,
+"rooms": 2.5,
+"start": "now",
+"end": null,
+"area": "Johanneshov",
+"street": "Skulptörvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0143,
+59.3322
+]
+},
+"properties": {
+"id": "Qasa:1488119",
+"address": "Geijersvägen, Stockholm",
+"travel (weekday 8:00, SL)": "27 min",
+"rent": "13773 kr",
+"size": "1 rok, 28 m²",
+"kr/m²": 492,
+"move in": "now → 2027-05-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1488119",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 27,
+"rent_kr": 13773,
+"m2": 28,
+"rooms": 1,
+"start": "now",
+"end": "2027-05-31",
+"area": "Stockholm",
+"street": "Geijersvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0434,
+59.3183
+]
+},
+"properties": {
+"id": "Qasa:1511562",
+"address": "Lundagatan, Stockholm",
+"travel (weekday 8:00, SL)": "27 min",
+"rent": "16100 kr",
+"size": "2 rok, 39 m²",
+"kr/m²": 413,
+"move in": "2027-01-01 → 2027-06-30",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1511562",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 27,
+"rent_kr": 16100,
+"m2": 39,
+"rooms": 2,
+"start": "2027-01-01",
+"end": "2027-06-30",
+"area": "Stockholm",
+"street": "Lundagatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.091,
+59.3135
+]
+},
+"properties": {
+"id": "Qasa:1511702",
+"address": "Bondegatan, Stockholm",
+"travel (weekday 8:00, SL)": "27 min",
+"rent": "16272 kr",
+"size": "2 rok, 50 m²",
+"kr/m²": 325,
+"move in": "2026-12-01 → 2027-05-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1511702",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 27,
+"rent_kr": 16272,
+"m2": 50,
+"rooms": 2,
+"start": "2026-12-01",
+"end": "2027-05-31",
+"area": "Stockholm",
+"street": "Bondegatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0743,
+59.2961
+]
+},
+"properties": {
+"id": "Qasa:1494929",
+"address": "Skulptörvägen, Johanneshov",
+"travel (weekday 8:00, SL)": "27 min",
+"rent": "16316 kr",
+"size": "2 rok, 48 m²",
+"kr/m²": 340,
+"move in": "2027-01-01 → 2027-07-01",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1494929",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 27,
+"rent_kr": 16316,
+"m2": 48,
+"rooms": 2,
+"start": "2027-01-01",
+"end": "2027-07-01",
+"area": "Johanneshov",
+"street": "Skulptörvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0834,
+59.3106
+]
+},
+"properties": {
+"id": "Qasa:1483730",
+"address": "Katarina Bangata, Stockholm",
+"travel (weekday 8:00, SL)": "27 min",
+"rent": "16422 kr",
+"size": "1 rok, 34 m²",
+"kr/m²": 483,
+"move in": "2026-12-01 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1483730",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 27,
+"rent_kr": 16422,
+"m2": 34,
+"rooms": 1,
+"start": "2026-12-01",
+"end": null,
+"area": "Stockholm",
+"street": "Katarina Bangata"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0406,
+59.3873
+]
+},
+"properties": {
+"id": "Samtrygg:69293",
+"address": "Mörbylund 15, Danderyd",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "11040 kr",
+"size": "1 rok, 25 m²",
+"kr/m²": 442,
+"move in": "now → 2027-06-19",
+"source": "Samtrygg",
+"link": "https://www.samtrygg.se/object/usgszusoprsmkmxkmeuc/stockholm/danderyd/morbylund-15/1-rok",
+"new": "yes",
+"flag": "",
+"note": "extension possible",
+"first_seen": "2026-11-23",
+"t": 28,
+"rent_kr": 11040,
+"m2": 25,
+"rooms": 1,
+"start": "now",
+"end": "2027-06-19",
+"area": "Danderyd",
+"street": "Mörbylund 15"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0064,
+59.3651
+]
+},
+"properties": {
+"id": "Qasa:1502846",
+"address": "Råsundavägen, Solna",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "11442 kr",
+"size": "1.5 rok, 30 m²",
+"kr/m²": 381,
+"move in": "2026-11-26 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1502846",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 28,
+"rent_kr": 11442,
+"m2": 30,
+"rooms": 1.5,
+"start": "2026-11-26",
+"end": null,
+"area": "Solna",
+"street": "Råsundavägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0133,
+59.3013
+]
+},
+"properties": {
+"id": "Qasa:1509124",
+"address": "Svandammsvägen, Hägersten",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "13773 kr",
+"size": "2 rok, 32 m²",
+"kr/m²": 430,
+"move in": "2026-12-04 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1509124",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 28,
+"rent_kr": 13773,
+"m2": 32,
+"rooms": 2,
+"start": "2026-12-04",
+"end": null,
+"area": "Hägersten",
+"street": "Svandammsvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.001,
+59.3052
+]
+},
+"properties": {
+"id": "Qasa:1497536",
+"address": "Vallfartsvägen, Hägersten",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "14833 kr",
+"size": "2 rok, 42 m²",
+"kr/m²": 353,
+"move in": "now → 2027-12-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1497536",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 28,
+"rent_kr": 14833,
+"m2": 42,
+"rooms": 2,
+"start": "now",
+"end": "2027-12-31",
+"area": "Hägersten",
+"street": "Vallfartsvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.1054,
+59.2954
+]
+},
+"properties": {
+"id": "Qasa:1495444",
+"address": "Finn Malmgrens väg, Johanneshov",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "15129 kr",
+"size": "2 rok, 45 m²",
+"kr/m²": 336,
+"move in": "2027-01-01 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1495444",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 28,
+"rent_kr": 15129,
+"m2": 45,
+"rooms": 2,
+"start": "2027-01-01",
+"end": null,
+"area": "Johanneshov",
+"street": "Finn Malmgrens väg"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0839,
+59.3102
+]
+},
+"properties": {
+"id": "Qasa:1497358",
+"address": "Katarina Bangata, Stockholm",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "15892 kr",
+"size": "1 rok, 27 m²",
+"kr/m²": 589,
+"move in": "2026-12-01 → 2027-12-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1497358",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 28,
+"rent_kr": 15892,
+"m2": 27,
+"rooms": 1,
+"start": "2026-12-01",
+"end": "2027-12-31",
+"area": "Stockholm",
+"street": "Katarina Bangata"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0313,
+59.3372
+]
+},
+"properties": {
+"id": "Qasa:1507902",
+"address": "Kungsholms strand, Stockholm",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "15892 kr",
+"size": "1 rok, 45 m²",
+"kr/m²": 353,
+"move in": "2026-12-15 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1507902",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 28,
+"rent_kr": 15892,
+"m2": 45,
+"rooms": 1,
+"start": "2026-12-15",
+"end": null,
+"area": "Stockholm",
+"street": "Kungsholms strand"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.081,
+59.3128
+]
+},
+"properties": {
+"id": "Qasa:1512548",
+"address": "Södermannagatan, Stockholm",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "15892 kr",
+"size": "1 rok, 30 m²",
+"kr/m²": 530,
+"move in": "2027-01-01 → 2027-08-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1512548",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 28,
+"rent_kr": 15892,
+"m2": 30,
+"rooms": 1,
+"start": "2027-01-01",
+"end": "2027-08-31",
+"area": "Stockholm",
+"street": "Södermannagatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0698,
+59.2843
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:309155",
+"address": "Sockenvägen 345, Enskede Gård",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "5682 kr",
+"size": "1 rok, 33 m²",
+"kr/m²": 172,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620667/",
+"new": "yes",
+"flag": "",
+"note": "first-hand; similar flats went to 11–15 yrs queue",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 5682,
+"m2": 33,
+"rooms": 1,
+"start": null,
+"end": null,
+"area": "Enskede Gård",
+"street": "Sockenvägen 345"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0593,
+59.3556
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:308851",
+"address": "Albanovägen 4, Norra Djurgården",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "7775 kr",
+"size": "1 rok, 21 m²",
+"kr/m²": 370,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620067/",
+"new": "yes",
+"flag": "student flat – requires student status",
+"note": "first-hand; similar flats went to 3–9 yrs queue",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 7775,
+"m2": 21,
+"rooms": 1,
+"start": null,
+"end": null,
+"area": "Norra Djurgården",
+"street": "Albanovägen 4"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.1474,
+59.3485
+]
+},
+"properties": {
+"id": "Qasa:1506931",
+"address": "Agavägen, Lidingö",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "11124 kr",
+"size": "1 rok, 23 m²",
+"kr/m²": 484,
+"move in": "2027-01-01 → 2027-06-30",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1506931",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 11124,
+"m2": 23,
+"rooms": 1,
+"start": "2027-01-01",
+"end": "2027-06-30",
+"area": "Lidingö",
+"street": "Agavägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0881,
+59.2944
+]
+},
+"properties": {
+"id": "Qasa:1503350",
+"address": "Arkadvägen, Johanneshov",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "13773 kr",
+"size": "2 rok, 55 m²",
+"kr/m²": 250,
+"move in": "2026-11-30 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1503350",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 13773,
+"m2": 55,
+"rooms": 2,
+"start": "2026-11-30",
+"end": null,
+"area": "Johanneshov",
+"street": "Arkadvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.088,
+59.2943
+]
+},
+"properties": {
+"id": "Qasa:1500063",
+"address": "Arkadvägen, Johanneshov",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "15000 kr",
+"size": "1 rok, 37 m²",
+"kr/m²": 405,
+"move in": "now → 2027-11-30",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1500063",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 15000,
+"m2": 37,
+"rooms": 1,
+"start": "now",
+"end": "2027-11-30",
+"area": "Johanneshov",
+"street": "Arkadvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0937,
+59.2952
+]
+},
+"properties": {
+"id": "Qasa:1500284",
+"address": "Nathorstvägen, Johanneshov",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "15362 kr",
+"size": "2 rok, 38 m²",
+"kr/m²": 404,
+"move in": "2027-02-01 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1500284",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 15362,
+"m2": 38,
+"rooms": 2,
+"start": "2027-02-01",
+"end": null,
+"area": "Johanneshov",
+"street": "Nathorstvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0553,
+59.3717
+]
+},
+"properties": {
+"id": "Qasa:1486580",
+"address": "Ekhagsvägen, Stockholm",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "15892 kr",
+"size": "2 rok, 38 m²",
+"kr/m²": 418,
+"move in": "2026-12-01 → 2027-12-01",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1486580",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 15892,
+"m2": 38,
+"rooms": 2,
+"start": "2026-12-01",
+"end": "2027-12-01",
+"area": "Stockholm",
+"street": "Ekhagsvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0806,
+59.3119
+]
+},
+"properties": {
+"id": "Qasa:1512525",
+"address": "Katarina Bangata, Stockholm",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "16000 kr",
+"size": "1.5 rok, 45 m²",
+"kr/m²": 356,
+"move in": "2026-12-01 → 2027-05-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1512525",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 16000,
+"m2": 45,
+"rooms": 1.5,
+"start": "2026-12-01",
+"end": "2027-05-31",
+"area": "Stockholm",
+"street": "Katarina Bangata"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0448,
+59.3489
+]
+},
+"properties": {
+"id": "Qasa:1506542",
+"address": "Norrtullsgatan, Stockholm",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "16422 kr",
+"size": "2 rok, 36 m²",
+"kr/m²": 456,
+"move in": "2027-02-01 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1506542",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 16422,
+"m2": 36,
+"rooms": 2,
+"start": "2027-02-01",
+"end": null,
+"area": "Stockholm",
+"street": "Norrtullsgatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0656,
+59.3079
+]
+},
+"properties": {
+"id": "Qasa:1510330",
+"address": "Ringvägen, Stockholm",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "16422 kr",
+"size": "2 rok, 59 m²",
+"kr/m²": 278,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1510330",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 16422,
+"m2": 59,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Ringvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0083,
+59.3397
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:308924",
+"address": "Franzéngatan 33, Stadshagen",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "16811 kr",
+"size": "2 rok, 76 m²",
+"kr/m²": 221,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620465/",
+"new": "yes",
+"flag": "",
+"note": "first-hand; similar flats went to 16–24 yrs queue",
+"first_seen": "2026-11-23",
+"t": 29,
+"rent_kr": 16811,
+"m2": 76,
+"rooms": 2,
+"start": null,
+"end": null,
+"area": "Stadshagen",
+"street": "Franzéngatan 33"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.057,
+59.3525
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:308985",
+"address": "Roslagstullsbacken 13A, Norra Djurgården",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "6156 kr",
+"size": "1 rok, 25 m²",
+"kr/m²": 246,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620582/",
+"new": "yes",
+"flag": "student flat – requires student status",
+"note": "first-hand; similar flats went to 3–9 yrs queue",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 6156,
+"m2": 25,
+"rooms": 1,
+"start": null,
+"end": null,
+"area": "Norra Djurgården",
+"street": "Roslagstullsbacken 13A"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0728,
+59.285
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:308950",
+"address": "Björneborgsvägen 3, Enskede Gård",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "6482 kr",
+"size": "2 rok, 42 m²",
+"kr/m²": 154,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620651/",
+"new": "yes",
+"flag": "",
+"note": "first-hand; similar flats went to 13–17 yrs queue",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 6482,
+"m2": 42,
+"rooms": 2,
+"start": null,
+"end": null,
+"area": "Enskede Gård",
+"street": "Björneborgsvägen 3"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0688,
+59.2926
+]
+},
+"properties": {
+"id": "Qasa:1512665",
+"address": "Delägargatan, Enskede Gård",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "6886 kr",
+"size": "1 rok, 30 m²",
+"kr/m²": 230,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1512665",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 6886,
+"m2": 30,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Enskede Gård",
+"street": "Delägargatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.1465,
+59.348
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:308975",
+"address": "Agavägen 34, Larsberg",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "10881 kr",
+"size": "2 rok, 58 m²",
+"kr/m²": 188,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620498/",
+"new": "yes",
+"flag": "",
+"note": "first-hand; similar flats went to 6–11 yrs queue",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 10881,
+"m2": 58,
+"rooms": 2,
+"start": null,
+"end": null,
+"area": "Larsberg",
+"street": "Agavägen 34"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+17.999,
+59.3453
+]
+},
+"properties": {
+"id": "Qasa:1504682",
+"address": "Johan Enbergs väg, Solna",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "12714 kr",
+"size": "1 rok, 46 m²",
+"kr/m²": 276,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1504682",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 12714,
+"m2": 46,
+"rooms": 1,
+"start": "now",
+"end": null,
+"area": "Solna",
+"street": "Johan Enbergs väg"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+17.989,
+59.3068
+]
+},
+"properties": {
+"id": "Qasa:1451498",
+"address": "Hövdingagatan, Hägersten",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "14833 kr",
+"size": "2 rok, 38 m²",
+"kr/m²": 390,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1451498",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 14833,
+"m2": 38,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Hägersten",
+"street": "Hövdingagatan"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0505,
+59.3105
+]
+},
+"properties": {
+"id": "Qasa:1497427",
+"address": "Flintbacken, Stockholm",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "14833 kr",
+"size": "1.5 rok, 35 m²",
+"kr/m²": 424,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1497427",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 14833,
+"m2": 35,
+"rooms": 1.5,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Flintbacken"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.027,
+59.3506
+]
+},
+"properties": {
+"id": "Qasa:1491225",
+"address": "Olof af Acrels väg, Solna",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "14950 kr",
+"size": "1 rok, 26 m²",
+"kr/m²": 575,
+"move in": "2027-01-01 → 2027-08-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1491225",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 14950,
+"m2": 26,
+"rooms": 1,
+"start": "2027-01-01",
+"end": "2027-08-31",
+"area": "Solna",
+"street": "Olof af Acrels väg"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0053,
+59.3648
+]
+},
+"properties": {
+"id": "Qasa:1497318",
+"address": "Åkersvägen, Solna",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "15892 kr",
+"size": "2 rok, 40 m²",
+"kr/m²": 397,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1497318",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 15892,
+"m2": 40,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Solna",
+"street": "Åkersvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+17.9817,
+59.3353
+]
+},
+"properties": {
+"id": "Qasa:1502855",
+"address": "Hunnebergsvägen, Bromma",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "15892 kr",
+"size": "2 rok, 51 m²",
+"kr/m²": 312,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1502855",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 15892,
+"m2": 51,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Bromma",
+"street": "Hunnebergsvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.1413,
+59.3661
+]
+},
+"properties": {
+"id": "HomeQ:273095",
+"address": "Sagavägen 14, Lidingö",
+"travel (weekday 8:00, SL)": "30 min",
+"rent": "16578 kr",
+"size": "3 rok, 72 m²",
+"kr/m²": 230,
+"move in": "2026-12-01 → indefinite",
+"source": "HomeQ",
+"link": "https://www.homeq.se/lagenhet/273095-3rum-lidingö-stockholms-län-sagavägen-14",
+"new": "yes",
+"flag": "short lease – check length in ad",
+"note": "first-hand",
+"first_seen": "2026-11-23",
+"t": 30,
+"rent_kr": 16578,
+"m2": 72,
+"rooms": 3,
+"start": "2026-12-01",
+"end": null,
+"area": "Lidingö",
+"street": "Sagavägen 14"
 }
 }
 ]
