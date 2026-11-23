@@ -26,7 +26,11 @@ export class MemoryStore implements Store {
       }
       return ids;
     },
+    active: async () => this.placesActive(),
   };
+
+  readonly placesActive = async () =>
+    [...this.placeRows.values()].filter(p => this.listingRows.some(l => l.placeId === p.id && l.removedAt === null));
 
   readonly listings = {
     loadSource: async (source: Source) => this.listingRows.filter(l => l.source === source).map(l => ({ ...l })),

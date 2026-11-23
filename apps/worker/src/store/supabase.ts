@@ -43,8 +43,11 @@ export class SupabaseStore implements Store {
   readonly listings: Store['listings'];
   readonly runs: Store['runs'];
   readonly raw: Store['raw'];
+  /** for the travel time cache, which shares the same connection */
+  readonly client: Db;
 
   constructor(private readonly db: Db, rawBucket = 'raw') {
+    this.client = db;
     this.places = new Places(db);
     this.listings = new Listings(db);
     this.runs = new Runs(db);
@@ -109,6 +112,12 @@ class Places implements PlaceRepository {
       for (const r of rows) ids.set(placeKey({ lat: Number(r.lat), lon: Number(r.lon) }), r.id);
     }
     return ids;
+  }
+
+  async active() {
+    type Row = { places: { id: number; lat: number | string; lon: number | string } };
+    const rows = await selectAll<Row>((a, b) => this.db.from('listings').select('places(id,lat,lon)').is('removed_at', null).order('id').range(a, b) as never, 'active places');
+    return [...new Map(rows.map(r => [r.places.id, { id: r.places.id, lat: Number(r.places.lat), lon: Number(r.places.lon) }])).values()];
   }
 }
 

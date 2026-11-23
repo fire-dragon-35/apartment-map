@@ -8,6 +8,7 @@
  * Exit code 0 only when the run is ok; the systemd unit shows anything else as failed.
  */
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { KARLAPLAN, SupabaseTravelCache, TravelTimeService } from '@lk/shared';
 import { HttpClient } from './http.ts';
 import { Pipeline } from './services/pipeline.ts';
 import { systemClock } from './services/clock.ts';
@@ -32,12 +33,15 @@ process.on('exit', () => rmSync(lock, { force: true }));
 const wanted = process.argv.slice(2);
 const fetchers = wanted.length ? ADAPTERS.filter(a => wanted.includes(a.source)) : ADAPTERS;
 
+const store = SupabaseStore.fromEnv();
 const summary = await new Pipeline({
-  fetchers, http: new HttpClient(), store: SupabaseStore.fromEnv(), clock: systemClock,
+  fetchers, http: new HttpClient(), store, clock: systemClock,
+  travel: { service: new TravelTimeService({ fetch, cache: new SupabaseTravelCache(store.client), now: () => new Date() }), destination: KARLAPLAN },
   log: m => console.log(`${new Date().toISOString()} ${m}`),
 }).run();
 
 console.table(summary.sources);
+if (summary.travel) console.log(`travel times to Karlaplan: computed ${summary.travel.computed}, reused ${summary.travel.reused}, failed ${summary.travel.failed}`);
 console.log(`run ${summary.runId}: ${summary.ok ? 'ok' : 'NOT OK'}, ${summary.linked} duplicate links changed`);
 for (const p of summary.problems) console.error(`problem: ${p}`);
 process.exitCode = summary.ok ? 0 : 1;

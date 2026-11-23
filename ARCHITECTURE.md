@@ -174,7 +174,7 @@ The paywall is enforced in the database (policy on `travel_times` and `destinati
    5. write `source_runs`.
 3. Duplicates: link listings of different sources with the same place (±50 m), m² (±2) and rent (±5 %) through `same_as`; the cheapest one is shown.
 4. Facebook: new posts are inserted into `fb_posts`; `extract-fb` fills `extracted` and creates or updates a listing.
-5. Travel times for new places to Karlaplan are computed (the free default).
+5. Travel times from every active place without a fresh Karlaplan row are computed (the free default) with the shared `TravelTimeService` (§8); the run log shows computed, reused and failed. A failure here never fails the run.
 6. `runs.ok` set; `notify` runs.
 7. **Coverage check:** if a source is incomplete, returns 0, or returns less than half of the median of its last 7 complete runs (checked once 3 exist), the run is marked not ok and `npm run worker` exits non-zero. The email comes with `notify` (step 6); until then the failed systemd unit is the alert.
 8. **Raw retention:** files older than 30 days are deleted through the Storage API, except those a source run from the last 30 days still points at; source runs whose file was deleted get `raw_path = null`. A failure is logged and never fails the run.
@@ -208,7 +208,10 @@ Fetching is polite: one request at a time per site, a short pause between pages,
 
 `travel-times` takes a destination and a list of place ids, returns minutes and legs, and fills the cache.
 
-* **Phase 1 (launch):** SL journey planner per place, 6 requests at a time, fastest of 3 trips arriving at 08:00 next weekday, plus a walking estimate; results cached in `travel_times` for 7 days. The page shows listings at once and fills in times as they arrive.
+* **Phase 1 (launch):** one `TravelTimeService` in `packages/shared/src/travel/`, imported by the worker (Node) and by the `travel-times` edge function (Deno); no copies (the function's `deno.json` maps `@supabase/supabase-js`, the only bare import). Per place: the SL journey planner (`journeyplanner.integration.sl.se/v2/trips`, keyless), coordinate to coordinate, `calc_number_of_trips=3`, arriving at the profile's time (`weekday_0800` = 08:00) on the next weekday in Stockholm, fastest trip taken. Requests have a 15 s timeout, 2 retries with backoff and jitter, at most 6 in flight; a place whose request fails is skipped, counted in `failed` and not cached, so the next call retries it. An answer with no trip is asked once more, then `transit_min` is null.
+  * **Result per place:** `walk_min` as DESIGN.md §6, `transit_min` from SL, `minutes = min(walk, transit)`, `legs` = `[mode, line, coords, minutes, stops]` (mode `walk|metro|train|tram|bus|boat|other`, at most 60 points per leg rounded to 5 decimals, consecutive walking legs merged) or null when walking wins.
+  * **Cache:** `travel_times`, keyed by place × destination cell (rounded to 3 decimals, about 100 m) × profile; a row younger than 7 days is reused. Everything is computed for the cell centre, so a cached row is right for every pin in the cell.
+  * **`travel-times` function:** `POST { lat, lon, placeIds }` (at most 300 ids) returns `{ results: [{ placeId, minutes, walkMin, transitMin, legs }], failed: [placeId] }`: cached rows at once, only the missing ones computed. Karlaplan's cell is open to everyone; any other destination needs a signed-in user with `is_paying`, else **402** with a Swedish message. Reads run as the caller (row level security applies), writes use the service role. The gateway does not check the JWT (`verify_jwt = false`, because anonymous visitors use the Karlaplan cell and publishable keys are not JWTs); the function does its own check. The request logic is `handleTravelTimes` in `packages/shared/src/travel/handler.ts`, so test 4 runs it on Node.
 * **Phase 2 (when needed):** OpenTripPlanner with Trafiklab's open GTFS data for Stockholm and OpenStreetMap streets, on a small server. One request answers a pin to all places in about a second, with real walking times. Same function signature, so the page does not change.
 
 Karlaplan times are computed by the worker for every new place and are free; other pins require a paying user.
@@ -283,7 +286,7 @@ No unit tests per function. Five checks, each guarding something that would fail
 | **Source fixtures:** each adapter parses a saved real response into valid listings with the expected count | a site changing its format and the data quietly shrinking |
 | **Pipeline day:** a fake two day run on fixtures gives the right new, changed, removed and duplicate rows, and an incomplete source removes nothing | wrong "new" counts, ads vanishing, double listings |
 | **Page rules:** `tests/design_check.py` (ported to the React app) checks the ✓ rules in DESIGN.md | interaction and format regressions |
-| **Paywall:** an anonymous and a free user cannot read other pins' travel times or other users' rows | data or paid features leaking |
+| **Paywall:** an anonymous and a free user cannot read other pins' travel times or other users' rows, and get 402 from `travel-times` for a custom pin; a paying user gets results. Runs against local Supabase (`npx supabase start`) and is skipped, visibly, without it | data or paid features leaking |
 | **Stripe webhook:** the same event twice gives one subscription row in the right state | double or lost subscriptions |
 
 Plus the type checker and linter. Everything else is covered by the coverage alerts in section 6.
@@ -300,6 +303,7 @@ Plus the type checker and linter. Everything else is covered by the coverage ale
 
 ```
 packages/shared/src/domain/   Listing (zod), places, travel time rules, sanity checks
+packages/shared/src/travel/   TravelTimeService, SL client, travel_times cache, travel-times request handler (worker and Deno)
 packages/shared/src/format/   the DESIGN.md formats, used by worker and web
 apps/worker/src/http.ts       the only network client: timeouts, retries, per host politeness
 apps/worker/src/sources/      SourceAdapter base class + one subclass per site
@@ -312,7 +316,7 @@ apps/worker/test/             tests 1 and 2 of §13 (node:test)
 apps/worker/systemd/          daily timer for this laptop + install.sh
 apps/web/                     React app (step 5)
 supabase/migrations/          SQL in §5
-supabase/functions/           travel-times, extract-fb, stripe-webhook, notify (steps 3, 4, 6)
+supabase/functions/           travel-times (thin Deno wrapper); later extract-fb, stripe-webhook, notify (steps 3, 6)
 legacy/                       old pipeline, still running
 DESIGN.md                     page spec (UI)
 ARCHITECTURE.md               this file
@@ -327,7 +331,7 @@ Legacy files live in `legacy/` until the step that retires them (§16); only the
 | 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** hosted Supabase project (migrations applied and types generated on local Supabase). Fixtures and test 1 done | |
 | 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (verified on local Supabase 23 nov: 2 355 listings, second run changes nothing):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Done:** unchanged raw responses are not stored again, 30 day raw retention, and the alert when runs stop or coverage collapses (§14). **What remains of step 2** is the week of running next to the old task | |
 | 3 | Facebook through the worker + `extract-fb` | GitHub Actions `facebook.yml`, Claude reading posts |
-| 4 | `travel-times` (phase 1) | `routes.yml`, `routes.py`, `fb_eta.py` |
+| 4 | `travel-times` (phase 1). **Done:** shared service, worker step, edge function, test 4. **Open:** compare with legacy for a week, then retire | `routes.yml`, `routes.py`, `fb_eta.py` |
 | 5 | React app reading Supabase, same look as today | `index.html`, JSON files, GitHub Pages |
 | 6 | Auth, pins, Stripe, alerts | scheduled Claude task |
 

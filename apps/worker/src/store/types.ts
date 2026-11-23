@@ -2,7 +2,7 @@
  * What the pipeline needs from the database: small repositories, no SQL in the pipeline.
  * `supabase.ts` implements them for production; tests pass an in-memory version.
  */
-import type { LatLon, Source } from '@lk/shared';
+import type { LatLon, PlaceCoord, Source } from '@lk/shared';
 
 /** The comparison facts of one listing, as stored. Dates are ISO days. */
 export interface ListingFields {
@@ -54,6 +54,8 @@ export interface PlacePoint extends LatLon { exact: boolean }
 export interface PlaceRepository {
   /** Ids of the places at these positions (4 decimals), creating the missing ones. Keyed by `placeKey`. */
   resolve(points: PlacePoint[]): Promise<Map<string, number>>;
+  /** Places with at least one active listing. */
+  active(): Promise<PlaceCoord[]>;
 }
 
 export interface ListingRepository {
