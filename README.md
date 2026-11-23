@@ -2,6 +2,37 @@
 
 Daily Stockholm apartment search → map at https://fire-dragon-35.github.io/apartment-map/
 
+The repo is moving to the architecture in [ARCHITECTURE.md](ARCHITECTURE.md). Until each step is done, the
+**legacy pipeline** below keeps running unchanged.
+
+## New layout (in progress)
+
+```
+packages/shared/      domain objects (Listing, places, travel time, sanity checks) + DESIGN.md formats
+apps/worker/          laptop worker: HttpClient (timeouts, retries, politeness), one adapter class per site
+supabase/migrations/  database schema and row level security
+DESIGN.md             page spec · ARCHITECTURE.md system spec
+```
+
+```bash
+npm install
+npm run typecheck && npm run lint
+npm run fetch                 # dry run from this machine: fetch + validate every site → apps/worker/out/<date>/
+npm run fetch -- qasa homeq   # some sites only
+```
+
+The dry run writes nothing to a database yet; it shows per site how many ads were fetched, kept, skipped
+and rejected, and saves the raw responses (used as test fixtures later).
+
+## Legacy pipeline (still running)
+
+| piece | retired by (ARCHITECTURE.md §16) |
+|---|---|
+| `scripts/*.js` + `build.py` + scheduled Claude task | step 2 (worker writes to Supabase) |
+| `.github/workflows/facebook.yml`, Claude reading posts | step 3 |
+| `.github/workflows/routes.yml`, `fb-eta.yml`, `scripts/routes.py`, `scripts/fb_eta.py` | step 4 |
+| `index.html`, `apartments.geojson`, `fb/listings.json`, `routes.json`, GitHub Pages | step 5 |
+
 ## How a run works
 
 1. **Fetch (in the laptop's browser).** For each source, open its site in a tab and run the

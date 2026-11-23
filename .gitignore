@@ -1,1 +1,6 @@
 results/
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+apps/worker/out/

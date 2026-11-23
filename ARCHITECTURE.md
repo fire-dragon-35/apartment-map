@@ -294,14 +294,19 @@ Plus the type checker and linter. Everything else is covered by the coverage ale
 ## 15. Repo layout
 
 ```
-apps/web/            React app
-apps/worker/         laptop worker (Node + TypeScript), sources/, fixtures/
-packages/shared/     zod schemas, generated database types, formats (DESIGN.md §5), travel time rules
-supabase/migrations/ SQL above
-supabase/functions/  travel-times, extract-fb, stripe-webhook, notify
-DESIGN.md            page spec (UI)
-ARCHITECTURE.md      this file
+packages/shared/src/domain/   Listing (zod), places, travel time rules, sanity checks
+packages/shared/src/format/   the DESIGN.md formats, used by worker and web
+apps/worker/src/http.ts       the only network client: timeouts, retries, per host politeness
+apps/worker/src/sources/      SourceAdapter base class + one subclass per site
+apps/worker/src/main.ts       entry point (dry run today; full pipeline from step 2)
+apps/web/                     React app (step 5)
+supabase/migrations/          SQL in §5
+supabase/functions/           travel-times, extract-fb, stripe-webhook, notify (steps 3, 4, 6)
+DESIGN.md                     page spec (UI)
+ARCHITECTURE.md               this file
 ```
+
+Legacy files (`scripts/`, `build.py`, `index.html`, the JSON data and the workflows) stay at the root until the step that retires them (§16).
 
 ## 16. Moving from today's setup
 
