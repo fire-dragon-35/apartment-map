@@ -321,8 +321,8 @@ Legacy files live in `legacy/` until the step that retires them (§16); only the
 
 | Step | Result | Today's piece retired |
 | --- | --- | --- |
-| 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** Supabase project, apply migrations, generated types. Fixtures and test 1 done | |
-| 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (untested against a real database):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Open:** Supabase project; not yet done: skipping an unchanged raw response (§12), 30 day raw retention (`pg_cron`), heartbeat email | |
+| 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** hosted Supabase project (migrations applied and types generated on local Supabase). Fixtures and test 1 done | |
+| 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (verified on local Supabase 23 nov: 2 355 listings, second run changes nothing):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Open:** hosted project; not yet done: skipping an unchanged raw response (§12), 30 day raw retention (`pg_cron`), heartbeat email | |
 | 3 | Facebook through the worker + `extract-fb` | GitHub Actions `facebook.yml`, Claude reading posts |
 | 4 | `travel-times` (phase 1) | `routes.yml`, `routes.py`, `fb_eta.py` |
 | 5 | React app reading Supabase, same look as today | `index.html`, JSON files, GitHub Pages |

@@ -11,12 +11,14 @@
     "lint": "eslint .",
     "fetch": "npm run fetch -w @lk/worker",
     "test": "npm test --workspaces --if-present",
-    "worker": "npm run worker -w @lk/worker --"
+    "worker": "npm run worker -w @lk/worker --",
+    "db:types": "supabase gen types typescript --local > packages/shared/src/database.types.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "eslint": "^9.15.0",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.15.0"
+    "typescript-eslint": "^8.15.0",
+    "supabase": "^3.3.0"
   }
 }

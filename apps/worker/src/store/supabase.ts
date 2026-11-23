@@ -3,7 +3,9 @@
  * service key, which bypasses row level security.
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { placeKey, type Source } from '@lk/shared';
+import { placeKey, type Database, type Source } from '@lk/shared';
+
+type Db = SupabaseClient<Database>;
 import type {
   DuplicateCandidate, ListingChange, ListingRepository, NewListing, PlacePoint, PlaceRepository, RunRepository,
   SourceRunRow, Store, StoredListing,
@@ -19,17 +21,11 @@ function check<T>(res: { data: T | null; error: { message: string } | null }, wh
   return res.data as T;
 }
 
-/** The database's listing row; snake_case, numerics may arrive as strings. */
-interface ListingRow {
-  id: number; source: Source; source_id: string; url: string; place_id: number; street: string | null; area: string | null;
-  rent: number | null; m2: number | string | null; rooms: number | string | null; start_date: string | null; end_date: string | null;
-  first_hand: boolean | null; student: boolean | null; furnished: boolean | null; notes: string[]; flags: string[];
-  content_hash: string; first_seen: string; last_seen: string; removed_at: string | null; same_as: number | null;
-}
-const num = (v: number | string | null) => (v === null ? null : Number(v));
+type ListingRow = Database['public']['Tables']['listings']['Row'];
+const num = (v: number | string | null) => (v === null ? null : Number(v)); // numerics can arrive as strings
 
 const fromRow = (r: ListingRow): StoredListing => ({
-  id: r.id, source: r.source, sourceId: r.source_id, url: r.url, placeId: r.place_id, street: r.street, area: r.area,
+  id: r.id, source: r.source as Source, sourceId: r.source_id, url: r.url, placeId: r.place_id, street: r.street, area: r.area,
   rent: r.rent, m2: num(r.m2), rooms: num(r.rooms), startDate: r.start_date, endDate: r.end_date,
   firstHand: r.first_hand, student: r.student, furnished: r.furnished, notes: r.notes, flags: r.flags,
   contentHash: r.content_hash, firstSeen: r.first_seen, lastSeen: r.last_seen, removedAt: r.removed_at, sameAs: r.same_as,
@@ -48,7 +44,7 @@ export class SupabaseStore implements Store {
   readonly runs: Store['runs'];
   readonly raw: Store['raw'];
 
-  constructor(private readonly db: SupabaseClient, rawBucket = 'raw') {
+  constructor(private readonly db: Db, rawBucket = 'raw') {
     this.places = new Places(db);
     this.listings = new Listings(db);
     this.runs = new Runs(db);
@@ -63,7 +59,7 @@ export class SupabaseStore implements Store {
   static fromEnv(env: NodeJS.ProcessEnv = process.env): SupabaseStore {
     const url = env.SUPABASE_URL, key = env.SUPABASE_SERVICE_KEY;
     if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_KEY must be set (see .env.example)');
-    return new SupabaseStore(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+    return new SupabaseStore(createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
   }
 }
 
@@ -78,7 +74,7 @@ async function selectAll<T>(page: (from: number, to: number) => PromiseLike<{ da
 }
 
 class Places implements PlaceRepository {
-  constructor(private readonly db: SupabaseClient) {}
+  constructor(private readonly db: Db) {}
 
   async resolve(points: PlacePoint[]) {
     const byKey = new Map<string, { lat: number; lon: number; exact: boolean }>();
@@ -96,7 +92,7 @@ class Places implements PlaceRepository {
 }
 
 class Listings implements ListingRepository {
-  constructor(private readonly db: SupabaseClient) {}
+  constructor(private readonly db: Db) {}
 
   async loadSource(source: Source) {
     const rows = await selectAll<ListingRow>((a, b) => this.db.from('listings').select('*').eq('source', source).order('id').range(a, b), 'load listings');
@@ -145,7 +141,7 @@ class Listings implements ListingRepository {
 }
 
 class Runs implements RunRepository {
-  constructor(private readonly db: SupabaseClient) {}
+  constructor(private readonly db: Db) {}
 
   async open() {
     return (check(await this.db.from('runs').insert({}).select('id').single(), 'open run') as { id: number }).id;
