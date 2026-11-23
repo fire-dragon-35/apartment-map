@@ -1,6 +1,6 @@
 # ARCHITECTURE.md · Lägenhetskartan
 
-Status: draft 1, 23 nov 2026. Replaces the current mix (laptop browser + GitHub Actions + scheduled Claude task + JSON files in the repo).
+Status: draft 2, 23 nov 2026. Replaces the current mix (laptop browser + GitHub Actions + scheduled Claude task + JSON files in the repo).
 
 `DESIGN.md` stays the spec for how the page looks and behaves. This file is the spec for everything behind it.
 
@@ -198,7 +198,7 @@ interface Adapter {
 | Samtrygg | `samtrygg.se/RentalObject/SearchResult` | |
 | Facebook | Apify actor on the public groups list | text goes to `extract-fb` |
 
-Each adapter has a test that runs `parse` + `toListing` on saved sample responses in `fixtures/`, so a format change fails a test instead of shrinking the data. Fetching is polite: one request at a time per site, a short pause between pages, a normal browser user agent. The search area is wide (all of Stockholm county's central municipalities); per user filters are applied on read, not at fetch.
+Fetching is polite: one request at a time per site, a short pause between pages, a normal browser user agent. The search area is wide (all of Stockholm county's central municipalities); per user filters are applied on read, not at fetch.
 
 ## 8. Travel times to any pin
 
@@ -231,14 +231,67 @@ Based on the EU court's reading of the database right (*CV-Online Latvia v Melon
 * the paid product is the tool (pins, travel times, alerts), not access to the listings;
 * have a lawyer review this list before Stripe goes live.
 
-## 12. Operations
+## 12. Efficiency, speed, maintenance, robustness
+
+**Do each piece of work once**
+* Listings carry a content hash; a row is written only when the hash changes. A raw response identical to the previous one is not stored again.
+* Travel times are cached per place × destination cell (~100 m) × profile and kept until the timetable data changes (weekly). Duplicates share a place, so one calculation serves all copies. Karlaplan is precomputed.
+* A Facebook post is extracted once per `extractor_version`.
+* The page loads one compact payload of active listings (~50 KB gzip, CDN cached). Travel times for another pin are requested only for listings that pass the other filters.
+
+**Fast**
+* The last payload is kept on the device (TanStack Query persisted to IndexedDB): map and list render at once, then refresh in the background.
+* Small first load (React + Leaflet); paid screens are split out and loaded on demand.
+* Canvas pins; the list renders only visible rows once it passes a few hundred.
+* `active_listings` view with indexes on the filter columns, refreshed after each run.
+* Travel times for a new pin fill in progressively.
+
+**Maintainable**
+
+```
+worker/sources/   one class per site on a shared base class (paging, retry, raw save)
+shared/domain/    pure objects, no I/O: Listing, Place, Money, TravelTime, Filters
+shared/format/    the DESIGN.md formats, used by worker and web
+worker/store/     repositories; the only code that touches SQL
+worker/services/  Pipeline, TravelTimeService, Notifier
+web/              React components on top of domain + format
+```
+
+* One source of truth for shapes: SQL migrations → generated types → zod at the door.
+* HTTP client, clock and database are passed in, so the pipeline runs on fixtures without the network.
+* Strict TypeScript and lint on every commit.
+
+**Robust**
+* Every request has a timeout and retries with backoff and jitter; a source that keeps failing is skipped for that run.
+* Sources are independent. An incomplete fetch never removes listings; the last good data stays and the page shows when it was updated.
+* Missing fields become null and show as `?`. Only items without id, link or position are dropped, and the drop is counted.
+* Sanity checks: position inside the Stockholm area, rent and kr/m² in plausible ranges; outliers are flagged, not dropped.
+* Runs are idempotent (upserts), locked against double starts, started on wake when missed, and a missing heartbeat for 36 hours sends an email.
+* Outside services down: SL → keep cached times or show `restid saknas`; Claude → posts stay queued and are retried; Stripe → retries its webhooks, each event id is handled once.
+* The web app isolates failures per part (error boundaries) and says plainly when data cannot load.
+
+## 13. Tests (only the must haves)
+
+No unit tests per function. Five checks, each guarding something that would fail silently otherwise:
+
+| Test | Guards against |
+| --- | --- |
+| **Source fixtures:** each adapter parses a saved real response into valid listings with the expected count | a site changing its format and the data quietly shrinking |
+| **Pipeline day:** a fake two day run on fixtures gives the right new, changed, removed and duplicate rows, and an incomplete source removes nothing | wrong "new" counts, ads vanishing, double listings |
+| **Page rules:** `tests/design_check.py` (ported to the React app) checks the ✓ rules in DESIGN.md | interaction and format regressions |
+| **Paywall:** an anonymous and a free user cannot read other pins' travel times or other users' rows | data or paid features leaking |
+| **Stripe webhook:** the same event twice gives one subscription row in the right state | double or lost subscriptions |
+
+Plus the type checker and linter. Everything else is covered by the coverage alerts in section 6.
+
+## 14. Operations
 
 * **Secrets:** `.env` on the laptop (Supabase service key, Apify token); Supabase function secrets (Claude, Stripe, SMTP). Never in the repo.
 * **Monitoring:** `source_runs` per source and day; an email when a run is not ok or the worker has not reported for 36 hours.
 * **Backups:** Supabase daily backups; raw files 30 days in Storage.
 * **Environments:** one Supabase project for production, one for development; migrations in `supabase/migrations`, applied with the Supabase CLI.
 
-## 13. Repo layout
+## 15. Repo layout
 
 ```
 apps/web/            React app
@@ -250,7 +303,7 @@ DESIGN.md            page spec (UI)
 ARCHITECTURE.md      this file
 ```
 
-## 14. Moving from today's setup
+## 16. Moving from today's setup
 
 | Step | Result | Today's piece retired |
 | --- | --- | --- |
@@ -261,7 +314,7 @@ ARCHITECTURE.md      this file
 | 5 | React app reading Supabase, same look as today | `index.html`, JSON files, GitHub Pages |
 | 6 | Auth, pins, Stripe, alerts | scheduled Claude task |
 
-## 15. Open questions
+## 17. Open questions
 
 1. Price and trial length for the paid plan.
 2. Which pin features are free (one custom pin as a taste?) and which are paid.
