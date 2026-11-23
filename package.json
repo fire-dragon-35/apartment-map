@@ -7,7 +7,7 @@
     "apps/*"
   ],
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && tsc -p apps/web",
     "lint": "eslint .",
     "fetch": "npm run fetch -w @lk/worker",
     "test": "npm test --workspaces --if-present",

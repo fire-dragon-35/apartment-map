@@ -1,3 +1,5 @@
+import { stockholmToday } from '@lk/shared';
+
 export interface Clock {
   /** Today in Stockholm, as an ISO day. */
   today(): string;
@@ -5,6 +7,6 @@ export interface Clock {
 }
 
 export const systemClock: Clock = {
-  today: () => new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Stockholm' }).format(new Date()), // sv-SE prints YYYY-MM-DD
+  today: () => stockholmToday(),
   now: () => new Date(),
 };

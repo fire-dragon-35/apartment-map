@@ -9,3 +9,5 @@ apps/worker/out/
 apps/worker/cache/
 apps/worker/router/.venv/
 __pycache__/
+dist-test/
+*.local

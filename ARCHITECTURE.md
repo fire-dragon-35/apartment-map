@@ -249,10 +249,13 @@ Karlaplan times are computed by the worker for every new place and are free; oth
 
 ## 9. Web app
 
-* **Stack:** Vite + React + TypeScript, Leaflet (react-leaflet), TanStack Query, supabase-js. Hosted on Vercel.
-* **Behaviour and look:** as `DESIGN.md` (v3): one scrolling page, map on top, list below, Leaflet popups, `Visa resväg`.
-* **New screens:** sign in (Supabase Auth), pin editor (drag a pin, name it; paid), saved searches and alerts (paid), account with Stripe Customer Portal link.
-* **Data loading:** one query for active listings with their Karlaplan time (small enough to load whole); for another pin, a call to `travel-times` with the ids of listings passing the other filters.
+* **Stack:** Vite + React + TypeScript, Leaflet (react-leaflet), TanStack Query, supabase-js (anon key, row level security). Hosted on Vercel. No state library and no UI framework: React state, TanStack Query, plain CSS.
+* **Behaviour and look:** exactly `DESIGN.md` (v3, locked): one scrolling page, map on top, list below, one Leaflet popup, `Visa resväg`. Formats, price bands, source and line colours, the walk rule, the contract rule, the pin radius and the note tags live in `packages/shared` and are never repeated in the app; the design tokens are set as CSS variables from the same shared constants.
+* **Step 5 scope:** Karlaplan only. Own pins, sign in and payment (step 6) have seams but no code; Facebook listings (step 3) are not shown yet.
+* **Data loading:** one read of the view `listings_karlaplan` (migration `20261124030000`): active listings, copies hidden, with `source_id`, the Karlaplan travel time and legs, and `also_on` (the other sites that list the same flat). The view holds only rows the page can ever show with its slider limits (restid at most 31 minutes in the database, which still has to be corrected by the page's own walk estimate; rent at most 17 000 or unknown; size at least 20 m² or unknown), so the payload stays small; the page loads it whole (paged past 1 000 rows), keeps it in TanStack Query with `staleTime` one hour, and filters on the client. `restid` is computed in the page from the exact position as DESIGN.md §6 says: `travelMinutes(walkMinutes(listing, Karlaplan), transit_min)`. "Ny" is `first_seen` equal to today in Stockholm (R8). Missing values render as `?` or not at all; a null never crashes the page. Route lines come from `legs`; with no legs and walking faster nothing is drawn.
+* **Structure** (`apps/web/src`), the legacy class split as React pieces: `useListings` (data hook), `Listing` (a row with its rules: restid, new, contract, radius, tags), `useFilters` (state in the URL query so a view can be shared, the sliders and `Visa resväg` also remembered in `localStorage` as `lgh-filters` and `lgh-routes`), `MapView` (one Leaflet map, canvas pins in their own pane at z-index 450 with tolerance 8, rings, Karlaplan, one popup instance, preclick closes), `RouteLayer`, `ListView`, `Card`, `Details` (the three lines shared by card and popup), `Popup`.
+* **Test hooks:** a build made with `--mode test` exposes `window.__lgh` (listings, selection, map, markers, route layer) for the page rules test; the production build has no hooks.
+* **Later screens (step 6):** sign in (Supabase Auth), pin editor (drag a pin, name it; paid), saved searches and alerts (paid), account with Stripe Customer Portal link. For another pin the page calls `travel-times` (§8) with the ids of listings that pass the other filters.
 
 ## 10. Payments
 
@@ -316,7 +319,7 @@ No unit tests per function. Five checks, each guarding something that would fail
 | --- | --- |
 | **Source fixtures:** each adapter parses a saved real response into valid listings with the expected count | a site changing its format and the data quietly shrinking |
 | **Pipeline day:** a fake two day run on fixtures gives the right new, changed, removed and duplicate rows, and an incomplete source removes nothing | wrong "new" counts, ads vanishing, double listings |
-| **Page rules:** `tests/design_check.py` (ported to the React app) checks the ✓ rules in DESIGN.md | interaction and format regressions |
+| **Page rules:** `apps/web/test/design.test.ts` (the legacy `design_check.py` ported to Playwright) runs the built app on a fixture of about 30 listings, Supabase mocked, and checks R1 to R12 of DESIGN.md; it needs Chromium (`npx playwright install chromium`) | interaction and format regressions |
 | **Paywall:** an anonymous and a free user cannot read other pins' travel times or other users' rows, and cannot read `travel_matrix`, and get 402 from `travel-times` for a custom pin; a paying user gets minutes from a fixture matrix row (bulk) or the exact cached SL trip (one listing). Runs against local Supabase (`npx supabase start`) and is skipped, visibly, without it | data or paid features leaking |
 | **Stripe webhook:** the same event twice gives one subscription row in the right state | double or lost subscriptions |
 
@@ -347,7 +350,7 @@ apps/worker/test/             tests 1 and 2 of §13 (node:test)
 apps/worker/systemd/          daily timer for this laptop + install.sh
 apps/worker/router/           r5py matrix builder (Python subprocess), requirements.txt, setup.sh
 apps/worker/cache/            GTFS, cropped OSM, JDK (gitignored)
-apps/web/                     React app (step 5)
+apps/web/                     React app (step 5): src/ (hooks, components, styles), test/ (page rules)
 supabase/migrations/          SQL in §5
 supabase/functions/           travel-times (thin Deno wrapper); later extract-fb, stripe-webhook, notify (steps 3, 6)
 legacy/                       old pipeline, still running

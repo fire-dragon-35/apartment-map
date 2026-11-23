@@ -38,6 +38,14 @@ export const fmt = {
     const days = Math.round((Date.parse(today) - Date.parse(firstSeen)) / 864e5);
     return days <= 0 ? 'idag' : `${days}${NB}d`;
   },
+  /** The three sliders of DESIGN.md §4 as their labels, and the header summary of the active filters. */
+  sliderMin: (v: number) => `≤${NB}${v}${NB}min`,
+  sliderRent: (v: number) => `≤${NB}${k(v)}${NB}kr`,
+  sliderM2: (v: number) => `≥${NB}${v}${NB}m²`,
+  filterSummary: (f: { min: number; rent: number; m2: number }) =>
+    [`≤${NB}${k(f.rent)}${NB}kr`, `≥${NB}${f.m2}${NB}m²`, `≥${NB}6${NB}mån`, `≤${NB}${f.min}${NB}min`].join(SEP),
+  traffar: (n: number) => `${n}${NB}träffar`,
+  nya: (n: number) => `${n}${NB}nya`,
   gang: (minutes: number) => `gång${NB}${minutes}${NB}min`,
   linje: (mode: string, line: string) => (mode === 'metro' ? `T${line}` : line),
 };

@@ -1,15 +1,7 @@
 import { z } from 'zod';
 
-export const SOURCES = ['qasa', 'homeq', 'bostadsformedlingen', 'samtrygg', 'facebook'] as const;
-export type Source = (typeof SOURCES)[number];
-
-export const SOURCE_NAMES: Record<Source, string> = {
-  qasa: 'Qasa',
-  homeq: 'HomeQ',
-  bostadsformedlingen: 'Bostadsförmedlingen',
-  samtrygg: 'Samtrygg',
-  facebook: 'Facebook',
-};
+import { SOURCES } from './source.ts';
+export { SOURCES, SOURCE_NAMES, type Source } from './source.ts';
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 /** Missing or unparsable optional values become null instead of rejecting the listing (ARCHITECTURE.md §12). */

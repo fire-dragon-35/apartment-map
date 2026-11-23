@@ -61,6 +61,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "listings"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "fb_posts_listing_id_fkey"
+      columns: ["listing_id"]
+isOneToOne: false
+      referencedRelation: "listings_karlaplan"
+      referencedColumns: ["id"]
     }
                   ]
                 },"listing_changes": {
@@ -86,6 +92,12 @@ isOneToOne: false
       columns: ["listing_id"]
 isOneToOne: false
       referencedRelation: "listings"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "listing_changes_listing_id_fkey"
+      columns: ["listing_id"]
+isOneToOne: false
+      referencedRelation: "listings_karlaplan"
       referencedColumns: ["id"]
     }
                   ]
@@ -118,6 +130,12 @@ isOneToOne: false
       columns: ["same_as"]
 isOneToOne: false
       referencedRelation: "listings"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "listings_same_as_fkey"
+      columns: ["same_as"]
+isOneToOne: false
+      referencedRelation: "listings_karlaplan"
       referencedColumns: ["id"]
     }
                   ]
@@ -257,6 +275,14 @@ isOneToOne: false
             "active_listings": {
                   Row: {
                     "area": string | null,"end_date": string | null,"exact": boolean,"first_hand": boolean | null,"first_seen": string,"flags": (string)[],"furnished": boolean | null,"id": number,"kpm": number | null,"lat": number,"legs": Json | null,"lon": number,"m2": number | null,"minutes": number | null,"notes": (string)[],"rent": number | null,"rooms": number | null,"source": string,"start_date": string | null,"street": string | null,"student": boolean | null,"transit_min": number | null,"url": string,"walk_min": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"listings_karlaplan": {
+                  Row: {
+                    "also_on": (string)[] | null,"area": string | null,"end_date": string | null,"exact": boolean,"first_hand": boolean | null,"first_seen": string,"flags": (string)[],"furnished": boolean | null,"id": number,"kpm": number | null,"lat": number,"legs": Json | null,"lon": number,"m2": number | null,"minutes": number | null,"notes": (string)[],"rent": number | null,"rooms": number | null,"source": string,"source_id": string,"start_date": string | null,"street": string | null,"student": boolean | null,"transit_min": number | null,"url": string
                   }
                   ComputedFields: never
                   Relationships: [
