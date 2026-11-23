@@ -11,3 +11,4 @@ apps/worker/router/.venv/
 __pycache__/
 dist-test/
 *.local
+dist-prod/

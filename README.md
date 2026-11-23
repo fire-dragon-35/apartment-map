@@ -9,6 +9,7 @@ The repo is moving to the architecture in [ARCHITECTURE.md](ARCHITECTURE.md). Un
 
 ```
 packages/shared/      domain objects (Listing, places, travel time, sanity checks) + DESIGN.md formats
+apps/web/             the page: Vite + React + react-leaflet on Supabase (DESIGN.md v3)
 apps/worker/          laptop worker: HttpClient (timeouts, retries, politeness), one adapter class per site
 supabase/migrations/  database schema and row level security
 legacy/               the old pipeline, still running
@@ -20,7 +21,8 @@ npm install
 npm run typecheck && npm run lint
 npm run fetch                 # dry run from this machine: fetch + validate every site → apps/worker/out/<date>/
 npm run fetch -- qasa homeq   # some sites only
-npm test                      # source fixtures + pipeline day (no network, no database)
+npm test                      # source fixtures, pipeline day, paywall (local Supabase), page rules (Chromium: npx playwright install chromium)
+npm run dev -w @lk/web        # the page on http://localhost:5173 (copy apps/web/.env.example to apps/web/.env.local first)
 npm run worker                # the daily run: fetch, write to Supabase (needs .env, see .env.example)
 npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,mailpit,realtime,postgres-meta,supavisor
                               # local Supabase in Docker; applies supabase/migrations. Keys: npx supabase status -o env
