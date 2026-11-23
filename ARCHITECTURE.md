@@ -270,7 +270,7 @@ web/              React components on top of domain + format
 * Sources are independent. An incomplete fetch never removes listings; the last good data stays and the page shows when it was updated.
 * Missing fields become null and show as `?`. Only items without id, link or position are dropped, and the drop is counted.
 * Sanity checks: position inside the Stockholm area, rent and kr/m² in plausible ranges; outliers are flagged, not dropped.
-* Runs are idempotent (upserts), locked against double starts, started on wake when missed, and a missing heartbeat for 36 hours sends an email.
+* Runs are idempotent (upserts), locked against double starts, started on wake when missed, and a missing heartbeat for 36 hours sends a push (§14).
 * Outside services down: SL → keep cached times or show `restid saknas`; Claude → posts stay queued and are retried; Stripe → retries its webhooks, each event id is handled once.
 * The web app isolates failures per part (error boundaries) and says plainly when data cannot load.
 
@@ -291,7 +291,8 @@ Plus the type checker and linter. Everything else is covered by the coverage ale
 ## 14. Operations
 
 * **Secrets:** `.env` on the laptop (Supabase service key, Apify token); Supabase function secrets (Claude, Stripe, SMTP). Never in the repo.
-* **Monitoring:** `source_runs` per source and day; an email when a run is not ok or the worker has not reported for 36 hours.
+* **Monitoring:** `source_runs` per source and day. The alert runs in Supabase, so it still works when the laptop is dead: a `pg_cron` job calls `worker_health_check()` every morning at 09:00 Stockholm time (the job fires at 07:00 and 08:00 UTC and the function acts only at 09:00 local, so daylight saving needs no change). It sends **one push through ntfy.sh** (`pg_net`) when no run finished ok in the last 36 hours, when the last run was not ok (a run unfinished after 3 hours counts as not ok), or when a source of the last run was incomplete, returned 0 ads or under half of the median of its 7 earlier complete runs. The message names each problem and the time of the last good run. Nothing is sent when all is well. The topic is a secret named `ntfy_topic` in Supabase Vault (`select vault.create_secret('<topic>', 'ntfy_topic')`), never in the repo; whoever knows it can read the alerts, so keep it random. Email via Resend is the alternative if push is not wanted (§17.3).
+  Test it: `select worker_health_problems();` lists what is wrong now; `select worker_health_check(true);` sends if anything is.
 * **Backups:** Supabase daily backups; raw files 30 days in Storage (worker deletes older ones at the end of each run; a file a recent run still points at is kept).
 * **Environments:** one Supabase project for production, one for development; migrations in `supabase/migrations`, applied with the Supabase CLI.
 
@@ -324,7 +325,7 @@ Legacy files live in `legacy/` until the step that retires them (§16); only the
 | Step | Result | Today's piece retired |
 | --- | --- | --- |
 | 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** hosted Supabase project (migrations applied and types generated on local Supabase). Fixtures and test 1 done | |
-| 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (verified on local Supabase 23 nov: 2 355 listings, second run changes nothing):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Done:** unchanged raw responses are not stored again, 30 day raw retention. **Open:** the alert when runs stop (runs in Supabase, §14) | |
+| 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (verified on local Supabase 23 nov: 2 355 listings, second run changes nothing):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Done:** unchanged raw responses are not stored again, 30 day raw retention, and the alert when runs stop or coverage collapses (§14). **What remains of step 2** is the week of running next to the old task | |
 | 3 | Facebook through the worker + `extract-fb` | GitHub Actions `facebook.yml`, Claude reading posts |
 | 4 | `travel-times` (phase 1) | `routes.yml`, `routes.py`, `fb_eta.py` |
 | 5 | React app reading Supabase, same look as today | `index.html`, JSON files, GitHub Pages |
