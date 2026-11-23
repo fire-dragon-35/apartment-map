@@ -32,7 +32,7 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | R7 ✓ | UI text MUST NOT contain en dashes or em dashes. |
 | R8 ✓ | The "nya" count MUST count only new listings that match the other filters. |
 | R9 ✓ | Restid MUST be the faster of walking and SL (section 6). |
-| R10 ✓ | The selected listing's route MUST be drawn while its popup is open and removed when it closes. |
+| R10 ✓ | With `Visa resväg` on, the selected listing's route MUST be drawn on the map while its popup is open and removed when it closes. With it off, no route is drawn. |
 | R11 ✓ | Only one listing can be selected: one popup, one outlined card, one ringed pin. |
 | R12 | Blue (`accent`) MUST NOT appear on the map except Karlaplan. |
 
@@ -47,6 +47,8 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | `accent` | #007AFF | Karlaplan, links |
 | `new.bg` | #EEF5FF | card of a listing new today |
 | `selected` | #1C1C1E | pin ring, card outline |
+| `price.text.1` … `.5` | #1E7B34, #4A7208, #7F6200, #9C4E00, #B42318 | text in the kr/m² chip (background: the price colour at 20 %) |
+| source colours | Qasa #4B48C9, Bostadsförmedlingen #0A6F8E, Samtrygg #8A3FB5, HomeQ #1F7A5C, Facebook #1662C4, other #6C6C70 | text in the source chip (background: same colour at 12 %) |
 
 Type: system font (SF Pro / Inter), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid, hyra). T2 13 / 400 `text.2` (size, rooms, kr/m², contract, route). T3 12 / 400 `text.3` (area, source, age, legend).
 
@@ -54,7 +56,7 @@ SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18,
 
 ## 4. Layout (top to bottom, one column, max width 720 px)
 
-1. **Header** (padding 12 16): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 17k kr · ≥ 20 m² · ≥ 6 mån · ≤ 30 min`; a `<details>` labelled `Filter` with three sliders (Restid 10 to 30 min step 1, Hyra 8k to 17k kr step 500, Storlek 20 to 60 m² step 5; remembered in the browser) and a checkbox `Bara nya`.
+1. **Header** (padding 12 16): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 17k kr · ≥ 20 m² · ≥ 6 mån · ≤ 30 min`; a `<details>` labelled `Filter` and, beside it, a checkbox `Visa resväg` (on by default, remembered). The details hold three sliders (Restid 10 to 30 min step 1, Hyra 8k to 17k kr step 500, Storlek 20 to 60 m² step 5; remembered in the browser) and a checkbox `Bara nya`.
 2. **Map**, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
 3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 299`, `300 till 349`, `350 till 399`, `400+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
 4. **List** of cards, divider between cards, sorted by restid then hyra.
@@ -71,10 +73,10 @@ SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18,
 | Hyra | thousands with `k`, dot decimal, max one decimal | 15.2k kr |
 | Storlek | `N␣m²` | 52 m² |
 | Rum | `N␣rok` | 2 rok |
-| Pris per m² | price dot + `N␣kr/m²`, thousands space | ● 296 kr/m² |
+| Pris per m² | chip: `N␣kr/m²`, thousands space, in its price colours | [296 kr/m²] |
 | Avtal | `start → slut`; `nu` if today or earlier, `?` if unknown; `tills vidare` if no end | nu → tills vidare |
 | Datum | `d␣mmm`, `␣yyyy` if not this year | 1 dec, 1 jan 2027 |
-| Källa | platform name | Qasa |
+| Källa | chip: platform name in its source colours | [Qasa] |
 | Ålder | `idag` or `N␣d`; hidden if unknown | 9 d |
 | Notering | lower case tag | förstahand, möblerad |
 | Varning | `! långt under marknadspris, kontrollera` | |
@@ -98,23 +100,24 @@ restid = walk if sl is missing or walk ≤ sl, else sl
 
 **Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
 
-**Card** (a `<button>`, full width, padding 12 16):
+**Card** (a `<button>`, full width, padding 12 16). Card and popup show the same lines in the same order:
 
 ```
-Hornsgatan Södermalm                     23 min
-52 m² · 2 rok · ● 296 kr/m²              15.2k kr
-15 dec → 15 dec 2027 · Samtrygg · 9 d
+Hornsgatan Södermalm · 23 min                        (T1, area T3)
+15.2k kr · 52 m² · 2 rok · [296 kr/m²]               (T2, hyra T1)
+15 dec → 15 dec 2027 · [Samtrygg] · 9 d              (T3)
 [förstahand]
 ! långt under marknadspris, kontrollera
+gång 8 min › T18 · 1 stopp › T13 · 2 stopp › gång 5 min › Karlaplan   (card only)
 ```
+
+Line 1: Adress, Område, Restid. Line 2: Hyra, Storlek, Rum, Pris per m². Line 3: Avtal, Källa, Ålder. Then tags, warning. The card ends with the route line: `gång N min › Karlaplan` when walking wins; line names `T` + number for metro, on their line colour.
 
 New today: `new.bg` background. Selected: 2 px `selected` outline inside.
 
-**Popup** (Leaflet popup, max width 280): the card's lines, then the route line, then the link `Öppna annons på {källa} ›`.
+**Popup** (Leaflet popup, max width 280): lines 1 to 3, tags and warning as on the card, then the link `Öppna annons på {källa} ›`. No route line.
 
-Route line: `gång 8 min › T18 · 1 stopp › T13 · 2 stopp › gång 5 min › Karlaplan`; walking only: `gång N min › Karlaplan`. Line names: metro `T` + number.
-
-**Route on the map** (while the popup is open): each leg on its own geometry. Walk: 3 px `#3A3A3C` dots. Transit: 4 px line colour on 7 px white. Walking only: one dotted line pin → Karlaplan.
+**Route on the map** (while the popup is open and `Visa resväg` is on): each leg on its own geometry. Walk: 3 px `#3A3A3C` dots. Transit: 4 px line colour on 7 px white. Walking only: one dotted line pin → Karlaplan.
 
 **Hover tooltip** (mouse only): `Hornsgatan · 23 min · 15.2k kr`.
 
@@ -126,6 +129,7 @@ Route line: `gång 8 min › T18 · 1 stopp › T13 · 2 stopp › gång 5 min �
 | Tap card | page scrolls to top; map `setView` on the pin at zoom max(current, 14); popup (R3). Tap again: close. |
 | Tap empty map, popup ×, Esc | close, clear (R4) |
 | Filter change | refilter, close popup, keep the map where it is |
+| `Visa resväg` | draw or remove the open listing's route at once |
 | Load | fit Karlaplan and all pins once, max zoom 14 |
 
 Motion: only Leaflet's own pan and zoom animations and smooth page scroll. With reduced motion: none.
@@ -139,6 +143,7 @@ Motion: only Leaflet's own pan and zoom animations and smooth page scroll. With 
 | new | {N} nya |
 | filter | Filter |
 | only new | Bara nya |
+| routes | Visa resväg |
 | open | Öppna annons på {källa} › |
 | walk | gång {N} min |
 | stops | {linje} · {N} stopp |
@@ -165,11 +170,11 @@ Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ slider, contract �
 * R3: after scrolling down and tapping a card: page is at the top, the pin is inside the map, zoom ≥ 14, popup open. Tapping again closes.
 * R4: popup × closes; empty map tap closes; Esc closes.
 * R5: every pin's fill equals its price colour, its radius follows section 7; only the selected pin has the dark ring.
-* R6: every card and popup atom matches section 5.
+* R6: every card and popup atom matches section 5, and card line 1 and 2 hold the atoms of section 7 in that order.
 * R7: no en dash or em dash in page text.
 * R8: the `nya` number equals new listings under the current filters, after changing a filter.
 * R9: restid = min(walk, sl) for every listing.
-* R10: route layer non empty while a popup is open, empty after close.
+* R10: with `Visa resväg` on, route layer non empty while a popup is open and empty after close; with it off, empty while open.
 * R11: never more than one popup, outlined card or ringed pin.
 
 Run: `pip install playwright && playwright install chromium && python tests/design_check.py`

@@ -16,10 +16,14 @@ a{color:var(--accent);text-decoration:none}
 .t3{font-size:12px;color:var(--t3)}
 .nb{white-space:nowrap}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:0}
+.chip{display:inline-block;border-radius:6px;padding:0 6px;line-height:18px;white-space:nowrap;font-weight:600;font-size:12px}
 
 header{padding:12px 16px}
 h1{margin:0 0 2px;font-size:20px;font-weight:700}
-details{margin-top:6px}
+
+.tools{display:flex;align-items:flex-start;gap:16px;margin-top:6px}
+.tools details{flex:1}
+.tools>label{font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap}
 summary{cursor:pointer;color:var(--accent);font-size:13px}
 .frow{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:8px;margin-top:8px}
 .frow input{width:100%;margin:0;accent-color:var(--accent)}
@@ -31,15 +35,12 @@ summary{cursor:pointer;color:var(--accent);font-size:13px}
 .card{display:grid;row-gap:3px;width:100%;padding:12px 16px;border-bottom:1px solid var(--line)}
 .card.new{background:var(--new)}
 .card.sel{box-shadow:inset 0 0 0 2px var(--selected)}
-.row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-.row>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tags{display:flex;flex-wrap:wrap;gap:6px}
 .tag{font-size:12px;color:var(--t2);background:#F2F2F7;border-radius:6px;padding:1px 7px}
 .warn{font-size:12px;font-weight:600}
 .empty{padding:24px 16px}
 
 .leaflet-popup-content{margin:12px 14px;display:grid;row-gap:4px;font:inherit;min-width:220px}
-.leaflet-popup-content .row>span:first-child{white-space:normal}
 .route{color:var(--t2)}
 .pill{color:#fff;font-weight:600;font-size:11px;border-radius:999px;padding:0 6px}
 .open{font-size:15px;font-weight:600;margin-top:4px}
@@ -48,6 +49,7 @@ summary{cursor:pointer;color:var(--accent);font-size:13px}
 <header>
   <h1>Lägenheter nära Karlaplan</h1>
   <div class="t3" id="meta"></div>
+  <div class="tools">
   <details>
     <summary>Filter</summary>
     <label class="frow"><span class="t3">Restid</span><input id="f-min" type="range" min="10" max="30" step="1"><output class="t2" id="o-min"></output></label>
@@ -55,6 +57,8 @@ summary{cursor:pointer;color:var(--accent);font-size:13px}
     <label class="frow"><span class="t3">Storlek</span><input id="f-m2" type="range" min="20" max="60" step="5"><output class="t2" id="o-m2"></output></label>
     <label class="frow"><span class="t3">Bara nya</span><input id="f-new" type="checkbox" style="justify-self:start;width:auto"></label>
   </details>
+  <label><input id="f-route" type="checkbox" checked>Visa resväg</label>
+  </div>
 </header>
 <div id="map" aria-label="Karta"></div>
 <p class="legend t3" id="legend"></p>
@@ -70,6 +74,8 @@ const TODAY=new Date().toLocaleDateString('sv-SE'),YEAR=new Date().getFullYear()
 const MONTHS=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
 const PRICE=[[250,'#34C759','<250'],[300,'#A3D63C','250 till 299'],[350,'#FFCC00','300 till 349'],[400,'#FF9500','350 till 399'],[Infinity,'#FF3B30','400+ kr/m²']];
 const UNKNOWN='#AEAEB2';
+const PRICE_TEXT=['#1E7B34','#4A7208','#7F6200','#9C4E00','#B42318'];
+const SOURCE={'Qasa':'#4B48C9','Bostadsförmedlingen':'#0A6F8E','Samtrygg':'#8A3FB5','HomeQ':'#1F7A5C','Facebook':'#1662C4'};
 const LINES={metro:{10:'#0072BC',11:'#0072BC',13:'#E3242B',14:'#E3242B',17:'#2EA84A',18:'#2EA84A',19:'#2EA84A'},train:'#EC619F',tram:'#F28C00',bus:'#E3242B',boat:'#00A3AD'};
 const WALK_COLOR='#3A3A3C';
 const REDUCED=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -87,6 +93,8 @@ const Fmt={
   storlek:l=>(l.m2||'?')+NB+'m²',
   rum:l=>l.rooms?l.rooms+NB+'rok':'',
   kpm:l=>(l.kpm==null?'?':Fmt.thousands(l.kpm))+NB+'kr/m²',
+  priceChip(l){const i=l.kpm==null?-1:PRICE.findIndex(([max])=>l.kpm<max);return i<0?'background:#AEAEB233;color:#6C6C70':`background:${PRICE[i][1]}33;color:${PRICE_TEXT[i]}`},
+  sourceChip(l){const c=SOURCE[l.source]||'#6C6C70';return `background:${c}1F;color:${c}`},
   avtal(l){const start=l.start==='now'||(l.start&&l.start<=TODAY)?'nu':l.start?Fmt.date(l.start):'?';return start+' → '+(l.end?Fmt.date(l.end):'tills vidare')},
   alder(l){if(!l.firstSeen)return '';const n=Math.round((Date.parse(TODAY)-Date.parse(l.firstSeen))/864e5);return n<=0?'idag':n+NB+'d'},
   omrade:l=>l.area&&l.area!=='Stockholm'&&l.area!==l.street?l.area:'',
@@ -136,13 +144,14 @@ class Listing{
 /* ---------- markup shared by card and popup: DESIGN.md §7 ---------- */
 const View={
   atom:(name,text,cls='')=>text?`<span data-a="${name}"${cls?` class="${cls}"`:''}>${text}</span>`:'',
+  /* DESIGN.md §7: the same lines, in the same order, on card and popup */
   details(l){
     const a=View.atom,area=Fmt.omrade(l);
-    const facts=[a('storlek',Fmt.storlek(l)),a('rum',Fmt.rum(l)),`<span class="nb"><i class="dot" style="background:${Fmt.priceColor(l.kpm)}"></i>${a('kpm',Fmt.kpm(l))}</span>`].filter(Boolean).join(SEP);
-    const context=[a('avtal',Fmt.avtal(l)),a('kalla',esc(l.source)),a('alder',Fmt.alder(l))].filter(Boolean).join(SEP);
-    return `<span class="row"><span>${a('adress',esc(l.street),'t1')}${area?' '+a('omrade',esc(area),'t3'):''}</span>${a('restid',Fmt.restid(l),'t1 nb')}</span>
-      <span class="row"><span class="t2">${facts}</span>${a('hyra',Fmt.hyra(l),'t1 nb')}</span>
-      <span class="t3">${context}</span>
+    const chip=(name,text,style)=>`<span class="chip" style="${style}">${a(name,text)}</span>`;
+    const place=[`${a('adress',esc(l.street),'t1')}${area?' '+a('omrade',esc(area),'t3'):''}`,a('restid',Fmt.restid(l),'t1 nb')].join(SEP);
+    const facts=[a('hyra',Fmt.hyra(l),'t1 nb'),a('storlek',Fmt.storlek(l),'nb'),a('rum',Fmt.rum(l),'nb'),chip('kpm',Fmt.kpm(l),Fmt.priceChip(l))].filter(Boolean).join(SEP);
+    const context=[a('avtal',Fmt.avtal(l),'nb'),chip('kalla',esc(l.source),Fmt.sourceChip(l)),a('alder',Fmt.alder(l))].filter(Boolean).join(SEP);
+    return `<span class="l1">${place}</span><span class="l2 t2">${facts}</span><span class="t3">${context}</span>
       ${l.notes.length?`<span class="tags">${l.notes.map(n=>`<span class="tag">${esc(n)}</span>`).join('')}</span>`:''}
       ${l.warn?'<span class="warn">! långt under marknadspris, kontrollera</span>':''}`;
   },
@@ -155,7 +164,8 @@ const View={
     }).filter(Boolean);
     return steps.length?`<span class="route t2">${[...steps,'Karlaplan'].join(' › ')}</span>`:'';
   },
-  popup:(l,legs)=>View.details(l)+View.route(l,legs)+(l.link?`<a class="open" href="${esc(l.link)}" target="_blank" rel="noopener">Öppna annons på ${esc(l.source)} ›</a>`:''),
+  card:(l,legs)=>View.details(l)+View.route(l,legs),
+  popup:l=>View.details(l)+(l.link?`<a class="open" href="${esc(l.link)}" target="_blank" rel="noopener">Öppna annons på ${esc(l.source)} ›</a>`:''),
 };
 
 /* ---------- filters ---------- */
@@ -182,7 +192,7 @@ class Filters{
 class MapView{
   constructor(el,{onSelect,onClear}){
     this.onSelect=onSelect;this.onClear=onClear;
-    this.selected=null;this.markers=new Map();this.routes={};
+    this.selected=null;this.markers=new Map();this.routes={};this.showRoutes=true;
     this.map=L.map(el,{zoomControl:false}).setView(KARLAPLAN,13);
     /* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */
     this.map.createPane('pins').style.zIndex=450;
@@ -213,10 +223,9 @@ class MapView{
     if(this.selected&&this.selected!==l)this.markers.get(this.selected.id)?.setStyle(this.#style(this.selected,false));
     this.selected=l;
     m.setStyle(this.#style(l,true)).bringToFront();
-    const legs=l.legs(this.routes);
     this.popup.options.offset=[0,-l.radius];
-    this.popup.setLatLng(l.latlng).setContent(View.popup(l,legs)).openOn(this.map);
-    this.#drawRoute(l,legs);
+    this.popup.setLatLng(l.latlng).setContent(View.popup(l)).openOn(this.map);
+    this.#drawRoute();
     this.onSelect(l);
   }
   /* from the list (R3): centre on the pin, then open it */
@@ -225,15 +234,18 @@ class MapView{
     this.map.setView(l.latlng,Math.max(this.map.getZoom(),14),{animate:!REDUCED});
   }
   close(){this.map.closePopup(this.popup)}
+  setRoutes(on){this.showRoutes=on;this.#drawRoute()}
   #clear(){
     if(!this.selected)return;
     this.markers.get(this.selected.id)?.setStyle(this.#style(this.selected,false));
     this.selected=null;this.route.clearLayers();this.onClear();
   }
-  #drawRoute(l,legs){
+  #drawRoute(){
     this.route.clearLayers();
+    const l=this.selected;if(!l||!this.showRoutes)return;
+    const legs=l.legs(this.routes);
     const walk={color:WALK_COLOR,weight:3,dashArray:'0 8',lineCap:'round',interactive:false};
-    if(!legs)return void L.polyline([l.latlng,KARLAPLAN],walk).addTo(this.route);
+    if(!legs){if(l.byFoot)L.polyline([l.latlng,KARLAPLAN],walk).addTo(this.route);return}
     for(const [mode,line,coords] of legs){
       if(!coords||coords.length<2)continue;
       if(mode==='walk'){L.polyline(coords,walk).addTo(this.route);continue}
@@ -249,10 +261,10 @@ class ListView{
     this.el=el;this.byId=new Map();
     el.addEventListener('click',e=>{const c=e.target.closest('.card');if(c)onPick(this.byId.get(+c.dataset.id))});
   }
-  show(items){
+  show(items,routes){
     this.byId=new Map(items.map(l=>[l.id,l]));
     this.el.innerHTML=items.length
-      ?items.map(l=>`<button class="card${l.isNew?' new':''}" id="c${l.id}" data-id="${l.id}" aria-pressed="false">${View.details(l)}</button>`).join('')
+      ?items.map(l=>`<button class="card${l.isNew?' new':''}" id="c${l.id}" data-id="${l.id}" aria-pressed="false">${View.card(l,l.legs(routes))}</button>`).join('')
       :'<p class="t2 empty">Inga träffar med de här filtren</p>';
   }
   /* outline only; never scrolls (R2) */
@@ -272,6 +284,10 @@ class App{
     this.list=new ListView($('list'),l=>this.pick(l));
     $('legend').innerHTML=PRICE.map(([,c,label])=>`<span class="nb"><i class="dot" style="background:${c}"></i>${label}</span>`).join('')
       +'<span>större prick = fler m²</span><span>restid: SL dörr till dörr, framme 08:00 nästa vardag</span>';
+    const route=$('f-route');
+    try{route.checked=localStorage.getItem('lgh-routes')!=='0'}catch{}
+    this.map.setRoutes(route.checked);
+    route.addEventListener('change',()=>{this.map.setRoutes(route.checked);try{localStorage.setItem('lgh-routes',route.checked?'1':'0')}catch{}});
     addEventListener('keydown',e=>{if(e.key==='Escape')this.map.close()});
   }
   get selected(){return this.map.selected}
@@ -285,7 +301,7 @@ class App{
     this.visible=base.filter(l=>!f.state.onlyNew||l.isNew).sort((a,b)=>a.t-b.t||(a.rent||0)-(b.rent||0));
     $('meta').innerHTML=`${this.visible.length}${NB}träffar${SEP}<span id="nya">${newCount}${NB}nya</span>${SEP}${f.summary()}`;
     this.map.show(this.visible,this.routes);
-    this.list.show(this.visible);
+    this.list.show(this.visible,this.routes);
   }
   async load(){
     const json=(url,fallback)=>fetch(url+'?'+Date.now()).then(r=>{if(!r.ok)throw new Error(url+' '+r.status);return r.json()}).catch(e=>{if(fallback===undefined)throw e;return fallback});

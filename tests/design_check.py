@@ -128,10 +128,16 @@ with sync_playwright() as pw:
     in_popup = js("document.querySelectorAll('.leaflet-popup [data-a]').length")
     wrong = [(a, t) for a, t in atoms if not re.fullmatch(FORMATS[a], t)]
     check('R6 data formats (cards and popup)', atoms and in_popup and not wrong, str(wrong[:5]))
+    order = js("""[...document.querySelectorAll('.card')].every(c=>{const n=s=>[...c.querySelectorAll(s+' [data-a]')].map(e=>e.dataset.a).join(',');
+        return /^adress(,omrade)?,restid$/.test(n('.l1'))&&/^hyra,storlek(,rum)?,kpm$/.test(n('.l2'))})""")
+    check('R6 card line order: adress · restid / hyra · storlek · rum · kr/m²', order)
 
     # R10: route only while open
-    drawn = js('app.map.route.getLayers().length'); close()
-    check('R10 route drawn only while popup is open', drawn > 0 and js('app.map.route.getLayers().length') == 0, f'drawn={drawn}')
+    drawn = js('app.map.route.getLayers().length')
+    pg.click('#f-route'); wait(100); off = js('app.map.route.getLayers().length')
+    pg.click('#f-route'); wait(100); back = js('app.map.route.getLayers().length')
+    close()
+    check('R10 route only while open and Visa resväg on', drawn > 0 and off == 0 and back > 0 and js('app.map.route.getLayers().length') == 0, f'drawn={drawn} off={off} back={back}')
 
     # R11: one selection at a time
     open_one(); scroll_to(0); pg.locator(f'#c{ids[1]}').scroll_into_view_if_needed(); pg.click(f'#c{ids[1]}'); wait(1500)
