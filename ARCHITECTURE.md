@@ -56,6 +56,8 @@ The worker does the parsing on the laptop so a broken site is fixed in one place
 
 ## 5. Data model
 
+The SQL below is the design; `supabase/migrations/` is the source of truth and also holds the `active_listings` view, the helper functions `is_karlaplan` / `is_paying`, `listings.content_hash`, `source_runs.skipped/invalid` and `subscriptions.last_event_id`.
+
 ```sql
 -- runs and coverage
 create table runs (
@@ -313,7 +315,7 @@ Legacy files live in `legacy/` until the step that retires them (§16); only the
 
 | Step | Result | Today's piece retired |
 | --- | --- | --- |
-| 1 | Supabase project, migrations, shared package | |
+| 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** Supabase project, apply migration, fixtures | |
 | 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared | |
 | 3 | Facebook through the worker + `extract-fb` | GitHub Actions `facebook.yml`, Claude reading posts |
 | 4 | `travel-times` (phase 1) | `routes.yml`, `routes.py`, `fb_eta.py` |
