@@ -82,18 +82,29 @@ export interface SourceRunRow {
   error: string | null;
   durationMs: number;
   rawPath: string | null;
+  rawSha256: string | null;
 }
 
 export interface RunRepository {
-  open(): Promise<number>;
+  open(startedAt: Date): Promise<number>;
   saveSource(row: SourceRunRow): Promise<void>;
   /** `kept` of this source's last complete runs, newest first, for the coverage check. */
   recentKept(source: Source, runs: number): Promise<number[]>;
+  /** The source's newest stored raw file: its path and the sha256 of its body. Null when there is none. */
+  latestRaw(source: Source): Promise<{ path: string; sha256: string } | null>;
+  /** Raw files that source runs started on or after `day` still point to. */
+  rawPathsSince(day: string): Promise<string[]>;
+  /** Retention deleted these files: source runs pointing at them lose their `raw_path`. */
+  clearRawPaths(paths: string[]): Promise<void>;
   finish(runId: number, ok: boolean): Promise<void>;
 }
 
 export interface RawStore {
   put(path: string, gzipped: Uint8Array): Promise<void>;
+  /** Every stored file, as `<source>/<file>`. */
+  list(): Promise<string[]>;
+  /** Delete through the Storage API. */
+  remove(paths: string[]): Promise<void>;
 }
 
 export interface Store {

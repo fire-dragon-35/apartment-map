@@ -53,6 +53,27 @@ export class SupabaseStore implements Store {
         const { error } = await db.storage.from(rawBucket).upload(path, bytes, { contentType: 'application/gzip', upsert: true });
         if (error) throw new Error(`storage ${path}: ${error.message}`);
       },
+      list: async () => {
+        const bucket = db.storage.from(rawBucket);
+        const files: string[] = [];
+        const { data: folders, error } = await bucket.list('', { limit: PAGE });
+        if (error) throw new Error(`storage list: ${error.message}`);
+        for (const folder of folders.filter(f => f.id === null)) { // folders have no id
+          for (let offset = 0; ; offset += PAGE) {
+            const { data, error } = await bucket.list(folder.name, { limit: PAGE, offset });
+            if (error) throw new Error(`storage list ${folder.name}: ${error.message}`);
+            files.push(...data.filter(f => f.id !== null).map(f => `${folder.name}/${f.name}`));
+            if (data.length < PAGE) break;
+          }
+        }
+        return files;
+      },
+      remove: async paths => {
+        for (const batch of chunks(paths, 100)) {
+          const { error } = await db.storage.from(rawBucket).remove(batch);
+          if (error) throw new Error(`storage remove: ${error.message}`);
+        }
+      },
     };
   }
 
@@ -141,22 +162,39 @@ class Listings implements ListingRepository {
 }
 
 class Runs implements RunRepository {
-  constructor(private readonly db: Db) {}
 
-  async open() {
-    return (check(await this.db.from('runs').insert({}).select('id').single(), 'open run') as { id: number }).id;
+  constructor(private readonly db: Db) {}
+  async open(startedAt: Date) {
+    return (check(await this.db.from('runs').insert({ started_at: startedAt.toISOString() }).select('id').single(), 'open run') as { id: number }).id;
   }
 
   async saveSource(r: SourceRunRow) {
     check(await this.db.from('source_runs').upsert({
       run_id: r.runId, source: r.source, complete: r.complete, fetched: r.fetched, kept: r.kept, skipped: r.skipped,
-      invalid: r.invalid, error: r.error, duration_ms: r.durationMs, raw_path: r.rawPath,
+      invalid: r.invalid, error: r.error, duration_ms: r.durationMs, raw_path: r.rawPath, raw_sha256: r.rawSha256,
     }), 'save source run');
   }
 
   async recentKept(source: Source, runs: number) {
     const rows = check(await this.db.from('source_runs').select('kept').eq('source', source).eq('complete', true).order('run_id', { ascending: false }).limit(runs), 'recent runs') as { kept: number }[];
     return rows.map(r => r.kept);
+  }
+
+  async latestRaw(source: Source) {
+    const rows = check(await this.db.from('source_runs').select('raw_path,raw_sha256').eq('source', source)
+      .not('raw_path', 'is', null).not('raw_sha256', 'is', null).order('run_id', { ascending: false }).limit(1), 'latest raw');
+    const r = rows[0];
+    return r?.raw_path && r.raw_sha256 ? { path: r.raw_path, sha256: r.raw_sha256 } : null;
+  }
+
+  async rawPathsSince(day: string) {
+    const rows = await selectAll<{ raw_path: string | null }>(
+      (a, b) => this.db.from('source_runs').select('raw_path, runs!inner(started_at)').not('raw_path', 'is', null).gte('runs.started_at', day).range(a, b), 'raw paths');
+    return [...new Set(rows.map(r => r.raw_path!))];
+  }
+
+  async clearRawPaths(paths: string[]) {
+    for (const batch of chunks(paths)) check(await this.db.from('source_runs').update({ raw_path: null }).in('raw_path', batch), 'clear raw paths');
   }
 
   async finish(runId: number, ok: boolean) {

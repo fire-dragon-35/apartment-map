@@ -55,6 +55,7 @@ before(async () => {
 });
 
 const row = (source: Source, sourceId: string) => store.listingRows.find(l => l.source === source && l.sourceId === sourceId)!;
+const filesOf = (day: string) => [...store.rawFiles.keys()].filter(p => p.includes(`/${day}-`));
 const sourceSummary = (run: RunSummary, s: Source) => run.sources.find(x => x.source === s)!;
 
 test('day 1: everything is new and first_seen is set', () => {
@@ -62,7 +63,7 @@ test('day 1: everything is new and first_seen is set', () => {
   assert.equal(day1.ok, true);
   assert.equal(sourceSummary(day1, 'qasa').new, qasa.length);
   assert.equal(store.sourceRunRows.filter(r => r.runId === day1.runId).length, 4);
-  assert.equal([...store.rawFiles.keys()].filter(p => p.endsWith(`${DAY1}.json.gz`)).length, 4);
+  assert.equal(filesOf(DAY1).length, 4);
   assert.equal(store.listingRows.filter(l => l.firstSeen === DAY1).length, total);
 });
 
@@ -102,4 +103,24 @@ test('a source back after an incomplete fetch is not duplicated', async () => {
   await runDay(store, '2026-11-25', [fake('homeq', homeq)]);
   assert.equal(store.listingRows.length, before);
   assert.equal(store.listingRows.filter(l => l.source === 'homeq' && l.removedAt !== null).length, 0);
+});
+
+test('an unchanged raw response is not stored twice, and still has a file to replay', () => {
+  const bf = (runId: number) => store.sourceRunRows.find(r => r.runId === runId && r.source === 'bostadsformedlingen')!;
+  assert.equal(sourceSummary(day2, 'bostadsformedlingen').rawReused, true);
+  assert.equal(bf(day2.runId).rawPath, bf(day1.runId).rawPath, 'points at the first file');
+  assert.equal(bf(day2.runId).rawSha256, bf(day1.runId).rawSha256);
+  assert.equal(filesOf(DAY2).length, 3, 'only the three sources whose response changed were uploaded');
+  assert.equal(sourceSummary(day2, 'qasa').rawReused, false);
+  for (const r of store.sourceRunRows) assert.ok(r.rawPath && store.rawFiles.has(r.rawPath), `${r.source} run ${r.runId} has its file`);
+});
+
+test('raw files older than 30 days go, unless a recent run still points at them', async () => {
+  const later = await runDay(store, '2027-01-05', [fake('bostadsformedlingen', listingsOf('bostadsformedlingen'))]);
+  const bfFile = store.sourceRunRows.find(r => r.runId === later.runId)!.rawPath!;
+  assert.match(bfFile, new RegExp(`^bostadsformedlingen/${DAY1}-`), 'still the first file');
+  assert.deepEqual([...store.rawFiles.keys()], [bfFile], 'the rest is deleted');
+  assert.equal(later.rawPruned, 7);
+  for (const r of store.sourceRunRows) assert.ok(r.rawPath === null || store.rawFiles.has(r.rawPath), 'no source run points at a missing file');
+  assert.equal(store.sourceRunRows.find(r => r.runId === day1.runId && r.source === 'qasa')!.rawPath, null);
 });

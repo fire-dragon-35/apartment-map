@@ -8,7 +8,7 @@ export class MemoryStore implements Store {
   readonly placeRows = new Map<string, { id: number; lat: number; lon: number; exact: boolean }>();
   readonly listingRows: StoredListing[] = [];
   readonly changeRows: ListingChange[] = [];
-  readonly runRows: { id: number; ok: boolean | null }[] = [];
+  readonly runRows: { id: number; startedAt: Date; ok: boolean | null }[] = [];
   readonly sourceRunRows: SourceRunRow[] = [];
   readonly rawFiles = new Map<string, Uint8Array>();
 
@@ -61,14 +61,27 @@ export class MemoryStore implements Store {
   };
 
   readonly runs = {
-    open: async () => { this.runRows.push({ id: this.runRows.length + 1, ok: null }); return this.runRows.length; },
+    open: async (startedAt: Date) => { this.runRows.push({ id: this.runRows.length + 1, startedAt, ok: null }); return this.runRows.length; },
     saveSource: async (row: SourceRunRow) => { this.sourceRunRows.push(row); },
     recentKept: async (source: Source, runs: number) =>
       this.sourceRunRows.filter(r => r.source === source && r.complete).map(r => r.kept).reverse().slice(0, runs),
+    latestRaw: async (source: Source) => {
+      const r = this.sourceRunRows.filter(r => r.source === source && r.rawPath && r.rawSha256).at(-1);
+      return r ? { path: r.rawPath!, sha256: r.rawSha256! } : null;
+    },
+    rawPathsSince: async (day: string) => {
+      const started = new Map(this.runRows.map(r => [r.id, r.startedAt.toISOString().slice(0, 10)]));
+      return this.sourceRunRows.filter(r => r.rawPath && started.get(r.runId)! >= day).map(r => r.rawPath!);
+    },
+    clearRawPaths: async (paths: string[]) => {
+      for (const r of this.sourceRunRows) if (r.rawPath && paths.includes(r.rawPath)) r.rawPath = null;
+    },
     finish: async (runId: number, ok: boolean) => { this.runRows.find(r => r.id === runId)!.ok = ok; },
   };
 
   readonly raw = {
     put: async (path: string, bytes: Uint8Array) => { this.rawFiles.set(path, bytes); },
+    list: async () => [...this.rawFiles.keys()],
+    remove: async (paths: string[]) => { for (const p of paths) this.rawFiles.delete(p); },
   };
 }

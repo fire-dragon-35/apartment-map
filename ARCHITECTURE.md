@@ -28,7 +28,7 @@ A web app that shows every rental apartment in Stockholm that matches a user's f
 ```
  laptop (worker, scheduled)                 Supabase (cloud)                         browser
  ───────────────────────────               ───────────────────────────              ─────────────────
- fetch Qasa, HomeQ, Bostadsf., ──raw──▶   Storage: raw/{source}/{date}.json.gz
+ fetch Qasa, HomeQ, Bostadsf., ──raw──▶   Storage: raw/{source}/{date}-{sha8}.json.gz
  Samtrygg, Apify(Facebook)                  │
  parse + validate (shared/zod) ──rows──▶   Postgres: listings, source_runs, …  ◀──read (RLS)── React app
                                             │                                    ──pins──▶   (Vercel)
@@ -72,7 +72,8 @@ create table source_runs (
   complete boolean not null,         -- every page fetched without error
   fetched int not null, kept int not null,
   error text, duration_ms int,
-  raw_path text,                     -- Storage key of the raw response
+  raw_path text,                     -- Storage key of the raw response; null once retention deleted the file
+  raw_sha256 text,                   -- sha256 of the gzipped body; an identical response is not uploaded again
   primary key (run_id, source)
 );
 
@@ -166,7 +167,7 @@ The paywall is enforced in the database (policy on `travel_times` and `destinati
 
 1. `runs` row opened.
 2. For each source, in parallel, through its adapter (section 7):
-   1. fetch every page; save the raw response to Storage;
+   1. fetch every page; save the raw response to Storage as `{source}/{date}-{sha8}.json.gz`, unless its sha256 equals that of the source's latest stored file, in which case `raw_path` points at that file (so every source run has a file to replay);
    2. parse and validate each item with the shared zod schema; invalid items are counted, logged and skipped;
    3. upsert into `places` and `listings` on `(source, source_id)`: new → `first_seen = today`; existing → update fields, `last_seen = today`, write `listing_changes`;
    4. if the fetch was **complete**, set `removed_at = today` on this source's active listings not seen today. An incomplete fetch never removes anything.
@@ -176,6 +177,7 @@ The paywall is enforced in the database (policy on `travel_times` and `destinati
 5. Travel times for new places to Karlaplan are computed (the free default).
 6. `runs.ok` set; `notify` runs.
 7. **Coverage check:** if a source is incomplete, returns 0, or returns less than half of the median of its last 7 complete runs (checked once 3 exist), the run is marked not ok and `npm run worker` exits non-zero. The email comes with `notify` (step 6); until then the failed systemd unit is the alert.
+8. **Raw retention:** files older than 30 days are deleted through the Storage API, except those a source run from the last 30 days still points at; source runs whose file was deleted get `raw_path = null`. A failure is logged and never fails the run.
 
 Re-running a day replays the stored raw files through steps 2 to 5 and gives the same rows (`SourceAdapter.parse()` takes stored raw pages, no network).
 
@@ -236,7 +238,7 @@ Based on the EU court's reading of the database right (*CV-Online Latvia v Melon
 ## 12. Efficiency, speed, maintenance, robustness
 
 **Do each piece of work once**
-* Listings carry a content hash; a row is written only when the hash changes. A raw response identical to the previous one is not stored again.
+* Listings carry a content hash; a row is written only when the hash changes. A raw response whose sha256 equals the source's latest stored one is not uploaded again; the new source run points at the existing file.
 * Travel times are cached per place × destination cell (~100 m) × profile and kept until the timetable data changes (weekly). Duplicates share a place, so one calculation serves all copies. Karlaplan is precomputed.
 * A Facebook post is extracted once per `extractor_version`.
 * The page loads one compact payload of active listings (~50 KB gzip, CDN cached). Travel times for another pin are requested only for listings that pass the other filters.
@@ -290,7 +292,7 @@ Plus the type checker and linter. Everything else is covered by the coverage ale
 
 * **Secrets:** `.env` on the laptop (Supabase service key, Apify token); Supabase function secrets (Claude, Stripe, SMTP). Never in the repo.
 * **Monitoring:** `source_runs` per source and day; an email when a run is not ok or the worker has not reported for 36 hours.
-* **Backups:** Supabase daily backups; raw files 30 days in Storage.
+* **Backups:** Supabase daily backups; raw files 30 days in Storage (worker deletes older ones at the end of each run; a file a recent run still points at is kept).
 * **Environments:** one Supabase project for production, one for development; migrations in `supabase/migrations`, applied with the Supabase CLI.
 
 ## 15. Repo layout
@@ -322,7 +324,7 @@ Legacy files live in `legacy/` until the step that retires them (§16); only the
 | Step | Result | Today's piece retired |
 | --- | --- | --- |
 | 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** hosted Supabase project (migrations applied and types generated on local Supabase). Fixtures and test 1 done | |
-| 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (verified on local Supabase 23 nov: 2 355 listings, second run changes nothing):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Open:** hosted project; not yet done: skipping an unchanged raw response (§12), 30 day raw retention (`pg_cron`), heartbeat email | |
+| 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (verified on local Supabase 23 nov: 2 355 listings, second run changes nothing):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Done:** unchanged raw responses are not stored again, 30 day raw retention. **Open:** the alert when runs stop (runs in Supabase, §14) | |
 | 3 | Facebook through the worker + `extract-fb` | GitHub Actions `facebook.yml`, Claude reading posts |
 | 4 | `travel-times` (phase 1) | `routes.yml`, `routes.py`, `fb_eta.py` |
 | 5 | React app reading Supabase, same look as today | `index.html`, JSON files, GitHub Pages |
