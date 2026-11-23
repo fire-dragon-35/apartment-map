@@ -3,7 +3,7 @@ name: facebook eta
 on:
   push:
     branches: [main]
-    paths: ['fb/listings.json', 'scripts/fb_eta.py', '.github/workflows/fb-eta.yml']
+    paths: ['legacy/fb/listings.json', 'legacy/scripts/fb_eta.py', '.github/workflows/fb-eta.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -11,6 +11,9 @@ concurrency: fb-eta
 jobs:
   eta:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: legacy
     steps:
       - uses: actions/checkout@v4
       - name: add position + travel time

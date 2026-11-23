@@ -1,4 +1,5 @@
-results/
+legacy/results/
+__pycache__/
 node_modules/
 dist/
 *.tsbuildinfo

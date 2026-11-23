@@ -3,7 +3,7 @@ name: routes
 on:
   push:
     branches: [main]
-    paths: ['apartments.geojson', 'fb/listings.json', 'scripts/routes.py', '.github/workflows/routes.yml']
+    paths: ['legacy/apartments.geojson', 'legacy/fb/listings.json', 'legacy/scripts/routes.py', '.github/workflows/routes.yml']
   workflow_run:   # fb-eta commits with the actions token, which doesn't trigger push workflows
     workflows: ['facebook eta']
     types: [completed]
@@ -14,6 +14,9 @@ concurrency: routes
 jobs:
   routes:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: legacy
     steps:
       - uses: actions/checkout@v4
       - run: python3 scripts/routes.py

@@ -302,11 +302,12 @@ apps/worker/src/main.ts       entry point (dry run today; full pipeline from ste
 apps/web/                     React app (step 5)
 supabase/migrations/          SQL in §5
 supabase/functions/           travel-times, extract-fb, stripe-webhook, notify (steps 3, 4, 6)
+legacy/                       old pipeline, still running
 DESIGN.md                     page spec (UI)
 ARCHITECTURE.md               this file
 ```
 
-Legacy files (`scripts/`, `build.py`, `index.html`, the JSON data and the workflows) stay at the root until the step that retires them (§16).
+Legacy files live in `legacy/` until the step that retires them (§16); only their workflows stay in `.github/workflows/`, running inside `legacy/`.
 
 ## 16. Moving from today's setup
 

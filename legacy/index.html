@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="sv"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lägenheter nära Karlaplan</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* DESIGN.md §3 */
+:root{--t1:#1C1C1E;--t2:#3A3A3C;--t3:#6C6C70;--line:#E5E5EA;--accent:#007AFF;--new:#EEF5FF;--selected:#1C1C1E}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:720px;font:400 13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;color:var(--t1);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;text-align:left;cursor:pointer}
+a{color:var(--accent);text-decoration:none}
+.t1{font-size:15px;font-weight:600;color:var(--t1)}
+.t2{font-size:13px;color:var(--t2)}
+.t3{font-size:12px;color:var(--t3)}
+.nb{white-space:nowrap}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:0}
+.chip{display:inline-block;border-radius:6px;padding:0 6px;line-height:18px;white-space:nowrap;font-weight:600;font-size:12px}
+
+header{padding:12px 16px}
+h1{margin:0 0 2px;font-size:20px;font-weight:700}
+
+.tools{display:flex;align-items:flex-start;gap:16px;margin-top:6px}
+.tools details{flex:1}
+.tools>label{font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+summary{cursor:pointer;color:var(--accent);font-size:13px}
+.frow{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:8px;margin-top:8px}
+.frow input{width:100%;margin:0;accent-color:var(--accent)}
+.frow output{text-align:right}
+
+#map{height:55vh;min-height:320px;background:#F2F2EF}
+.legend{padding:8px 16px;display:flex;flex-wrap:wrap;gap:4px 12px;border-bottom:1px solid var(--line);margin:0}
+
+.card{display:grid;row-gap:3px;width:100%;padding:12px 16px;border-bottom:1px solid var(--line)}
+.card.new{background:var(--new)}
+.card.sel{box-shadow:inset 0 0 0 2px var(--selected)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;color:var(--t2);background:#F2F2F7;border-radius:6px;padding:1px 7px}
+.warn{font-size:12px;font-weight:600}
+.empty{padding:24px 16px}
+
+.leaflet-popup-content{margin:12px 14px;display:grid;row-gap:4px;font:inherit;min-width:220px}
+.route{color:var(--t2)}
+.pill{color:#fff;font-weight:600;font-size:11px;border-radius:999px;padding:0 6px}
+.open{font-size:15px;font-weight:600;margin-top:4px}
+</style></head><body>
+
+<header>
+  <h1>Lägenheter nära Karlaplan</h1>
+  <div class="t3" id="meta"></div>
+  <div class="tools">
+  <details>
+    <summary>Filter</summary>
+    <label class="frow"><span class="t3">Restid</span><input id="f-min" type="range" min="10" max="30" step="1"><output class="t2" id="o-min"></output></label>
+    <label class="frow"><span class="t3">Hyra</span><input id="f-rent" type="range" min="8000" max="17000" step="500"><output class="t2" id="o-rent"></output></label>
+    <label class="frow"><span class="t3">Storlek</span><input id="f-m2" type="range" min="20" max="60" step="5"><output class="t2" id="o-m2"></output></label>
+    <label class="frow"><span class="t3">Bara nya</span><input id="f-new" type="checkbox" style="justify-self:start;width:auto"></label>
+  </details>
+  <label><input id="f-route" type="checkbox" checked>Visa resväg</label>
+  </div>
+</header>
+<div id="map" aria-label="Karta"></div>
+<p class="legend t3" id="legend"></p>
+<main id="list"></main>
+
+<script>
+'use strict';
+
+/* ---------- constants: DESIGN.md §3 ---------- */
+const KARLAPLAN=L.latLng(59.3389,18.0907);
+const NB=' ',SEP=' · ';
+const TODAY=new Date().toLocaleDateString('sv-SE'),YEAR=new Date().getFullYear();
+const MONTHS=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+const PRICE=[[250,'#34C759','<250'],[300,'#A3D63C','250 till 299'],[350,'#FFCC00','300 till 349'],[400,'#FF9500','350 till 399'],[Infinity,'#FF3B30','400+ kr/m²']];
+const UNKNOWN='#AEAEB2';
+const PRICE_TEXT=['#1E7B34','#4A7208','#7F6200','#9C4E00','#B42318'];
+const SOURCE={'Qasa':'#4B48C9','Bostadsförmedlingen':'#0A6F8E','Samtrygg':'#8A3FB5','HomeQ':'#1F7A5C','Facebook':'#1662C4'};
+const LINES={metro:{10:'#0072BC',11:'#0072BC',13:'#E3242B',14:'#E3242B',17:'#2EA84A',18:'#2EA84A',19:'#2EA84A'},train:'#EC619F',tram:'#F28C00',bus:'#E3242B',boat:'#00A3AD'};
+const WALK_COLOR='#3A3A3C';
+const REDUCED=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- formats: DESIGN.md §5 ---------- */
+const Fmt={
+  k:v=>Math.round(v/100)/10+'k',
+  thousands:n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,NB),
+  priceColor:k=>k==null?UNKNOWN:PRICE.find(([max])=>k<max)[1],
+  date(s){const d=new Date(s+'T00:00:00');return isNaN(d)?'?':d.getDate()+NB+MONTHS[d.getMonth()]+(d.getFullYear()!==YEAR?NB+d.getFullYear():'')},
+  restid:l=>(l.approx?'~':'')+l.t+NB+'min',
+  hyra:l=>(l.rent?Fmt.k(l.rent):'?')+NB+'kr',
+  storlek:l=>(l.m2||'?')+NB+'m²',
+  rum:l=>l.rooms?l.rooms+NB+'rok':'',
+  kpm:l=>(l.kpm==null?'?':Fmt.thousands(l.kpm))+NB+'kr/m²',
+  priceChip(l){const i=l.kpm==null?-1:PRICE.findIndex(([max])=>l.kpm<max);return i<0?'background:#AEAEB233;color:#6C6C70':`background:${PRICE[i][1]}33;color:${PRICE_TEXT[i]}`},
+  sourceChip(l){const c=SOURCE[l.source]||'#6C6C70';return `background:${c}1F;color:${c}`},
+  avtal(l){const start=l.start==='now'||(l.start&&l.start<=TODAY)?'nu':l.start?Fmt.date(l.start):'?';return start+' → '+(l.end?Fmt.date(l.end):'tills vidare')},
+  alder(l){if(!l.firstSeen)return '';const n=Math.round((Date.parse(TODAY)-Date.parse(l.firstSeen))/864e5);return n<=0?'idag':n+NB+'d'},
+  omrade:l=>l.area&&l.area!=='Stockholm'&&l.area!==l.street?l.area:'',
+  line:(mode,line)=>({name:mode==='metro'?'T'+line:line,color:(mode==='metro'?LINES.metro[line]:LINES[mode])||WALK_COLOR}),
+};
+
+/* ---------- listing ---------- */
+class Listing{
+  static #next=0;
+  static NOTES=[[/first-hand/i,'förstahand'],[/student/i,'studentlägenhet'],[/short|korttid/i,'korttid'],[/extension/i,'kan förlängas'],[/queue|kö|yrs/i,null]];
+  static note(s){
+    s=String(s??'').trim();if(!s)return null;
+    const also=s.match(/also listed on (\S+)/i);if(also)return 'finns även på '+also[1];
+    const rule=Listing.NOTES.find(([re])=>re.test(s));return rule?rule[1]:s.toLowerCase();
+  }
+  static fromGeo(f){
+    const p=f.properties,num=s=>parseFloat(String(s??'').replace(/[^\d.]/g,''))||null,parts=(s,c)=>String(s??'').split(c).map(x=>x.trim()).filter(Boolean);
+    const size=String(p.size??'').split(','),moveIn=parts(p['move in'],'→'),addr=parts(p.address,','),flags=parts(p.flag,';');
+    const date=s=>/^\d{4}-/.test(s||'')?s:null;
+    return new Listing({lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],street:p.street||addr[0]||'?',area:p.area||addr[1]||'',
+      sl:p.t??num(p['travel (weekday 8:00, SL)']),rent:p.rent_kr??num(p.rent),m2:p.m2??num(size[1]),rooms:p.rooms??num(size[0]),
+      kpm:p['kr/m²']??null,source:p.source,link:p.link,firstSeen:p.first_seen||(p.new?TODAY:null),approx:false,
+      start:p.start!==undefined?p.start:(moveIn[0]==='now'?'now':date(moveIn[0])),end:p.end!==undefined?p.end:date(moveIn[1]),
+      warn:flags.some(x=>/far below/i.test(x)),notes:[...flags.filter(x=>!/far below/i.test(x)),...parts(p.note,';')]});
+  }
+  static fromFacebook(p){
+    return new Listing({lat:p.lat,lon:p.lon,street:p.area||'?',area:'',sl:p.t??null,rent:p.rent,m2:p.m2,rooms:p.rooms,
+      kpm:p.rent&&p.m2?Math.round(p.rent/p.m2):null,source:'Facebook',link:p.url,firstSeen:p.first_seen,approx:true,warn:false,
+      start:p.start,end:p.end,notes:[p.furnished===true?'möblerad':p.furnished===false?'omöblerad':null]});
+  }
+  constructor(d){
+    Object.assign(this,d);
+    this.id=Listing.#next++;
+    this.notes=[...new Set(this.notes.map(Listing.note).filter(Boolean))];
+    this.latlng=L.latLng(this.lat,this.lon);
+    /* DESIGN.md §6 */
+    this.walk=Math.max(1,Math.round(this.latlng.distanceTo(KARLAPLAN)*1.3/80));
+    this.byFoot=this.sl==null||this.walk<=this.sl;
+    this.t=this.byFoot?this.walk:this.sl;
+  }
+  get isNew(){return this.firstSeen===TODAY}
+  get contractOk(){if(!this.end)return true;const from=this.start&&this.start!=='now'&&this.start>TODAY?this.start:TODAY;return (Date.parse(this.end)-Date.parse(from))/864e5>=180}
+  get radius(){const a=Math.sqrt(20),b=Math.sqrt(65);return 6+6*Math.min(1,Math.max(0,(Math.sqrt(this.m2||20)-a)/(b-a)))}
+  legs(routes){return this.byFoot?null:routes[this.lat.toFixed(4)+','+this.lon.toFixed(4)]||null}
+}
+
+/* ---------- markup shared by card and popup: DESIGN.md §7 ---------- */
+const View={
+  atom:(name,text,cls='')=>text?`<span data-a="${name}"${cls?` class="${cls}"`:''}>${text}</span>`:'',
+  /* DESIGN.md §7: the same lines, in the same order, on card and popup */
+  details(l){
+    const a=View.atom,area=Fmt.omrade(l);
+    const chip=(name,text,style)=>`<span class="chip" style="${style}">${a(name,text)}</span>`;
+    const place=[`${a('adress',esc(l.street),'t1')}${area?' '+a('omrade',esc(area),'t3'):''}`,a('restid',Fmt.restid(l),'t1 nb')].join(SEP);
+    const facts=[a('hyra',Fmt.hyra(l),'t1 nb'),a('storlek',Fmt.storlek(l),'nb'),a('rum',Fmt.rum(l),'nb'),chip('kpm',Fmt.kpm(l),Fmt.priceChip(l))].filter(Boolean).join(SEP);
+    const context=[a('avtal',Fmt.avtal(l),'nb'),chip('kalla',esc(l.source),Fmt.sourceChip(l)),a('alder',Fmt.alder(l))].filter(Boolean).join(SEP);
+    return `<span class="l1">${place}</span><span class="l2 t2">${facts}</span><span class="t3">${context}</span>
+      ${l.notes.length?`<span class="tags">${l.notes.map(n=>`<span class="tag">${esc(n)}</span>`).join('')}</span>`:''}
+      ${l.warn?'<span class="warn">! långt under marknadspris, kontrollera</span>':''}`;
+  },
+  route(l,legs){
+    const walk=n=>`gång${NB}${n}${NB}min`;
+    const steps=l.byFoot?[walk(l.walk)]:(legs||[]).map(([mode,line,,mins,stops])=>{
+      if(mode==='walk')return mins?walk(mins):null;
+      const {name,color}=Fmt.line(mode,line);
+      return `<span class="pill" style="background:${color}">${esc(name)}</span>${stops?`${NB}·${NB}${stops}${NB}stopp`:''}`;
+    }).filter(Boolean);
+    return steps.length?`<span class="route t2">${[...steps,'Karlaplan'].join(' › ')}</span>`:'';
+  },
+  card:(l,legs)=>View.details(l)+View.route(l,legs),
+  popup:l=>View.details(l)+(l.link?`<a class="open" href="${esc(l.link)}" target="_blank" rel="noopener">Öppna annons på ${esc(l.source)} ›</a>`:''),
+};
+
+/* ---------- filters ---------- */
+class Filters{
+  static KEY='lgh-filters';
+  static SLIDERS=[['min',v=>`≤${NB}${v}${NB}min`],['rent',v=>`≤${NB}${Fmt.k(v)}${NB}kr`],['m2',v=>`≥${NB}${v}${NB}m²`]];
+  constructor(onChange){
+    this.state={min:30,rent:17000,m2:20,onlyNew:false};
+    try{Object.assign(this.state,JSON.parse(localStorage.getItem(Filters.KEY)||'{}'),{onlyNew:false})}catch{}
+    for(const [key,label] of Filters.SLIDERS){
+      const input=$('f-'+key),show=()=>$('o-'+key).textContent=label(this.state[key]);
+      input.value=this.state[key];show();
+      input.addEventListener('input',()=>{this.state[key]=+input.value;show();this.#save();onChange()});
+    }
+    $('f-new').addEventListener('change',e=>{this.state.onlyNew=e.target.checked;onChange()});
+  }
+  #save(){try{const {onlyNew,...s}=this.state;localStorage.setItem(Filters.KEY,JSON.stringify(s))}catch{}}
+  /* everything except "Bara nya": R8 counts within these */
+  passes(l){const s=this.state;return l.t<=s.min&&(!l.rent||l.rent<=s.rent)&&(!l.m2||l.m2>=s.m2)&&l.contractOk}
+  summary(){const s=this.state;return [`≤${NB}${Fmt.k(s.rent)}${NB}kr`,`≥${NB}${s.m2}${NB}m²`,`≥${NB}6${NB}mån`,`≤${NB}${s.min}${NB}min`].join(SEP)}
+}
+
+/* ---------- map ---------- */
+class MapView{
+  constructor(el,{onSelect,onClear}){
+    this.onSelect=onSelect;this.onClear=onClear;
+    this.selected=null;this.markers=new Map();this.routes={};this.showRoutes=true;
+    this.map=L.map(el,{zoomControl:false}).setView(KARLAPLAN,13);
+    /* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */
+    this.map.createPane('pins').style.zIndex=450;
+    this.canvas=L.canvas({pane:'pins',tolerance:8});
+    for(const [layer,opacity] of [['Base',1],['Reference',.55]])
+      L.tileLayer(`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_${layer}/MapServer/tile/{z}/{y}/{x}`,{maxZoom:17,opacity,attribution:layer==='Base'?'Esri, HERE, OpenStreetMap':''}).addTo(this.map);
+    for(const km of [2,4,6])L.circle(KARLAPLAN,{radius:km*1000,color:'#8E8E93',weight:1,dashArray:'4 4',fill:false,interactive:false}).addTo(this.map);
+    L.circleMarker(KARLAPLAN,{radius:7,color:'#fff',weight:2,fillColor:'#007AFF',fillOpacity:1,interactive:false})
+      .bindTooltip('Karlaplan',{permanent:true,direction:'right',offset:[8,0]}).addTo(this.map);
+    this.pins=L.layerGroup().addTo(this.map);
+    this.route=L.layerGroup().addTo(this.map);
+    this.popup=L.popup({maxWidth:280,autoPanPadding:[16,16]}).on('remove',()=>this.#clear());
+    this.hover=matchMedia('(hover:hover) and (pointer:fine)').matches;
+  }
+  #style(l,on){return {renderer:this.canvas,radius:l.radius,fillColor:Fmt.priceColor(l.kpm),fillOpacity:.9,color:on?'#1C1C1E':'#fff',weight:on?3:1.5,bubblingMouseEvents:false}}
+  show(items,routes){
+    this.close();this.pins.clearLayers();this.markers.clear();this.routes=routes;
+    /* larger first, so smaller pins are drawn on top */
+    for(const l of [...items].sort((a,b)=>(b.m2||0)-(a.m2||0))){
+      const m=L.circleMarker(l.latlng,this.#style(l,false)).on('click',()=>this.select(l)).addTo(this.pins);
+      if(this.hover)m.bindTooltip(`${esc(l.street)} · ${Fmt.restid(l)} · ${Fmt.hyra(l)}`,{direction:'top'});
+      this.markers.set(l.id,m);
+    }
+  }
+  fit(items){this.map.fitBounds(L.latLngBounds([KARLAPLAN,...items.map(l=>l.latlng)]),{padding:[24,24],maxZoom:14,animate:false})}
+  select(l){
+    const m=this.markers.get(l.id);if(!m)return;
+    if(this.selected&&this.selected!==l)this.markers.get(this.selected.id)?.setStyle(this.#style(this.selected,false));
+    this.selected=l;
+    m.setStyle(this.#style(l,true)).bringToFront();
+    this.popup.options.offset=[0,-l.radius];
+    this.popup.setLatLng(l.latlng).setContent(View.popup(l)).openOn(this.map);
+    this.#drawRoute();
+    this.onSelect(l);
+  }
+  /* from the list (R3): centre on the pin, then open it */
+  focus(l){
+    this.map.once('moveend',()=>this.select(l));
+    this.map.setView(l.latlng,Math.max(this.map.getZoom(),14),{animate:!REDUCED});
+  }
+  close(){this.map.closePopup(this.popup)}
+  setRoutes(on){this.showRoutes=on;this.#drawRoute()}
+  #clear(){
+    if(!this.selected)return;
+    this.markers.get(this.selected.id)?.setStyle(this.#style(this.selected,false));
+    this.selected=null;this.route.clearLayers();this.onClear();
+  }
+  #drawRoute(){
+    this.route.clearLayers();
+    const l=this.selected;if(!l||!this.showRoutes)return;
+    const legs=l.legs(this.routes);
+    const walk={color:WALK_COLOR,weight:3,dashArray:'0 8',lineCap:'round',interactive:false};
+    if(!legs){if(l.byFoot)L.polyline([l.latlng,KARLAPLAN],walk).addTo(this.route);return}
+    for(const [mode,line,coords] of legs){
+      if(!coords||coords.length<2)continue;
+      if(mode==='walk'){L.polyline(coords,walk).addTo(this.route);continue}
+      L.polyline(coords,{color:'#fff',weight:7,opacity:.9,interactive:false}).addTo(this.route);
+      L.polyline(coords,{color:Fmt.line(mode,line).color,weight:4,interactive:false}).addTo(this.route);
+    }
+  }
+}
+
+/* ---------- list ---------- */
+class ListView{
+  constructor(el,onPick){
+    this.el=el;this.byId=new Map();
+    el.addEventListener('click',e=>{const c=e.target.closest('.card');if(c)onPick(this.byId.get(+c.dataset.id))});
+  }
+  show(items,routes){
+    this.byId=new Map(items.map(l=>[l.id,l]));
+    this.el.innerHTML=items.length
+      ?items.map(l=>`<button class="card${l.isNew?' new':''}" id="c${l.id}" data-id="${l.id}" aria-pressed="false">${View.card(l,l.legs(routes))}</button>`).join('')
+      :'<p class="t2 empty">Inga träffar med de här filtren</p>';
+  }
+  /* outline only; never scrolls (R2) */
+  mark(l){
+    this.el.querySelector('.card.sel')?.classList.remove('sel');
+    this.el.querySelector('[aria-pressed="true"]')?.setAttribute('aria-pressed','false');
+    const c=l&&$('c'+l.id);if(c){c.classList.add('sel');c.setAttribute('aria-pressed','true')}
+  }
+}
+
+/* ---------- app ---------- */
+class App{
+  constructor(){
+    this.all=[];this.visible=[];this.routes={};
+    this.filters=new Filters(()=>this.refresh());
+    this.map=new MapView($('map'),{onSelect:l=>this.list.mark(l),onClear:()=>this.list.mark(null)});
+    this.list=new ListView($('list'),l=>this.pick(l));
+    $('legend').innerHTML=PRICE.map(([,c,label])=>`<span class="nb"><i class="dot" style="background:${c}"></i>${label}</span>`).join('')
+      +'<span>större prick = fler m²</span><span>restid: SL dörr till dörr, framme 08:00 nästa vardag</span>';
+    const route=$('f-route');
+    try{route.checked=localStorage.getItem('lgh-routes')!=='0'}catch{}
+    this.map.setRoutes(route.checked);
+    route.addEventListener('change',()=>{this.map.setRoutes(route.checked);try{localStorage.setItem('lgh-routes',route.checked?'1':'0')}catch{}});
+    addEventListener('keydown',e=>{if(e.key==='Escape')this.map.close()});
+  }
+  get selected(){return this.map.selected}
+  pick(l){
+    if(l===this.selected)return this.map.close();
+    scrollTo({top:0,behavior:REDUCED?'auto':'smooth'});
+    this.map.focus(l);
+  }
+  refresh(){
+    const f=this.filters,base=this.all.filter(l=>f.passes(l)),newCount=base.filter(l=>l.isNew).length;
+    this.visible=base.filter(l=>!f.state.onlyNew||l.isNew).sort((a,b)=>a.t-b.t||(a.rent||0)-(b.rent||0));
+    $('meta').innerHTML=`${this.visible.length}${NB}träffar${SEP}<span id="nya">${newCount}${NB}nya</span>${SEP}${f.summary()}`;
+    this.map.show(this.visible,this.routes);
+    this.list.show(this.visible,this.routes);
+  }
+  async load(){
+    const json=(url,fallback)=>fetch(url+'?'+Date.now()).then(r=>{if(!r.ok)throw new Error(url+' '+r.status);return r.json()}).catch(e=>{if(fallback===undefined)throw e;return fallback});
+    try{
+      const [geo,fb,routes]=await Promise.all([json('apartments.geojson'),json('fb/listings.json',[]),json('routes.json',{})]);
+      this.routes=routes;
+      this.all=[...geo.features.filter(f=>f.geometry?.type==='Point'&&f.properties.link).map(Listing.fromGeo),
+                ...fb.filter(p=>p.lat&&p.lon).map(Listing.fromFacebook)];
+      this.refresh();
+      if(this.visible.length)this.map.fit(this.visible);
+    }catch(e){$('meta').textContent='Kunde inte ladda';$('list').innerHTML=`<p class="t3 empty">${esc(e.message||e)}</p>`}
+  }
+}
+
+const app=new App();
+app.load();
+</script></body></html>

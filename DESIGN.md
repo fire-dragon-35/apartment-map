@@ -2,7 +2,7 @@
 
 Status: **locked**. Version 3.0, 23 nov 2026.
 
-This file is the single source of truth for `index.html`. Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `tests/design_check.py`.
+This file is the single source of truth for the page: today `legacy/index.html`, later `apps/web`. Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `legacy/tests/design_check.py`.
 
 **Changing the design:** edit this file first, then the page, then run the check. A change is done only when the check prints ALL PASS.
 
@@ -163,7 +163,7 @@ Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ slider, contract �
 
 ## 11. Automated check
 
-`tests/design_check.py` opens the page in a phone sized headless browser with the repo data:
+`legacy/tests/design_check.py` opens the page in a phone sized headless browser with the repo data:
 
 * R1: no element has computed position fixed or sticky, none uses backdrop-filter; the document is taller than the viewport and scrolls.
 * R2: tapping each pin centre in view selects the pin on top there, opens a popup and outlines its card; page and list scroll positions are unchanged.
@@ -177,4 +177,4 @@ Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ slider, contract �
 * R10: with `Visa resväg` on, route layer non empty while a popup is open and empty after close; with it off, empty while open.
 * R11: never more than one popup, outlined card or ringed pin.
 
-Run: `pip install playwright && playwright install chromium && python tests/design_check.py`
+Run: `pip install playwright && playwright install chromium && python legacy/tests/design_check.py`
