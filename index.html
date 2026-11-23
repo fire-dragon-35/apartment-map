@@ -66,6 +66,8 @@ header{position:fixed;top:var(--top);left:12px;right:12px;z-index:1000;border-ra
 .frow input{width:100%;accent-color:var(--accent);height:28px;margin:0}
 
 /* control row: DESIGN.md §6.3 */
+#tip{position:fixed;left:0;top:0;z-index:850;border-radius:12px;padding:6px 10px;pointer-events:none;display:none;white-space:nowrap;flex-direction:column;gap:2px}
+#tip.on{display:flex}
 .ctl{position:fixed;left:12px;right:12px;bottom:calc(var(--sheet-h) + 12px);z-index:900;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
 .ctl>*{pointer-events:auto}
 .lpillbtn{border-radius:999px;height:44px;padding:0 14px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
@@ -126,6 +128,7 @@ header{position:fixed;top:var(--top);left:12px;right:12px;z-index:1000;border-ra
 }
 </style></head><body>
 <div id="map" aria-label="Karta"></div>
+<div id="tip" class="glass" aria-live="polite"></div>
 
 <header class="glass">
   <div class="hrow">
@@ -276,7 +279,7 @@ function revealPin(p){
 }
 
 function render(){
-  sel=null;routeL.clearLayers();document.getElementById('map').classList.remove('selmode');
+  sel=null;routeL.clearLayers();hideTip();document.getElementById('map').classList.remove('selmode');
   const base=ALL.filter(p=>p.t!=null&&p.t<=F.min&&(!p.rent||p.rent<=F.rent)&&(!p.m2||p.m2>=F.m2)&&lenOk(p));
   NEWN=base.filter(isNew).length;
   if(!NEWN)F.onlyNew=false; /* never leave the user stuck in an empty "nya" view */
@@ -365,11 +368,17 @@ function select(i,from){
   document.getElementById('x'+i).innerHTML=resvag(r,p)+(p.link?`<a class="cta" href="${esc(p.link)}" target="_blank" rel="noopener">Öppna annons på ${esc(p.source)}</a>`:'');
   c.classList.add('sel');c.querySelector('.sum').setAttribute('aria-expanded','true');
   const b=document.getElementById('sbody');
+  /* DESIGN.md §7.7: move the list only if the card is not fully visible, by the smallest distance */
   const top=c.getBoundingClientRect().top-b.getBoundingClientRect().top+b.scrollTop-8;
-  const bottom=top+c.querySelector('.sum').offsetHeight+130; /* 130 = expanded part */
-  if(from==='map'||top<b.scrollTop||bottom>b.scrollTop+b.clientHeight)
-    b.scrollTo({top,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
-  revealPin(p);
+  const ex=c.querySelector('.exp'),full=c.offsetHeight-ex.offsetHeight+ex.firstElementChild.scrollHeight;
+  const bottom=top+8+full+8;
+  let to=null;
+  if(top<b.scrollTop||bottom-top>b.clientHeight)to=top;
+  else if(bottom>b.scrollTop+b.clientHeight)to=bottom-b.clientHeight;
+  /* long jumps are instant: a smooth sweep across the whole list reads as the list bouncing */
+  if(to!=null)b.scrollTo({top:to,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches||Math.abs(to-b.scrollTop)>b.clientHeight*1.5?'auto':'smooth'});
+  if(from!=='map')revealPin(p); /* a tapped pin is already in view: never pan */
+  showTip(p);
 }
 function unmark(i){
   const p=P[i];if(!p)return;
@@ -380,7 +389,7 @@ function unmark(i){
 function clear(){
   if(sel==null)return;
   unmark(sel);sel=null;
-  document.getElementById('map').classList.remove('selmode');routeL.clearLayers();
+  document.getElementById('map').classList.remove('selmode');routeL.clearLayers();hideTip();
 }
 /* map taps: the pin whose centre is nearest the tap wins (pins overlap, so DOM hit testing is unreliable) */
 function pinAt(pt){
@@ -390,7 +399,30 @@ function pinAt(pt){
     if(d<=r&&(d<bd-0.5||(Math.abs(d-bd)<=0.5&&zFor(p)>zFor(best)))){best=p;bd=d}});
   return best;
 }
-map.on('click',e=>{const p=pinAt(e.containerPoint);if(p)toggle(p.i,'map');else clear()});
+/* tooltip: DESIGN.md §7.9 */
+const tipEl=document.getElementById('tip');let tipP=null,hoverP=null;
+function tipHtml(p){
+  const l1=[esc(p.street),A.restid(p),A.hyra(p)].join(SEP),l2=[A.storlek(p),A.rum(p),A.kpm(p)].filter(Boolean).join(SEP);
+  return `<span class="t1 nb">${l1}</span><span class="t2 nb">${l2}</span>`;
+}
+function placeTip(){
+  if(!tipP||tipP.lat==null)return;
+  const c=map.latLngToContainerPoint([tipP.lat,tipP.lon]),v=viewRect(),r=diam(tipP.m2)/2+(sel===tipP.i?2:0);
+  const w=tipEl.offsetWidth,h=tipEl.offsetHeight;
+  let x=Math.min(Math.max(c.x-w/2,v.l),v.r-w),y=c.y-r-8-h;
+  if(y<v.t)y=c.y+r+8;
+  tipEl.style.transform=`translate(${Math.round(x)}px,${Math.round(y)}px)`;
+}
+function showTip(p){tipP=p;tipEl.innerHTML=tipHtml(p);tipEl.classList.add('on');placeTip()}
+function hideTip(){tipP=null;tipEl.classList.remove('on')}
+map.on('move zoom viewreset',placeTip);
+if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+  map.on('mousemove',e=>{const p=pinAt(e.containerPoint);if(p===hoverP)return;hoverP=p;
+    if(p)showTip(p);else if(sel!=null)showTip(P[sel]);else hideTip();
+    document.getElementById('map').style.cursor=p?'pointer':''});
+  map.on('mouseout',()=>{hoverP=null;if(sel!=null)showTip(P[sel]);else hideTip()});
+}
+map.on('click',e=>{const p=pinAt(e.containerPoint);if(p){if(p.i!==sel)select(p.i,'map')}else clear()}); /* tapping the selected pin keeps it */
 {const tb=document.getElementById('tbtn');tb.setAttribute('aria-pressed',ROUTES);
  tb.onclick=()=>{ROUTES=!ROUTES;tb.setAttribute('aria-pressed',ROUTES);try{localStorage.setItem('lgh-routes',ROUTES?'1':'0')}catch(e){}
    const p=sel!=null?P[sel]:null;showRoute(p,p&&!p.byFoot?routeFor(p):null)}}
@@ -399,7 +431,7 @@ addEventListener('keydown',e=>{if(e.key==='Escape')clear()});
 /* sheet: user drag only (DESIGN.md §0.2) */
 const sheet=document.getElementById('sheet');
 const H=()=>{const hb=document.querySelector('header').getBoundingClientRect().bottom;return [96,Math.round(innerHeight*.45),Math.round(innerHeight-hb-8)]};
-const setSheet=h=>document.documentElement.style.setProperty('--sheet-h',h+'px');
+const setSheet=h=>{document.documentElement.style.setProperty('--sheet-h',h+'px');if(typeof placeTip==='function')requestAnimationFrame(placeTip)};
 (()=>{let y0=null,h0=0,moved=false;const g=document.getElementById('grab');
   g.addEventListener('pointerdown',e=>{if(DESK()||e.target.closest('button'))return;y0=e.clientY;h0=sheet.offsetHeight;moved=false;sheet.classList.remove('snap');g.setPointerCapture(e.pointerId)});
   g.addEventListener('pointermove',e=>{if(y0==null)return;const dy=e.clientY-y0;if(Math.abs(dy)>4)moved=true;const [a,,c]=H();setSheet(Math.max(a,Math.min(c,h0-dy)))});

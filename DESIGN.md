@@ -29,7 +29,7 @@ One page, mobile first. It shows every rental that matches the filters, on a map
 | R9 ✓ | Restid MUST be the faster of walking and SL (section 6). |
 | R10 | Routes MUST be drawn only when the route toggle is on. |
 | R11 | Blue (`accent`) MUST NOT appear on the map except Karlaplan. |
-| R12 | Only one listing can be selected. There is no detail screen and no map callout; the card expands in place. |
+| R12 | Only one listing can be selected. There is no detail screen; the card expands in place. The only map callout is the tooltip (7.9). |
 
 ## 3. Tokens
 
@@ -218,7 +218,7 @@ gång 8 min › [T18 · 1 stopp] › [T13 · 2 stopp] › gång 5 min › Karlap
 
 Walking: `gång N min › Karlaplan`. Line pills: 11 / 600 white on line colour, full radius; metro prefixed `T`. Button: `accent`, white T1, 44 px, radius 12, opens the ad in a new tab.
 
-When a card is selected, the list scrolls so the card's top is 8 px under the sheet header if it came from a map tap, or if the expanded card would not fit.
+When a card is selected, the list scrolls only if the card is not fully visible: by the smallest distance that shows the whole expanded card, or so its top is 8 px under the sheet header if it is taller than the list. A card that is already fully visible never moves. Scrolls longer than 1.5 list heights are instant; shorter ones use 200 ms ease out.
 
 ### 7.8 Route (map, only with the toggle on)
 
@@ -229,11 +229,23 @@ When a card is selected, the list scrolls so the card's top is 8 px under the sh
 
 No labels on the map. The SL walk geometry is not used.
 
+### 7.9 Tooltip (map)
+
+Shown for the selected pin, and on mouse hover for the pin under the pointer. `glass.chrome`, radius 12, padding 6 × 10, no arrow, never intercepts taps.
+
+```
+Hornsgatan · 23 min · 15.2k kr        (T1)
+52 m² · 2 rok · [296 kr/m²]           (T2)
+```
+
+Atoms and formats as section 5. Placed 8 px above the pin; below it when there is no room above. Kept 12 px inside the visible map area horizontally. It follows the pin while the map moves. It does not move the camera (R1).
+
 ## 8. Interaction
 
 | Input | Result |
 | --- | --- |
-| Tap map | nearest pin centre within (radius + 10 px) is toggled; else selection cleared |
+| Tap map | nearest pin centre within (radius + 10 px) is selected (tapping the selected pin keeps it selected); else selection cleared. A map tap never pans the map (the pin is already in view). |
+| Hover map (mouse only) | the pin under the pointer shows its tooltip; leaving it shows the selected pin's tooltip again, or none |
 | Tap card | toggle that listing |
 | Esc | clear |
 | Drag sheet | snap to Liten, Halv or Hel |
