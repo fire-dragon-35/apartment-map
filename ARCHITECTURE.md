@@ -331,7 +331,7 @@ Legacy files live in `legacy/` until the step that retires them (§16); only the
 | 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** hosted Supabase project (migrations applied and types generated on local Supabase). Fixtures and test 1 done | |
 | 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (verified on local Supabase 23 nov: 2 355 listings, second run changes nothing):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Done:** unchanged raw responses are not stored again, 30 day raw retention, and the alert when runs stop or coverage collapses (§14). **What remains of step 2** is the week of running next to the old task | |
 | 3 | Facebook through the worker + `extract-fb` | GitHub Actions `facebook.yml`, Claude reading posts |
-| 4 | `travel-times` (phase 1). **Done:** shared service, worker step, edge function, test 4. **Open:** compare with legacy for a week, then retire | `routes.yml`, `routes.py`, `fb_eta.py` |
+| 4 | `travel-times` (phase 1). **Done (23 nov):** shared service, worker step, edge function deployed, test 4; first run computed 1 844 places in 14 min with 0 failed, and SL minutes match legacy `t` within 1 minute for all 77 shared listings. **Open:** run next to legacy for a week, then retire | `routes.yml`, `routes.py`, `fb_eta.py` |
 | 5 | React app reading Supabase, same look as today | `index.html`, JSON files, GitHub Pages |
 | 6 | Auth, pins, Stripe, alerts | scheduled Claude task |
 
