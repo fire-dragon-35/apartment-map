@@ -26,10 +26,10 @@ def link(src, m):
     return PREFIX[src](m) if src in PREFIX else u
 
 def load_prev():
-    """id -> first_seen (YYYY-MM-DD) of yesterday's map; listings without one get today's date."""
+    """id -> first_seen (YYYY-MM-DD or None if it was never recorded) of the previous map."""
     try:
         g = json.load(open("apartments.geojson"))
-        return {f["properties"]["id"]: f["properties"].get("first_seen") or TODAY
+        return {f["properties"]["id"]: f["properties"].get("first_seen")
                 for f in g["features"] if f["properties"].get("id")}
     except Exception:
         return {}
@@ -97,7 +97,8 @@ def main():
                 "flag": m["flag"],
                 "note": note,
                 # structured copies for the page (the strings above are for people / the summary)
-                "first_seen": prev.get(m["key"], TODAY),
+                # new listings get today; ones already on the map keep their date (None = unknown, older)
+                "first_seen": prev[m["key"]] if m["key"] in prev else TODAY,
                 "t": m["t"], "rent_kr": m["r"], "m2": m["m"], "rooms": rooms,
                 "start": m["st"], "end": m["en"], "area": m["ar"], "street": m["a"],
             }})
