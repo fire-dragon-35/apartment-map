@@ -43,7 +43,7 @@ A web app that shows every rental apartment in Stockholm that matches a user's f
 
 | Component | Runs on | Does | Talks to |
 | --- | --- | --- | --- |
-| **Worker** | laptop (launchd / Task Scheduler, 06:30 daily + on wake if missed) | fetch every source fully, store raw, parse, validate, upsert, mark removed, record run | listing sites, Apify, Supabase (service key) |
+| **Worker** | laptop (systemd user timer on Linux; launchd / Task Scheduler elsewhere; 06:30 daily + on wake if missed) | fetch every source fully, store raw, parse, validate, upsert, mark removed, record run | listing sites, Apify, Supabase (service key) |
 | **Database** | Supabase Postgres | all rows, row level security, `pg_cron` for housekeeping | |
 | **Storage** | Supabase Storage | raw responses (gzip), kept 30 days | |
 | **travel-times** | Supabase Edge Function | travel time + route from a pin to many places, cached | SL journey planner (phase 1), OpenTripPlanner (phase 2) |
@@ -56,7 +56,7 @@ The worker does the parsing on the laptop so a broken site is fixed in one place
 
 ## 5. Data model
 
-The SQL below is the design; `supabase/migrations/` is the source of truth and also holds the `active_listings` view, the helper functions `is_karlaplan` / `is_paying`, `listings.content_hash`, `source_runs.skipped/invalid` and `subscriptions.last_event_id`.
+The SQL below is the design; `supabase/migrations/` is the source of truth and also holds the `active_listings` view, the helper functions `is_karlaplan` / `is_paying`, `listings.content_hash`, `source_runs.skipped/invalid` and `subscriptions.last_event_id`. The private Storage bucket `raw` is created by its own migration.
 
 ```sql
 -- runs and coverage
@@ -175,9 +175,9 @@ The paywall is enforced in the database (policy on `travel_times` and `destinati
 4. Facebook: new posts are inserted into `fb_posts`; `extract-fb` fills `extracted` and creates or updates a listing.
 5. Travel times for new places to Karlaplan are computed (the free default).
 6. `runs.ok` set; `notify` runs.
-7. **Coverage check:** if a source returns 0, or less than half of its 7 day median, the run is marked not ok and you get an email.
+7. **Coverage check:** if a source is incomplete, returns 0, or returns less than half of the median of its last 7 complete runs (checked once 3 exist), the run is marked not ok and `npm run worker` exits non-zero. The email comes with `notify` (step 6); until then the failed systemd unit is the alert.
 
-Re-running a day replays the stored raw files through steps 2 to 5 and gives the same rows.
+Re-running a day replays the stored raw files through steps 2 to 5 and gives the same rows (`SourceAdapter.parse()` takes stored raw pages, no network).
 
 ## 7. Source adapters
 
@@ -300,7 +300,13 @@ packages/shared/src/domain/   Listing (zod), places, travel time rules, sanity c
 packages/shared/src/format/   the DESIGN.md formats, used by worker and web
 apps/worker/src/http.ts       the only network client: timeouts, retries, per host politeness
 apps/worker/src/sources/      SourceAdapter base class + one subclass per site
-apps/worker/src/main.ts       entry point (dry run today; full pipeline from step 2)
+apps/worker/src/main.ts       dry run: fetch + validate to out/<date>/, no database (`npm run fetch`)
+apps/worker/src/run.ts        the daily run: full pipeline to Supabase (`npm run worker`)
+apps/worker/src/services/     Pipeline, SourceSync (upsert/removal rules), duplicates, clock
+apps/worker/src/store/        repository interfaces; Supabase implementation (the only SQL); in-memory one for tests
+apps/worker/fixtures/         20 real items per source (photos removed), used by tests 1 and 2
+apps/worker/test/             tests 1 and 2 of §13 (node:test)
+apps/worker/systemd/          daily timer for this laptop + install.sh
 apps/web/                     React app (step 5)
 supabase/migrations/          SQL in §5
 supabase/functions/           travel-times, extract-fb, stripe-webhook, notify (steps 3, 4, 6)
@@ -315,8 +321,8 @@ Legacy files live in `legacy/` until the step that retires them (§16); only the
 
 | Step | Result | Today's piece retired |
 | --- | --- | --- |
-| 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** Supabase project, apply migration, fixtures | |
-| 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared | |
+| 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** Supabase project, apply migrations, generated types. Fixtures and test 1 done | |
+| 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (untested against a real database):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Open:** Supabase project; not yet done: skipping an unchanged raw response (§12), 30 day raw retention (`pg_cron`), heartbeat email | |
 | 3 | Facebook through the worker + `extract-fb` | GitHub Actions `facebook.yml`, Claude reading posts |
 | 4 | `travel-times` (phase 1) | `routes.yml`, `routes.py`, `fb_eta.py` |
 | 5 | React app reading Supabase, same look as today | `index.html`, JSON files, GitHub Pages |

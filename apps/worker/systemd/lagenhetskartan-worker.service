@@ -1,0 +1,10 @@
+[Unit]
+Description=Lägenhetskartan worker: fetch listings and write them to Supabase
+
+[Service]
+Type=oneshot
+WorkingDirectory=@REPO@
+Environment=PATH=@NODE_BIN@:/usr/local/bin:/usr/bin:/bin
+ExecStart=@NPM@ run worker
+# a hung run is stopped; the timer starts the next one
+TimeoutStartSec=30min

@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Lägenhetskartan worker run
+
+[Timer]
+OnCalendar=*-*-* 06:30:00
+# a run missed because the laptop was off or asleep starts when it is back
+Persistent=true
+RandomizedDelaySec=2min
+
+[Install]
+WantedBy=timers.target

@@ -20,9 +20,12 @@ npm install
 npm run typecheck && npm run lint
 npm run fetch                 # dry run from this machine: fetch + validate every site → apps/worker/out/<date>/
 npm run fetch -- qasa homeq   # some sites only
+npm test                      # source fixtures + pipeline day (no network, no database)
+npm run worker                # the daily run: fetch, write to Supabase (needs .env, see .env.example)
+apps/worker/systemd/install.sh  # daily 06:30 timer on this laptop (systemd user unit)
 ```
 
-The dry run writes nothing to a database yet; it shows per site how many ads were fetched, kept, skipped
+The dry run writes nothing to a database; it shows per site how many ads were fetched, kept, skipped
 and rejected, and saves the raw responses (used as test fixtures later).
 
 ## Legacy pipeline (still running)

@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "fetch": "tsx src/main.ts",
-    "test": "tsx --test test/*.test.ts"
+    "test": "tsx --test test/*.test.ts",
+    "worker": "tsx src/run.ts"
   },
   "dependencies": {
     "@lk/shared": "*",
