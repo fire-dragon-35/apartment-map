@@ -1,0 +1,433 @@
+[
+ {
+  "data": {
+   "homeIndexSearch": {
+    "documents": {
+     "totalCount": 20,
+     "nodes": [
+      {
+       "id": "1513475",
+       "monthlyCost": 13031,
+       "roomCount": 2,
+       "squareMeters": 43,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Johanneshov",
+        "route": "Burspråksvägen",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.2952227428,
+         "lon": 18.0857804553
+        }
+       },
+       "startDate": "2026-12-01T00:00:00+00:00",
+       "endDate": "2027-05-31T00:00:00+00:00"
+      },
+      {
+       "id": "1478701",
+       "monthlyCost": 13455,
+       "roomCount": 2,
+       "squareMeters": 58,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Älvsjö",
+        "route": "Blackensvägen",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.2798375,
+         "lon": 18.0006166
+        }
+       },
+       "startDate": "2026-11-22T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1511693",
+       "monthlyCost": 8604,
+       "roomCount": 1,
+       "squareMeters": 35,
+       "shared": false,
+       "firstHand": true,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Stockholm",
+        "route": "Gerda Bergstrands Väg",
+        "streetNumber": "3",
+        "point": {
+         "lat": 59.3795138,
+         "lon": 17.9081808
+        }
+       },
+       "startDate": "2026-11-20T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1510290",
+       "monthlyCost": 18255,
+       "roomCount": 2,
+       "squareMeters": 38,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Stockholm",
+        "route": "Stigbergsgatan",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.3167320265,
+         "lon": 18.0877134
+        }
+       },
+       "startDate": "2027-01-07T00:00:00+00:00",
+       "endDate": "2027-05-10T00:00:00+00:00"
+      },
+      {
+       "id": "1508957",
+       "monthlyCost": 11124,
+       "roomCount": 2,
+       "squareMeters": 32,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Sundbyberg",
+        "route": "Humblegatan",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.360795,
+         "lon": 17.966255
+        }
+       },
+       "startDate": "2026-11-17T00:00:00+00:00",
+       "endDate": "2027-05-01T00:00:00+00:00"
+      },
+      {
+       "id": "1507621",
+       "monthlyCost": 16952,
+       "roomCount": 3,
+       "squareMeters": 74,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Vällingby",
+        "route": "Härjedalsgatan",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.3655698,
+         "lon": 17.8778793
+        }
+       },
+       "startDate": "2026-12-07T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1506040",
+       "monthlyCost": 16832,
+       "roomCount": 3,
+       "squareMeters": 71,
+       "shared": false,
+       "firstHand": true,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Kista",
+        "route": "Borgarfjordsgatan",
+        "streetNumber": "2F",
+        "point": {
+         "lat": 59.4078659,
+         "lon": 17.947637
+        }
+       },
+       "startDate": "2027-03-01T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1504038",
+       "monthlyCost": 8147,
+       "roomCount": 1,
+       "squareMeters": 24,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Skärholmen",
+        "route": "Vårbergsvägen",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.2731593802,
+         "lon": 17.8804832977
+        }
+       },
+       "startDate": "2026-11-10T00:00:00+00:00",
+       "endDate": "2027-12-31T00:00:00+00:00"
+      },
+      {
+       "id": "1502257",
+       "monthlyCost": 9800,
+       "roomCount": 1.5,
+       "squareMeters": 28,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Skärholmen",
+        "route": "Vita Liljans väg",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.2930625,
+         "lon": 17.9398876
+        }
+       },
+       "startDate": "2026-11-07T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1500243",
+       "monthlyCost": 21190,
+       "roomCount": 2,
+       "squareMeters": 51,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Stockholm",
+        "route": "Luntmakargatan",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.3430919,
+         "lon": 18.0578104
+        }
+       },
+       "startDate": "2026-11-16T00:00:00+00:00",
+       "endDate": "2026-12-20T00:00:00+00:00"
+      },
+      {
+       "id": "1454456",
+       "monthlyCost": 10806,
+       "roomCount": 1,
+       "squareMeters": 35,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Hägersten",
+        "route": "Diavoxvägen",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.2972365,
+         "lon": 18.0043453
+        }
+       },
+       "startDate": "2026-11-30T00:00:00+00:00",
+       "endDate": "2027-01-11T00:00:00+00:00"
+      },
+      {
+       "id": "1494609",
+       "monthlyCost": 37998,
+       "roomCount": 5,
+       "squareMeters": 114,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Stockholm",
+        "route": "Hedemoratäppan",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.3446698,
+         "lon": 18.037265
+        }
+       },
+       "startDate": "2026-12-01T00:00:00+00:00",
+       "endDate": "2027-06-18T00:00:00+00:00"
+      },
+      {
+       "id": "1491754",
+       "monthlyCost": 4979,
+       "roomCount": 1,
+       "squareMeters": 15,
+       "shared": true,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Hägersten",
+        "route": "Fredrika Bremers gata",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.2858941,
+         "lon": 17.9734131
+        }
+       },
+       "startDate": "2026-12-09T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1474238",
+       "monthlyCost": 6357,
+       "roomCount": 1,
+       "squareMeters": 20,
+       "shared": true,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Stockholm",
+        "route": "Marieberg Kungsholmen ",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.3265894616,
+         "lon": 18.0134064597
+        }
+       },
+       "startDate": "2026-12-01T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1482296",
+       "monthlyCost": 4767,
+       "roomCount": 5,
+       "squareMeters": 20,
+       "shared": true,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Kista",
+        "route": "Trondheimsgatan",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.4090744783,
+         "lon": 17.9225082722
+        }
+       },
+       "startDate": "2026-11-03T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1404865",
+       "monthlyCost": 13243,
+       "roomCount": 1,
+       "squareMeters": 40,
+       "shared": true,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Stockholm",
+        "route": "Olof Palmes gata",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.33554718,
+         "lon": 18.0587132283
+        }
+       },
+       "startDate": "2026-11-03T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1467621",
+       "monthlyCost": 6357,
+       "roomCount": 1,
+       "squareMeters": 9,
+       "shared": true,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Kista",
+        "route": "Trondheimsgatan",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.4095559,
+         "lon": 17.9225129
+        }
+       },
+       "startDate": "2026-11-06T00:00:00+00:00",
+       "endDate": "2027-03-31T00:00:00+00:00"
+      },
+      {
+       "id": "1452657",
+       "monthlyCost": 5827,
+       "roomCount": 5,
+       "squareMeters": 13,
+       "shared": true,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Älvsjö",
+        "route": "Solberga hagväg",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.280558177,
+         "lon": 18.0089856008
+        }
+       },
+       "startDate": "2026-11-03T00:00:00+00:00",
+       "endDate": null
+      },
+      {
+       "id": "1419739",
+       "monthlyCost": 19071,
+       "roomCount": 3.5,
+       "squareMeters": 78,
+       "shared": false,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Lidingö",
+        "route": "Lillåkersvägen",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.3530159317,
+         "lon": 18.1502028844
+        }
+       },
+       "startDate": "2026-11-16T00:00:00+00:00",
+       "endDate": "2027-01-31T00:00:00+00:00"
+      },
+      {
+       "id": "1344510",
+       "monthlyCost": 6886,
+       "roomCount": 1,
+       "squareMeters": 30,
+       "shared": true,
+       "firstHand": false,
+       "studentHome": false,
+       "seniorHome": false,
+       "location": {
+        "locality": "Kista",
+        "route": "Oslogatan",
+        "streetNumber": null,
+        "point": {
+         "lat": 59.4080901,
+         "lon": 17.9242541
+        }
+       },
+       "startDate": "2026-11-15T00:00:00+00:00",
+       "endDate": null
+      }
+     ]
+    }
+   }
+  }
+ }
+]

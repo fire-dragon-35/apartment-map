@@ -28,30 +28,45 @@ export abstract class SourceAdapter<Item> {
   /** A loose listing for ListingInput to validate, or null to skip on purpose (shared room, senior housing …). */
   protected abstract toListing(item: Item): Record<string, unknown> | null;
 
+  /** Fetch every page. A failure keeps what was fetched so far and leaves `complete` false. */
   async run(http: HttpClient): Promise<SourceResult> {
     const started = Date.now();
-    const result: SourceResult = { source: this.source, complete: false, fetched: 0, skipped: 0, listings: [], invalid: [], raw: [], error: null, ms: 0 };
+    const result = this.#empty();
     try {
-      for await (const page of this.pages(http)) {
-        result.raw.push(page);
-        for (const item of this.items(page)) {
-          result.fetched++;
-          const loose = this.toListing(item);
-          if (loose === null) { result.skipped++; continue; }
-          const parsed = ListingInput.safeParse({ ...loose, source: this.source });
-          if (!parsed.success) {
-            result.invalid.push({ item, issues: parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`) });
-            continue;
-          }
-          const l = parsed.data;
-          result.listings.push({ ...l, flags: [...new Set([...l.flags, ...sanityFlags(l)])] });
-        }
-      }
+      for await (const page of this.pages(http)) this.#ingest(result, page);
       result.complete = true;
     } catch (e) {
-      result.error = e instanceof Error ? e.message : String(e); // keep what was fetched; complete stays false
+      result.error = e instanceof Error ? e.message : String(e);
     }
     result.ms = Date.now() - started;
     return result;
+  }
+
+  /** Parse and validate stored raw pages without the network (replay of a day, fixtures). */
+  parse(rawPages: unknown[]): SourceResult {
+    const result = this.#empty();
+    for (const page of rawPages) this.#ingest(result, page);
+    result.complete = true;
+    return result;
+  }
+
+  #empty(): SourceResult {
+    return { source: this.source, complete: false, fetched: 0, skipped: 0, listings: [], invalid: [], raw: [], error: null, ms: 0 };
+  }
+
+  #ingest(result: SourceResult, page: unknown) {
+    result.raw.push(page);
+    for (const item of this.items(page)) {
+      result.fetched++;
+      const loose = this.toListing(item);
+      if (loose === null) { result.skipped++; continue; }
+      const parsed = ListingInput.safeParse({ ...loose, source: this.source });
+      if (!parsed.success) {
+        result.invalid.push({ item, issues: parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`) });
+        continue;
+      }
+      const l = parsed.data;
+      result.listings.push({ ...l, flags: [...new Set([...l.flags, ...sanityFlags(l)])] });
+    }
   }
 }

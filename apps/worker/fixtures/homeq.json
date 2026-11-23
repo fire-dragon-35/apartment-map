@@ -1,0 +1,621 @@
+[
+ {
+  "results": [
+   {
+    "id": 295466,
+    "references": {
+     "object_ad": 295466,
+     "estate": 15173,
+     "project": null,
+     "company": 1223,
+     "office": 1990,
+     "apartment": 300991
+    },
+    "type": "individual",
+    "uri": "/lagenhet/295466-1rum-stockholm-stockholms-län-maltesholmsvägen-138",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Stockholm",
+    "location": {
+     "lon": 17.8329163,
+     "lat": 59.3611572
+    },
+    "boost_value": 10,
+    "discount": null,
+    "title": "Maltesholmsvägen 138",
+    "audience": "everyone",
+    "is_short_lease": true,
+    "early_access": null,
+    "rent": 10500,
+    "rooms": 1,
+    "area": 35,
+    "date_access": "2027-03-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 295303,
+    "references": {
+     "object_ad": 295303,
+     "estate": 5232,
+     "project": null,
+     "company": 807,
+     "office": 1196,
+     "apartment": 300977
+    },
+    "type": "individual",
+    "uri": "/lagenhet/295303-2rum-stockholm-stockholms-län-blekingegatan-8",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Stockholm",
+    "location": {
+     "lon": 18.0653243,
+     "lat": 59.309157
+    },
+    "boost_value": 0.56,
+    "discount": null,
+    "title": "Blekingegatan 8",
+    "audience": "everyone",
+    "is_short_lease": true,
+    "early_access": null,
+    "rent": 9004,
+    "rooms": 2,
+    "area": 57,
+    "date_access": "2027-01-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 295220,
+    "references": {
+     "object_ad": 295220,
+     "estate": 7675,
+     "project": null,
+     "company": 1085,
+     "office": 2555,
+     "apartment": 299766
+    },
+    "type": "individual",
+    "uri": "/lagenhet/295220-2rum-spånga-stockholms-län-skogängsvägen-11a",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Spånga",
+    "location": {
+     "lon": 17.9099893,
+     "lat": 59.3790625
+    },
+    "boost_value": 9.05,
+    "discount": null,
+    "title": "Skogängsvägen 11A",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 10072,
+    "rooms": 2,
+    "area": 35,
+    "date_access": null,
+    "is_quick_apply": false
+   },
+   {
+    "id": 295211,
+    "references": {
+     "object_ad": 295211,
+     "estate": 11317,
+     "project": null,
+     "company": 1085,
+     "office": 2555,
+     "apartment": 254074
+    },
+    "type": "individual",
+    "uri": "/lagenhet/295211-2rum-spånga-stockholms-län-skogängsvägen-27",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Spånga",
+    "location": {
+     "lon": 17.9077636,
+     "lat": 59.3800909
+    },
+    "boost_value": 5.5,
+    "discount": null,
+    "title": "Skogängsvägen 27",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 9113,
+    "rooms": 2,
+    "area": 35.01,
+    "date_access": null,
+    "is_quick_apply": false
+   },
+   {
+    "id": 1353,
+    "references": {
+     "project": 1353,
+     "company": 1028,
+     "office": 5060
+    },
+    "type": "project",
+    "uri": "/projekt/1353",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Kista",
+    "location": {
+     "lon": 17.9492992,
+     "lat": 59.402959
+    },
+    "boost_value": 8.45,
+    "discount": null,
+    "title": "Square Garden etapp 2",
+    "audience": [
+     "everyone"
+    ],
+    "is_short_lease": false,
+    "has_discount": false,
+    "rent_range": [
+     8388,
+     13244
+    ],
+    "active_ads": 210,
+    "date_access": "2027-01-15"
+   },
+   {
+    "id": 294311,
+    "references": {
+     "object_ad": 294311,
+     "estate": 3200,
+     "project": null,
+     "company": 59,
+     "office": 838,
+     "apartment": 213129
+    },
+    "type": "individual",
+    "uri": "/lagenhet/294311-3rum-bandhagen-stockholms-län-askersundsgatan-6",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Bandhagen",
+    "location": {
+     "lon": 18.0312406,
+     "lat": 59.2594982
+    },
+    "boost_value": 0.07,
+    "discount": null,
+    "title": "Askersundsgatan 6",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 11893,
+    "rooms": 3,
+    "area": 78,
+    "date_access": "2027-02-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 293805,
+    "references": {
+     "object_ad": 293805,
+     "estate": 17332,
+     "project": null,
+     "company": 986,
+     "office": 3229,
+     "apartment": 300261
+    },
+    "type": "individual",
+    "uri": "/lagenhet/293805-2rum-farsta-stockholms-län-perstorpsvägen-197",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Farsta",
+    "location": {
+     "lon": 18.1118094,
+     "lat": 59.2439495
+    },
+    "boost_value": 2.6500000000000004,
+    "discount": null,
+    "title": "Perstorpsvägen 197",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 11985,
+    "rooms": 2,
+    "area": 41,
+    "date_access": "2027-02-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 293195,
+    "references": {
+     "object_ad": 293195,
+     "estate": 16911,
+     "project": null,
+     "company": 3063,
+     "office": 4039,
+     "apartment": 271661
+    },
+    "type": "individual",
+    "uri": "/lagenhet/293195-3rum-kista-stockholms-län-borgarfjordsgatan-2f",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Kista",
+    "location": {
+     "lon": 17.947637,
+     "lat": 59.4078659
+    },
+    "boost_value": 6.180000000000001,
+    "discount": null,
+    "title": "Borgarfjordsgatan 2F",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 16832,
+    "rooms": 3,
+    "area": 71,
+    "date_access": "2027-03-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 292741,
+    "references": {
+     "object_ad": 292741,
+     "estate": 3196,
+     "project": null,
+     "company": 59,
+     "office": 838,
+     "apartment": 295786
+    },
+    "type": "individual",
+    "uri": "/lagenhet/292741-3rum-bandhagen-stockholms-län-bäverbäcksgränd-161",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Bandhagen",
+    "location": {
+     "lon": 18.0381362,
+     "lat": 59.2530937
+    },
+    "boost_value": 1.4,
+    "discount": null,
+    "title": "Bäverbäcksgränd 161",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 12095,
+    "rooms": 3,
+    "area": 81,
+    "date_access": "2027-02-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 292203,
+    "references": {
+     "object_ad": 292203,
+     "estate": 3188,
+     "project": null,
+     "company": 59,
+     "office": 838,
+     "apartment": 297975
+    },
+    "type": "individual",
+    "uri": "/lagenhet/292203-4rum-bandhagen-stockholms-län-harpsundsvägen-12",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Bandhagen",
+    "location": {
+     "lon": 18.0468841,
+     "lat": 59.2648896
+    },
+    "boost_value": 1.75,
+    "discount": null,
+    "title": "Harpsundsvägen 12",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 12044,
+    "rooms": 4,
+    "area": 86,
+    "date_access": "2027-02-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 291493,
+    "references": {
+     "object_ad": 291493,
+     "estate": 10181,
+     "project": null,
+     "company": 981,
+     "office": 1596,
+     "apartment": 243843
+    },
+    "type": "individual",
+    "uri": "/lagenhet/291493-3rum-bandhagen-stockholms-län-bjursätragatan-152",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Bandhagen",
+    "location": {
+     "lon": 18.0221271,
+     "lat": 59.2549376
+    },
+    "boost_value": 12.41,
+    "discount": null,
+    "title": "Bjursätragatan 152",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 19897,
+    "rooms": 3,
+    "area": 68,
+    "date_access": "2027-03-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 269225,
+    "references": {
+     "object_ad": 269225,
+     "estate": 10181,
+     "project": null,
+     "company": 981,
+     "office": 1596,
+     "apartment": 243924
+    },
+    "type": "individual",
+    "uri": "/lagenhet/269225-1.5rum-bandhagen-stockholms-län-bjurgränd-60",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Bandhagen",
+    "location": {
+     "lon": 18.0231756,
+     "lat": 59.2551283
+    },
+    "boost_value": 11.78,
+    "discount": null,
+    "title": "Bjurgränd 60",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 10988,
+    "rooms": 1.5,
+    "area": 30,
+    "date_access": "2026-11-30",
+    "is_quick_apply": false
+   },
+   {
+    "id": 290028,
+    "references": {
+     "object_ad": 290028,
+     "estate": 18167,
+     "project": null,
+     "company": 3063,
+     "office": 4039,
+     "apartment": 277064
+    },
+    "type": "individual",
+    "uri": "/lagenhet/290028-4rum-sundbyberg-stockholms-län-rissneleden-130-a",
+    "municipality": "Sundbyberg",
+    "county": "Stockholms län",
+    "city": "Sundbyberg",
+    "location": {
+     "lon": 17.9325209,
+     "lat": 59.3735376
+    },
+    "boost_value": 9.5,
+    "discount": null,
+    "title": "Rissneleden 130 A",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 19490,
+    "rooms": 4,
+    "area": 93,
+    "date_access": "2026-12-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 288288,
+    "references": {
+     "object_ad": 288288,
+     "estate": 7599,
+     "project": null,
+     "company": 59,
+     "office": 838,
+     "apartment": 139059
+    },
+    "type": "individual",
+    "uri": "/lagenhet/288288-4rum-spånga-stockholms-län-skogängsvägen-41-b",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Spånga",
+    "location": {
+     "lon": 17.9046668,
+     "lat": 59.381541
+    },
+    "boost_value": 9.370000000000001,
+    "discount": null,
+    "title": "Skogängsvägen 41 B",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 18428,
+    "rooms": 4,
+    "area": 85,
+    "date_access": "2027-02-01",
+    "is_quick_apply": false
+   },
+   {
+    "id": 281290,
+    "references": {
+     "object_ad": 281290,
+     "estate": 4379,
+     "project": null,
+     "company": 568,
+     "office": 870,
+     "apartment": 110244
+    },
+    "type": "individual",
+    "uri": "/lagenhet/281290-2rum-stockholm-stockholms-län-andholmsvägen-10",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Stockholm",
+    "location": {
+     "lon": 17.8806621,
+     "lat": 59.2732132
+    },
+    "boost_value": 10.11,
+    "discount": null,
+    "title": "Andholmsvägen 10",
+    "audience": "youth",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 9297,
+    "rooms": 2,
+    "area": 35,
+    "date_access": "2027-02-01",
+    "is_quick_apply": true
+   },
+   {
+    "id": 284343,
+    "references": {
+     "object_ad": 284343,
+     "estate": 24309,
+     "project": null,
+     "company": 568,
+     "office": 870,
+     "apartment": 296014
+    },
+    "type": "individual",
+    "uri": "/lagenhet/284343-1rum-nacka-stockholms-län-edinsvägen-22-a",
+    "municipality": "Nacka",
+    "county": "Stockholms län",
+    "city": "Nacka",
+    "location": {
+     "lon": 18.199683,
+     "lat": 59.313351
+    },
+    "boost_value": 13.530000000000001,
+    "discount": null,
+    "title": "Edinsvägen 22 A",
+    "audience": "student",
+    "is_short_lease": true,
+    "early_access": null,
+    "rent": 3498,
+    "rooms": 1,
+    "area": 17.8,
+    "date_access": null,
+    "is_quick_apply": false
+   },
+   {
+    "id": 281095,
+    "references": {
+     "object_ad": 281095,
+     "estate": 23998,
+     "project": null,
+     "company": 3924,
+     "office": 4995,
+     "apartment": 295021
+    },
+    "type": "individual",
+    "uri": "/lagenhet/281095-1rum-stockholm-stockholms-län-bergsunds-strand-3",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Stockholm",
+    "location": {
+     "lon": 18.0265,
+     "lat": 59.3178
+    },
+    "boost_value": 0,
+    "discount": null,
+    "title": "Bergsunds strand 3",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 14950,
+    "rooms": 1,
+    "area": 24,
+    "date_access": null,
+    "is_quick_apply": false
+   },
+   {
+    "id": 1200,
+    "references": {
+     "project": 1200,
+     "company": 1028,
+     "office": 1701
+    },
+    "type": "project",
+    "uri": "/projekt/1200",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Hägersten",
+    "location": {
+     "lon": 18.0022895,
+     "lat": 59.3066934
+    },
+    "boost_value": 10,
+    "discount": null,
+    "title": "Asta",
+    "audience": [],
+    "is_short_lease": false,
+    "has_discount": false,
+    "rent_range": null,
+    "active_ads": 0,
+    "date_access": "2027-07-01"
+   },
+   {
+    "id": 266725,
+    "references": {
+     "object_ad": 266725,
+     "estate": 19595,
+     "project": null,
+     "company": 3450,
+     "office": 4480,
+     "apartment": 283073
+    },
+    "type": "individual",
+    "uri": "/lagenhet/266725-1.5rum-stockholm--stockholms-län-frykdalsbacken-3",
+    "municipality": "Stockholm",
+    "county": "Stockholms län",
+    "city": "Stockholm ",
+    "location": {
+     "lon": 18.1135673,
+     "lat": 59.2389928
+    },
+    "boost_value": 10.379999999999999,
+    "discount": null,
+    "title": "Frykdalsbacken 3",
+    "audience": "everyone",
+    "is_short_lease": false,
+    "early_access": null,
+    "rent": 9000,
+    "rooms": 1.5,
+    "area": 31,
+    "date_access": null,
+    "is_quick_apply": false
+   },
+   {
+    "id": 1207,
+    "references": {
+     "project": 1207,
+     "company": 60,
+     "office": 2219
+    },
+    "type": "project",
+    "uri": "/projekt/1207",
+    "municipality": "Nacka",
+    "county": "Stockholms län",
+    "city": "Saltsjö-boo",
+    "location": {
+     "lon": 18.2613539,
+     "lat": 59.3278512
+    },
+    "boost_value": 10,
+    "discount": null,
+    "title": "Solhusen",
+    "audience": [],
+    "is_short_lease": false,
+    "has_discount": false,
+    "rent_range": [
+     9450,
+     21620
+    ],
+    "active_ads": 0,
+    "date_access": "2026-03-01"
+   }
+  ],
+  "total_hits": 20,
+  "total_listings": 20
+ }
+]

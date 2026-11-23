@@ -2,11 +2,15 @@
   "name": "lagenhetskartan",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "typecheck": "tsc -b",
     "lint": "eslint .",
-    "fetch": "npm run fetch -w @lk/worker"
+    "fetch": "npm run fetch -w @lk/worker",
+    "test": "npm test --workspaces --if-present"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
