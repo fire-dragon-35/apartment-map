@@ -6,8 +6,8 @@ export class MatrixReader {
   constructor(private readonly db: SupabaseClient<Database>) {}
 
   /**
-   * restid in minutes for the requested places from one destination cell. A place the row does not have, or a cell
-   * without a row (outside the grid, or not built yet), is simply absent from the result.
+   * restid in minutes for the requested places from one destination cell. A place the row does not have, a place that
+   * is unreachable (null), or a cell without a row (outside the grid, or not built yet) is simply absent from the result.
    */
   async minutes(cell: string, profile: string, placeIds: number[]): Promise<Map<number, number>> {
     const { data, error } = await this.db.from('travel_matrix').select('place_ids, minutes').eq('cell', cell).eq('profile', profile).maybeSingle();
@@ -16,7 +16,8 @@ export class MatrixReader {
     const found = new Map<number, number>();
     for (const id of placeIds) {
       const i = index.get(id);
-      if (i !== undefined) found.set(id, data!.minutes[i]!);
+      const m = i === undefined ? null : data!.minutes[i];   // null entries are unreachable places
+      if (m !== null && m !== undefined) found.set(id, m);
     }
     return found;
   }

@@ -28,13 +28,13 @@ export class SupabaseMatrixRepository implements MatrixRepository {
   async rows(cells: string[], profile: string): Promise<MatrixRow[]> {
     const { data, error } = await this.db.from('travel_matrix').select('cell, place_ids, minutes, gtfs_hash, computed_at').eq('profile', profile).in('cell', cells);
     if (error) fail('read', error);
-    return data!.map(r => ({ cell: r.cell, placeIds: r.place_ids, minutes: r.minutes, gtfsHash: r.gtfs_hash, computedAt: new Date(r.computed_at) }));
+    return data!.map(r => ({ cell: r.cell, placeIds: r.place_ids, minutes: r.minutes as (number | null)[], gtfsHash: r.gtfs_hash, computedAt: new Date(r.computed_at) }));
   }
 
   async save(rows: MatrixRow[], profile: string): Promise<void> {
     for (const batch of chunks(rows, WRITE_BATCH)) {   // sequential, in order: the reference row goes last
       const { error } = await this.db.from('travel_matrix').upsert(batch.map(r => ({
-        cell: r.cell, profile, place_ids: r.placeIds, minutes: r.minutes, gtfs_hash: r.gtfsHash, computed_at: r.computedAt.toISOString(),
+        cell: r.cell, profile, place_ids: r.placeIds, minutes: r.minutes as number[], gtfs_hash: r.gtfsHash, computed_at: r.computedAt.toISOString(),
       })));
       if (error) fail('write', error);
     }

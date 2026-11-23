@@ -6,7 +6,8 @@
  * appended to every cell row. Deterministic: the same inputs give the same rows.
  */
 import {
-  cellCentre, gridCells, MATRIX_PROFILE, nextWeekday, travelMinutes, walkMinutes, type LatLon, type PlaceCoord,
+  cellCentre, gridCells, MATRIX_MAX_WALK_ONLY_MIN, MATRIX_PERCENTILE, MATRIX_PROFILE, MATRIX_RULES, nextWeekday, travelMinutes, walkMinutes,
+  type LatLon, type PlaceCoord,
 } from '@lk/shared';
 import type { MatrixRepository, MatrixRow } from '../store/types.ts';
 
@@ -14,7 +15,7 @@ export interface TravelRouter {
   /** Bring the router's inputs up to date; returns the timetable hash. */
   prepare(): Promise<string>;
   /** Median transit minutes, origins × cells, row major; -1 where there is no trip. `date` is YYYY-MM-DD. */
-  transit(origins: LatLon[], cells: LatLon[], date: string): Promise<Int16Array>;
+  transit(origins: LatLon[], cells: LatLon[], date: string, percentile: number): Promise<Int16Array>;
 }
 
 export interface MatrixSummary {
@@ -38,7 +39,8 @@ export class MatrixService {
     const cells = gridCells();
     const reference = cells.at(-1)!;
 
-    const gtfsHash = await router.prepare();
+    // the stored stamp is the timetable hash plus the rules version, so a change of either rebuilds every row
+    const gtfsHash = `${await router.prepare()}.r${MATRIX_RULES}`;
     const state = await repo.state(MATRIX_PROFILE, reference);
     const full = state.gtfsHash !== gtfsHash || state.cells.length !== cells.length || !cells.every(c => state.cells.includes(c));
     const todo = full ? places : places.filter(p => !state.placeIds.has(p.id));
@@ -47,15 +49,18 @@ export class MatrixService {
 
     const centres = cells.map(cellCentre);
     const date = nextWeekday(now()).replace(/(\d{4})(\d\d)(\d\d)/, '$1-$2-$3');
-    const transit = await router.transit(todo, centres, date);
+    const transit = await router.transit(todo, centres, date, MATRIX_PERCENTILE);
 
-    // restid as DESIGN.md §6 defines it: walking when R5 has no trip or walking is not slower
+    // restid as DESIGN.md §6 defines it: walking when R5 has no trip or walking is not slower. No trip and a long walk
+    // (over an hour) is unreachable: null, never a value like 1 500 minutes
     const columns = cells.map((cell, c): MatrixRow => ({
       cell, gtfsHash, computedAt: now(),
       placeIds: todo.map(p => p.id),
       minutes: todo.map((p, o) => {
         const r5 = transit[o * cells.length + c]!;
-        return Math.min(MAX_MINUTES, travelMinutes(walkMinutes(p, centres[c]!), r5 < 0 ? null : r5));
+        const walk = walkMinutes(p, centres[c]!);
+        if (r5 < 0 && walk > MATRIX_MAX_WALK_ONLY_MIN) return null;
+        return Math.min(MAX_MINUTES, travelMinutes(walk, r5 < 0 ? null : r5));
       }),
     }));
 

@@ -31,33 +31,56 @@ export class RouterInputs {
     return { gtfs: await this.#gtfs(), osm: await this.#osm() };
   }
 
+  /**
+   * The Trafiklab key allows 60 requests per 30 days, so: one round a day (a conditional request for the feed), a retry
+   * only after a network error or a 5xx, never after a 4xx (406, 429 and the like); every request carries the gzip
+   * header the API insists on. A failed round counts as the day's attempt, so a rerun does not spend more of the quota;
+   * the cached feed is used meanwhile.
+   */
   async #gtfs(): Promise<string> {
     const file = this.path('gtfs', 'sl.zip'), metaFile = this.path('gtfs', 'meta.json');
     await mkdir(this.path('gtfs'), { recursive: true });
     const have = await exists(file);
-    const meta = have ? await readJson<{ etag?: string; checkedAt?: number }>(metaFile) : {};
-    if (have && this.now - (meta.checkedAt ?? 0) < GTFS_CHECK_EVERY) return file;
+    const meta = have ? await readJson<{ etag?: string; checkedAt?: number; attemptedAt?: number }>(metaFile) : {};
+    if (have && this.now - Math.max(meta.checkedAt ?? 0, meta.attemptedAt ?? 0) < GTFS_CHECK_EVERY) return file;
 
     try {
       if (!this.options.gtfsKey) throw new Error('TRAFIKLAB_GTFS_KEY is not set');
-      const res = await this.fetch(`https://opendata.samtrafiken.se/gtfs/sl/sl.zip?key=${this.options.gtfsKey}`, {
-        headers: have && meta.etag ? { 'if-none-match': meta.etag } : {}, signal: AbortSignal.timeout(300_000),
-      });
+      const res = await this.#gtfsRequest(have ? meta.etag : undefined);
       if (res.status === 304) {
         this.log('GTFS unchanged');
-      } else if (res.ok && res.body) {
-        await download(res.body, file);
+      } else {
+        await download(res.body!, file);
         this.log('GTFS downloaded');
         meta.etag = res.headers.get('etag') ?? undefined;
-      } else {
-        throw new Error(`HTTP ${res.status}`);
       }
-      await writeFile(metaFile, JSON.stringify({ ...meta, checkedAt: this.now }));
+      meta.checkedAt = this.now;
     } catch (e) {
       if (!have) throw new Error(`no GTFS and the download failed: ${e instanceof Error ? e.message : String(e)}`);
       this.log(`GTFS check failed, using the cached file (${e instanceof Error ? e.message : String(e)})`);
     }
+    meta.attemptedAt = this.now;
+    await writeFile(metaFile, JSON.stringify(meta));
     return file;
+  }
+
+  /** At most two requests: the first, and one retry after a network error or a 5xx. */
+  async #gtfsRequest(etag: string | undefined): Promise<Response> {
+    const url = `https://opendata.samtrafiken.se/gtfs/sl/sl.zip?key=${this.options.gtfsKey}`;
+    const headers: Record<string, string> = { 'accept-encoding': 'gzip, deflate', ...(etag ? { 'if-none-match': etag } : {}) };
+    let last: unknown;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 5_000));
+      try {
+        const res = await this.fetch(url, { headers, signal: AbortSignal.timeout(300_000) });
+        if (res.status === 304 || (res.ok && res.body)) return res;
+        last = new Error(`HTTP ${res.status}`);
+        if (res.status < 500) break;   // a 4xx will not get better by asking again
+      } catch (e) {
+        last = e;
+      }
+    }
+    throw last;
   }
 
   async #osm(): Promise<string> {

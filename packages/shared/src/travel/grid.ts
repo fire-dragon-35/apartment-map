@@ -16,6 +16,12 @@ export const GRID = {
 /** The matrix is for arriving about 08:00 on a weekday (departures 07:30 to 08:00), like the SL profile. */
 export const MATRIX_PROFILE = 'weekday_0800';
 export const MATRIX_DEPARTURE = { from: '07:30', windowMinutes: 30 } as const;
+/** Which percentile of the travel times over the departure window is stored (the choice is in ARCHITECTURE.md §8). */
+export const MATRIX_PERCENTILE = 25;
+/** A place with no R5 trip is walking-only up to this many minutes of walk; beyond it, it is unreachable (stored null). */
+export const MATRIX_MAX_WALK_ONLY_MIN = 60;
+/** Bump when the rules above change: stored rows of an older version are rebuilt in full. */
+export const MATRIX_RULES = 2;
 
 export const cellOf = (p: LatLon): string => latLngToCell(p.lat, p.lon, GRID.resolution);
 

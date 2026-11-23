@@ -25,6 +25,7 @@ const SKIP = local ? false : 'local Supabase is not running (npx supabase start)
 const KARLAPLAN = { lat: 59.339, lon: 18.091 };   // the free cell
 const CUSTOM = { lat: 59.33, lon: 18.07 };        // somebody's own pin
 const PLACE = { lat: 59.4999, lon: 18.4999 };     // a place only this test uses
+const UNREACHABLE = 2_000_000_001;   // a place in the fixture matrix row with no trip and a long walk: null minutes
 const noOpts = { auth: { persistSession: false, autoRefreshToken: false } };
 
 let service: Db, anon: Db, free: Db, paying: Db, placeId: number;
@@ -57,7 +58,7 @@ before(async () => {
     ({ place_id: placeId, dest_lat: d.lat, dest_lon: d.lon, profile: 'weekday_0800', walk_min: 99, transit_min: minutes, minutes, legs: null, computed_at: now });
   assert.ifError((await service.from('travel_times').upsert([row(KARLAPLAN, 21), row(CUSTOM, 17)])).error);
   // the matrix row of the custom pin's cell: 19 here, 17 in travel_times, so the two paths can be told apart
-  assert.ifError((await service.from('travel_matrix').upsert({ cell: cellOf(CUSTOM), profile: MATRIX_PROFILE, place_ids: [placeId], minutes: [19], gtfs_hash: 'test' })).error);
+  assert.ifError((await service.from('travel_matrix').upsert({ cell: cellOf(CUSTOM), profile: MATRIX_PROFILE, place_ids: [placeId, UNREACHABLE], minutes: [19, null] as unknown as number[], gtfs_hash: 'test' })).error);
 
   const stamp = Date.now();
   const f = await signedIn(local.url, local.anon, `free-${stamp}@example.test`);
@@ -139,6 +140,8 @@ test('travel-times function: 402 on a custom pin unless paying; Karlaplan open',
   assert.equal(pays.status, 200);
   assert.deepEqual(pays.body.results!.map(r => [r.placeId, r.minutes, r.approx, r.legs]), [[placeId, 19, true, null]], 'minutes from the matrix row');
   assert.deepEqual(pays.body.failed, []);
+  const withNull = await call(tokens.paying, CUSTOM, { placeIds: [placeId, UNREACHABLE] });
+  assert.deepEqual([withNull.body.results!.map(r => r.placeId), withNull.body.failed], [[placeId], [UNREACHABLE]], 'an unreachable place is failed, never a number');
   const elsewhere = await call(tokens.paying, { lat: 59.36, lon: 18.2 }, { placeIds: [placeId, 999999999] });
   assert.equal(elsewhere.status, 200);
   assert.deepEqual([elsewhere.body.results, elsewhere.body.failed], [[], [placeId, 999999999]], 'no row for that cell: failed, and no SL call');

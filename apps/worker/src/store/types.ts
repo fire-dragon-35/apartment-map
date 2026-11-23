@@ -120,7 +120,9 @@ export interface Store {
 export interface MatrixRow {
   cell: string;
   placeIds: number[];
-  minutes: number[];
+  /** null: unreachable (no R5 trip and a long walk) */
+  minutes: (number | null)[];
+  /** timetable hash and rules version: `<hash>.r<rules>` */
   gtfsHash: string;
   computedAt: Date;
 }

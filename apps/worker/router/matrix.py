@@ -5,9 +5,11 @@
       prints the timetable hash: names, sizes and CRCs of the feed's files except feed_info.txt (read from the zip
       directory, nothing is unpacked), so a re-published identical feed has the same hash.
 
-  matrix.py build --gtfs sl.zip --osm stockholm.osm.pbf --origins o.json --cells c.json --date YYYY-MM-DD --out m.i16
+  matrix.py build --gtfs sl.zip --osm stockholm.osm.pbf --origins o.json --cells c.json --date YYYY-MM-DD
+                     --out m.i16 [--percentile 50]
       origins: [{"lat", "lon"}, ...]   cells: [{"lat", "lon"}, ...]   (positions in the order of the output)
-      out: little endian int16, origins x cells, row major: median transit minutes (departures 07:30 to 08:00),
+      out: little endian int16, origins x cells, row major: transit minutes at the given percentile (default the
+      median) over the departures 07:30 to 08:00,
       -1 where R5 finds no trip. Walk and the rest of DESIGN.md section 6 are applied by the worker, not here.
 
 Needs Java 21 (JAVA_HOME) and r5py; see setup.sh. Progress goes to stderr.
@@ -58,15 +60,16 @@ def build(a: argparse.Namespace) -> None:
         snap_to_network=True,
         departure=datetime.fromisoformat(f'{a.date}T07:30:00'),
         departure_time_window=timedelta(minutes=30),
-        percentiles=[50],
+        percentiles=[a.percentile],
         transport_modes=[r5py.TransportMode.TRANSIT, r5py.TransportMode.WALK],
         max_time=timedelta(minutes=120),
     )
     print(f'{len(origins)} origins x {len(cells)} cells routed in {time.time() - t0:.0f} s', file=sys.stderr, flush=True)
 
+    column = 'travel_time' if 'travel_time' in ttm.columns else f'travel_time_p{a.percentile:02d}'
     out = numpy.full((len(origins), len(cells)), -1, dtype='<i2')
-    found = ttm.dropna(subset=['travel_time'])
-    out[found['from_id'].to_numpy(), found['to_id'].to_numpy()] = numpy.rint(found['travel_time'].to_numpy()).astype('<i2')
+    found = ttm.dropna(subset=[column])
+    out[found['from_id'].to_numpy(), found['to_id'].to_numpy()] = numpy.rint(found[column].to_numpy()).astype('<i2')
     out.tofile(a.out)
     print(f'{len(found)} of {out.size} pairs have a trip', file=sys.stderr, flush=True)
 
@@ -80,6 +83,7 @@ def main() -> None:
     for name in ('gtfs', 'osm', 'origins', 'cells', 'date', 'out'):
         b.add_argument(f'--{name}', required=True)
     b.add_argument('--max-memory', default='3G')
+    b.add_argument('--percentile', type=int, default=50)
     a = p.parse_args()
     if a.command == 'hash':
         print(gtfs_hash(a.gtfs))

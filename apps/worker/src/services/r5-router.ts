@@ -24,7 +24,7 @@ export class R5Router implements TravelRouter {
     return (await this.#python(['hash', '--gtfs', files.gtfs])).trim();
   }
 
-  async transit(origins: LatLon[], cells: LatLon[], date: string): Promise<Int16Array> {
+  async transit(origins: LatLon[], cells: LatLon[], date: string, percentile: number): Promise<Int16Array> {
     const files = await this.inputs.ensure();
     const dir = await mkdtemp(`${tmpdir()}/matrix-`);
     try {
@@ -32,7 +32,7 @@ export class R5Router implements TravelRouter {
       await writeFile(`${dir}/origins.json`, JSON.stringify(origins.map(point)));
       await writeFile(`${dir}/cells.json`, JSON.stringify(cells.map(point)));
       await this.#python(['build', '--gtfs', files.gtfs, '--osm', files.osm, '--origins', `${dir}/origins.json`, '--cells', `${dir}/cells.json`,
-        '--date', date, '--out', `${dir}/matrix.i16`, '--max-memory', this.options.maxMemory ?? '3G']);
+        '--date', date, '--out', `${dir}/matrix.i16`, '--max-memory', this.options.maxMemory ?? '3G', '--percentile', String(percentile)]);
       const bytes = await readFile(`${dir}/matrix.i16`);
       const out = new Int16Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 2);
       if (out.length !== origins.length * cells.length) throw new Error(`router returned ${out.length} values, expected ${origins.length * cells.length}`);
