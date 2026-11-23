@@ -41,8 +41,8 @@ def route(r):
         return r.fulfill(path=str(f)) if f.is_file() else r.fulfill(status=404)
     if LEAFLET and 'unpkg.com/leaflet' in u:
         return r.fulfill(path=str(pathlib.Path(LEAFLET) / u.split('/dist/')[1]))
-    if 'arcgisonline' in u:
-        return r.abort()  # tiles are irrelevant to the rules
+    if 'arcgisonline' in u or 'fonts.g' in u:
+        return r.abort()  # tiles and fonts are irrelevant to the rules
     return r.continue_()
 
 with sync_playwright() as pw:
@@ -53,70 +53,95 @@ with sync_playwright() as pw:
     pg.route('**/*', route)
     pg.add_init_script("try{localStorage.clear()}catch(e){}")
     pg.goto(BASE + 'index.html')
-    pg.wait_for_function('typeof P!=="undefined" && P.length>0', timeout=15000)
+    pg.wait_for_function('typeof app!=="undefined" && app.visible.length>0', timeout=15000)
     pg.wait_for_timeout(500)
     check('no script errors', not errors, '; '.join(errors))
 
-    cam = lambda: pg.evaluate('(()=>{const c=map.getCenter();return [c.lat.toFixed(6),c.lng.toFixed(6),map.getZoom()]})()')
-    sheet_h = lambda: pg.evaluate("document.getElementById('sheet').offsetHeight")
-    sel = lambda: pg.evaluate('sel')
+    js = pg.evaluate
+    sel = lambda: js('app.selected?app.selected.id:null')
+    popup_open = lambda: js('app.map.map.hasLayer(app.map.popup)')
+    sheet_h = lambda: js("document.getElementById('sheet').offsetHeight")
+    def settle(ms=900): pg.wait_for_timeout(ms)
+    def clear():
+        js('app.map.close()'); settle(150)
+    # visible map area: between header and control row above the sheet
+    AREA = """(()=>{const t=document.querySelector('header').getBoundingClientRect().bottom,b=innerHeight-document.getElementById('sheet').offsetHeight-56;return [8,t,innerWidth-8,b]})()"""
+    in_area = lambda lid: js(f"""(()=>{{const [l,t,r,b]={AREA},l0=app.visible.find(x=>x.id==={lid}),p=app.map.map.latLngToContainerPoint(l0.latlng);return p.x>l&&p.x<r&&p.y>t&&p.y<b}})()""")
+    card_visible = lambda: js("""(()=>{const c=document.getElementById('c'+app.selected.id).getBoundingClientRect(),b=document.getElementById('sbody').getBoundingClientRect();return c.top>=b.top-2&&c.top<b.bottom-30})()""")
 
-    # R1, R2: select a card whose pin is already in view
-    i = pg.evaluate("""(()=>{const v=viewRect();return P.findIndex(p=>{if(!p.mk)return false;const c=map.latLngToContainerPoint([p.lat,p.lon]);return c.x>v.l+30&&c.x<v.r-30&&c.y>v.t+30&&c.y<v.b-30})})()""")
-    c0, h0 = cam(), sheet_h()
-    pg.click(f'#c{i} .sum'); pg.wait_for_timeout(700)
-    check('R1 camera still on select', cam() == c0, f'{c0} -> {cam()}')
+    # R1, R2: tap a card far down the list; its pin must end up visible with an open popup; sheet unchanged
+    ids = js('app.visible.map(l=>l.id)')
+    target = ids[len(ids) * 2 // 3]
+    h0 = sheet_h()
+    pg.click(f'#c{target}'); settle(1400)
+    check('R1 card tap shows its pin and popup', sel() == target and popup_open() and in_area(target), f'sel={sel()} popup={popup_open()}')
     check('R2 sheet height unchanged', sheet_h() == h0, f'{h0} -> {sheet_h()}')
 
     # R4
-    check('R4 tap card selects', sel() == i)
-    pg.click(f'#c{i} .sum'); pg.wait_for_timeout(300)
-    check('R4 second tap clears', sel() is None)
-    pg.click(f'#c{i} .sum'); pg.wait_for_timeout(300); pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
-    check('R4 Esc clears', sel() is None)
-    check('R1 camera still on clear', cam() == c0)
+    pg.click(f'#c{target}'); settle(300)
+    check('R4 second card tap clears', sel() is None and not popup_open())
+    pg.click(f'#c{target}'); settle(1400); pg.keyboard.press('Escape'); settle(300)
+    check('R4 Esc clears', sel() is None and not popup_open())
+    pg.click(f'#c{target}'); settle(1400)
+    empty = js(f"""(()=>{{const [l,t,r,b]={AREA};const pins=[...document.querySelectorAll('.pinhit')].map(e=>e.getBoundingClientRect()),pop=document.querySelector('.leaflet-popup').getBoundingClientRect();
+      for(let y=t+20;y<b-10;y+=12)for(let x=l+20;x<r-20;x+=12){{const hit=r2=>x>r2.left-4&&x<r2.right+4&&y>r2.top-4&&y<r2.bottom+4;if(!pins.some(hit)&&!hit(pop)&&!hit(document.querySelector('.kplabel').getBoundingClientRect()))return [x,y]}}return null}})()""")
+    if empty:
+        pg.touchscreen.tap(*empty); settle(400)
+    check('R4 empty map tap clears', empty is not None and sel() is None and not popup_open(), f'spot={empty}')
 
-    # R3: tap every visible pin
-    top = pg.evaluate("document.querySelector('header').getBoundingClientRect().bottom")
+    # R3: tap the centre of every pin in the visible area; the pin drawn on top there must be selected
     bad = []
-    for k in range(pg.evaluate('P.length')):
-        pg.evaluate('clear()')
-        xy = pg.evaluate(f'P[{k}].mk?(()=>{{const c=map.latLngToContainerPoint([P[{k}].lat,P[{k}].lon]);return [c.x,c.y]}})():null')
-        bot = pg.evaluate("innerHeight-document.getElementById('sheet').offsetHeight-70")
-        if not xy or not (top + 10 < xy[1] < bot and 10 < xy[0] < 380): continue
-        pg.touchscreen.tap(*xy); pg.wait_for_timeout(900)
-        s = sel()
-        same = s is not None and pg.evaluate(f'(()=>{{const a=map.latLngToContainerPoint([P[{k}].lat,P[{k}].lon]),c=map.latLngToContainerPoint([P[sel].lat,P[sel].lon]);return Math.hypot(a.x-c.x,a.y-c.y)<=1}})()')
-        vis = s is not None and pg.evaluate("""(()=>{const c=document.getElementById('c'+sel).getBoundingClientRect(),b=document.getElementById('sbody').getBoundingClientRect();return c.top>=b.top-2&&c.top<b.bottom-40})()""")
-        if not (same and vis): bad.append(k)
-    check('R3 pin tap selects its card and shows it', not bad, f'pins {bad}')
-    pg.evaluate('clear()')
+    for lid in ids:
+        clear()
+        if not in_area(lid): continue
+        xy = js(f"(()=>{{const p=app.map.map.latLngToContainerPoint(app.visible.find(x=>x.id==={lid}).latlng);return [p.x,p.y]}})()")
+        top_id = js(f"""(()=>{{const e=document.elementFromPoint({xy[0]},{xy[1]})?.closest('.pinhit');if(!e)return null;for(const [id,m] of app.map.markers)if(m.getElement()===e)return id;return null}})()""")
+        if top_id is None: continue  # covered by UI (header, controls)
+        pg.touchscreen.tap(*xy); settle(500)
+        if not (sel() == top_id and popup_open() and card_visible()): bad.append(lid)
+    check('R3 pin tap selects the top pin, opens popup, shows card', not bad, f'pins {bad}')
+    clear()
 
     # R5
-    r5 = pg.evaluate("""[...document.querySelectorAll('#map .pin')].every(e=>e.children.length===0&&getComputedStyle(e).borderTopStyle==='solid')""")
+    r5 = js("""[...document.querySelectorAll('#map .pin')].every(e=>e.children.length===0&&getComputedStyle(e).borderTopStyle==='solid')""")
     check('R5 pins show only fill and size', r5)
 
-    # R6
-    atoms = pg.evaluate("""[...document.querySelectorAll('.card [data-a]')].map(e=>[e.dataset.a,e.textContent])""")
+    # R6: cards and an open popup
+    pg.click(f'#c{ids[0]}'); settle(1400)
+    atoms = js("""[...document.querySelectorAll('.card [data-a], .leaflet-popup [data-a]')].map(e=>[e.dataset.a,e.textContent])""")
+    pop_atoms = js("document.querySelectorAll('.leaflet-popup [data-a]').length")
     wrong = [(a, t) for a, t in atoms if not re.fullmatch(FORMATS[a], t)]
-    check('R6 data formats', not wrong and len(atoms) > 0, str(wrong[:5]))
+    check('R6 data formats (cards and popup)', not wrong and len(atoms) > 0 and pop_atoms > 0, str(wrong[:5]))
+
+    # R10: route while open, none after close
+    drawn = js('app.map.route.getLayers().length')
+    clear()
+    check('R10 route drawn only while popup is open', drawn > 0 and js('app.map.route.getLayers().length') == 0, f'drawn={drawn}')
+
+    # R12: one selection at a time
+    pg.click(f'#c{ids[0]}'); settle(1400); pg.click(f'#c{ids[1]}'); settle(1400)
+    one = js("document.querySelectorAll('.card.sel').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&document.querySelectorAll('.pinhit.on').length===1")
+    check('R12 one selection, one popup', one)
+    clear()
 
     # R7
-    txt = pg.evaluate('document.body.innerText')
+    txt = js('document.body.innerText')
     check('R7 no dashes in UI text', '–' not in txt and '—' not in txt)
 
     # R8: nya count follows filters
     def nya_ok():
-        shown = pg.evaluate("(document.getElementById('nbtn')||{}).textContent||''")
-        n = pg.evaluate('ALL.filter(p=>p.t!=null&&p.t<=F.min&&(!p.rent||p.rent<=F.rent)&&(!p.m2||p.m2>=F.m2)&&lenOk(p)&&isNew(p)).length')
+        shown = js("(document.querySelector('.newchip')||{}).textContent||''")
+        n = js('app.all.filter(l=>app.filters.passes(l)&&l.isNew).length')
         return (shown == '' and n == 0) or shown == f'{n}{NB}nya', (shown, n)
     ok1, d1 = nya_ok()
-    pg.evaluate("document.getElementById('fmin').value=12;document.getElementById('fmin').dispatchEvent(new Event('input'))")
+    js("document.getElementById('f-min').value=12;document.getElementById('f-min').dispatchEvent(new Event('input'))")
     ok2, d2 = nya_ok()
     check('R8 nya counts within filters', ok1 and ok2, f'{d1} {d2}')
 
-    # R9
-    r9 = pg.evaluate("""ALL.every(p=>{if(p.lat==null)return true;const w=Math.max(1,Math.round(distM([p.lat,p.lon],K)*1.3/80));const want=(p.sl==null||w<=p.sl)?w:p.sl;return p.t===want})""")
+    # R9: restid = min(walk, SL), walk per DESIGN.md §6 (haversine × 1.3 / 80)
+    r9 = js("""app.all.every(l=>{const R=6371000,r=Math.PI/180,a=[l.lat,l.lon],k=[59.3389,18.0907],dp=(k[0]-a[0])*r,dl=(k[1]-a[1])*r;
+      const h=Math.sin(dp/2)**2+Math.cos(a[0]*r)*Math.cos(k[0]*r)*Math.sin(dl/2)**2,w=Math.max(1,Math.round(2*R*Math.asin(Math.sqrt(h))*1.3/80));
+      return l.t===((l.sl==null||w<=l.sl)?w:l.sl)})""")
     check('R9 restid = min(walk, SL)', r9)
     b.close()
 

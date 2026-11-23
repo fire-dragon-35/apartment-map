@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 1.0, 23 nov 2026.
+Status: **locked**. Version 2.0, 23 nov 2026. v2 brings back map popups and map motion on list taps (usability over strict stillness).
 
 This file is the single source of truth for `index.html`. Rules use MUST and MUST NOT. Every rule has an id (`R1`, `R2` …). Rules marked ✓ are checked automatically by `tests/design_check.py`.
 
@@ -18,18 +18,20 @@ One page, mobile first. It shows every rental that matches the filters, on a map
 
 | Id | Rule |
 | --- | --- |
-| R1 ✓ | The map camera MUST NOT move when a listing is selected or cleared, except one pan (no zoom) when the selected pin is outside the visible map area. |
+| R1 ✓ | Tapping a card MUST show its pin and popup in the visible map area (between header and sheet). The map moves only when the pin is not already there at zoom ≥ 14. |
 | R2 ✓ | The sheet height MUST NOT change unless the user drags it. |
-| R3 ✓ | Tapping a pin MUST select the listing whose pin centre is nearest the tap, and that listing's card MUST be visible in the list afterwards. |
-| R4 ✓ | Tapping a card MUST select that listing; tapping it again, tapping empty map, or pressing Esc MUST clear the selection. |
+| R3 ✓ | Tapping a pin MUST select the pin drawn on top at that spot, open its popup, and bring its card into view in the list. |
+| R4 ✓ | Tapping a card MUST select it; tapping it again, tapping empty map, the popup's close button, or Esc MUST clear the selection. |
 | R5 ✓ | A pin MUST show only two things: price per m² (fill) and size (diameter). No badges, dots, stripes or dashed edges. |
-| R6 ✓ | Every datum MUST use the format in section 5, everywhere it appears. |
+| R6 ✓ | Every datum MUST use the format in section 5, everywhere it appears (card and popup). |
 | R7 ✓ | UI text MUST NOT contain en dashes or em dashes. |
 | R8 ✓ | The "nya" count MUST count only new listings that match the other filters. |
 | R9 ✓ | Restid MUST be the faster of walking and SL (section 6). |
-| R10 | Routes MUST be drawn only when the route toggle is on. |
-| R11 | Blue (`accent`) MUST NOT appear on the map except Karlaplan. |
-| R12 | Only one listing can be selected. There is no detail screen; the card expands in place. The only map callout is the tooltip (7.9). |
+| R10 ✓ | The selected listing's route MUST be drawn while its popup is open, and removed when it closes. |
+| R11 | Blue (`accent`) MUST NOT appear in map marks except Karlaplan. (The popup's button is UI, not a mark.) |
+| R12 ✓ | Only one listing can be selected. Its details show in one map popup; its card is outlined. |
+
+The page uses Leaflet's own markers, popups, tooltips and camera moves. No custom hit testing or hand-placed overlays.
 
 ## 3. Tokens
 
@@ -115,8 +117,8 @@ Back to front on a phone:
 
 1. **Map**, full screen. Esri light grey base + reference labels at 55 %.
 2. **Header bar**, `glass.chrome`, top = safe area + 12.
-3. **Control row**, 12 above the sheet: legend pill (left); route toggle and recenter (right), 8 apart.
-4. **Sheet**, `glass.sheet`. Heights: Liten 96 px, Halv 45 % of viewport (default), Hel to 8 px under the header. Drag snaps to the nearest; a tap on the handle cycles.
+3. **Control row**, 12 above the sheet: legend pill (left), recenter (right).
+4. **Sheet**, `glass.sheet`. Heights: Liten 96 px, Halv 30 % of viewport (default), Hel to 8 px under the header. Drag snaps to the nearest; a tap on the handle cycles.
 
 Desktop (≥ 900 px): sheet is a 400 px panel, 12 from left, top and bottom. Header and control row start at 424 px.
 
@@ -161,6 +163,7 @@ restid = walk if sl is missing or walk ≤ sl, else sl
 Circle. Fill = price colour. Diameter = 14 + 12 × clamp((√m² − √20) / (√65 − √20), 0, 1) px. Edge 1.5 px white. Shadow 0 1 3 at 28 %.
 Selected: edge `selected`, diameter + 4, on top. While a listing is selected, all other pins are at 30 % opacity.
 Stacking: smaller pins above larger pins.
+Tap target: the Leaflet marker icon, pin plus 6 px transparent margin on each side.
 
 ### 7.2 Karlaplan
 
@@ -184,7 +187,6 @@ Slider values use the filter chip format. Values are remembered in the browser.
 | Control | Look | Action |
 | --- | --- | --- |
 | Legend pill | `glass.chrome`, 44 px: `<250`, five 16 × 6 bars, `400+ kr/m²` | toggles the legend |
-| Route toggle | 44 px round `glass.chrome`, route icon in `text.2`; on = `accent` background, white icon | toggles routes (R10); remembered; default off |
 | Recenter | 44 px round `glass.chrome`, crosshair in `accent` | flies to Karlaplan, zoom 13, centred in the visible map area |
 
 ### 7.5 Legend
@@ -209,51 +211,51 @@ Hornsgatan Södermalm                        23 min
 
 Line 3 order: Avtal, Källa, Ålder. Tags and warning only when present.
 
-**Selected:** 1.5 px `selected` inset outline, and an expanded part (200 ms height animation) below a hairline:
+**Selected:** 1.5 px `selected` inset outline. The list scrolls by the smallest distance that shows the whole card (`scrollIntoView`, block nearest). The card does not expand; details are in the popup.
 
-```
-gång 8 min › [T18 · 1 stopp] › [T13 · 2 stopp] › gång 5 min › Karlaplan
-[ Öppna annons på Qasa ]
-```
-
-Walking: `gång N min › Karlaplan`. Line pills: 11 / 600 white on line colour, full radius; metro prefixed `T`. Button: `accent`, white T1, 44 px, radius 12, opens the ad in a new tab.
-
-When a card is selected, the list scrolls only if the card is not fully visible: by the smallest distance that shows the whole expanded card, or so its top is 8 px under the sheet header if it is taller than the list. A card that is already fully visible never moves. Scrolls longer than 1.5 list heights are instant; shorter ones use 200 ms ease out.
-
-### 7.8 Route (map, only with the toggle on)
+### 7.8 Route (map, while the popup is open)
 
 | Case | Drawing |
 | --- | --- |
 | Walking wins | one dotted walk line, pin → Karlaplan |
-| SL | dotted walk pin → first stop; each transit leg as a smoothed line in its colour with a 4 px white boarding dot at its start; dotted walk between legs; dotted walk last stop → Karlaplan |
+| SL | every leg from routes.json on its own geometry: walking dotted `text.2`; transit 4 px in its line colour on a 7 px white casing, with a 4 px white boarding dot at its start |
 
-No labels on the map. The SL walk geometry is not used.
+No labels on the map.
 
-### 7.9 Tooltip (map)
+### 7.9 Popup (map)
 
-Shown for the selected pin, and on mouse hover for the pin under the pointer. `glass.chrome`, radius 12, padding 6 × 10, no arrow, never intercepts taps.
+Leaflet popup on the selected pin, radius 16, max width 300, close button labelled `Stäng`. Opening it pans the map only as far as needed to keep it between header and sheet (Leaflet auto pan with those paddings).
 
 ```
-Hornsgatan · 23 min · 15.2k kr        (T1)
-52 m² · 2 rok · [296 kr/m²]           (T2)
+Hornsgatan Södermalm
+23 min · 15.2k kr                       (T1)
+52 m² · 2 rok · [296 kr/m²]             (T2)
+15 dec → 15 dec 2027 · [Samtrygg] · 9 d (T3)
+[förstahand]
+(!) långt under marknadspris, kontrollera
+gång 8 min › [T18 · 1 stopp] › Karlaplan
+[ Öppna annons på Samtrygg ]
 ```
 
-Atoms and formats as section 5. Placed 8 px above the pin; below it when there is no room above. Kept 12 px inside the visible map area horizontally. It follows the pin while the map moves. It does not move the camera (R1).
+Atoms and formats as section 5. Button: `accent`, white T1, 40 px, radius 12, opens the ad in a new tab.
+
+**Hover (mouse only):** a Leaflet tooltip above the pin: `Hornsgatan · 23 min · 15.2k kr`.
 
 ## 8. Interaction
 
 | Input | Result |
 | --- | --- |
-| Tap map | nearest pin centre within (radius + 10 px) is selected (tapping the selected pin keeps it selected); else selection cleared. A map tap never pans the map (the pin is already in view). |
-| Hover map (mouse only) | the pin under the pointer shows its tooltip; leaving it shows the selected pin's tooltip again, or none |
-| Tap card | toggle that listing |
-| Esc | clear |
+| Tap pin | select it: popup opens, route drawn, card outlined and scrolled into view |
+| Tap card | select it: if the pin is not in the visible map area at zoom ≥ 14, fly there (zoom 15, 0.6 s), then open its popup; tap again to clear |
+| Tap empty map, popup close, Esc | clear |
+| Hover pin (mouse only) | tooltip |
 | Drag sheet | snap to Liten, Halv or Hel |
 | Tap `nya` | toggle new only; clears selection |
 | Move a slider | refilter; clears selection |
+| Recenter | fly to Karlaplan, zoom 13, centred in the visible map area |
 | Load | fit Karlaplan and all pins once, between header and sheet, max zoom 14, zoom steps of 0.25 |
 
-Motion: 200 ms ease out for card expand and sheet snap, 300 ms for the R1 pan, 600 ms for recenter. With reduced motion: none.
+Motion: 200 ms ease out for sheet snap, 0.6 s for flights. With reduced motion: none.
 
 ## 9. UI strings
 
@@ -273,7 +275,6 @@ Motion: 200 ms ease out for card expand and sheet snap, 300 ms for the R1 pan, 6
 | error | Kunde inte ladda |
 | aria.filter | Filter |
 | aria.legend | Visa teckenförklaring |
-| aria.routes | Visa resväg på kartan |
 | aria.recenter | Centrera på Karlaplan |
 | aria.close | Stäng |
 
@@ -293,14 +294,16 @@ Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ slider, contract �
 
 `tests/design_check.py` opens the page in a phone sized headless browser with the repo data and fails if any ✓ rule breaks:
 
-* R1: camera centre and zoom are equal before and after selecting a card that is in view.
+* R1: after tapping a card, its pin is inside the visible map area and its popup is open.
 * R2: sheet height is equal before and after selecting.
-* R3: tapping the centre of every visible pin selects that pin (or one drawn at the same spot) and its card is in view.
-* R4: tap card selects, second tap clears, Esc clears.
+* R3: tapping the centre of every visible pin selects the listing drawn on top there, opens its popup and shows its card in the list.
+* R4: tap card selects, second tap clears; empty map tap clears; Esc clears.
 * R5: pin elements contain no child elements and use a solid white edge.
-* R6: every card matches the format patterns of section 5.
+* R6: every card and popup atom matches the format patterns of section 5.
 * R7: page text contains no en dash or em dash.
 * R8: the `nya` number equals the number of new listings under the current filters, after changing a filter.
 * R9: every listing's restid equals min(walk, sl) per section 6.
+* R10: a route layer exists while a popup is open and is empty after it closes.
+* R12: never more than one outlined card and one popup.
 
 Run: `pip install playwright && playwright install chromium && python tests/design_check.py`
