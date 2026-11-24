@@ -7,7 +7,7 @@ import styles from './MapView.module.css';
 export function Popup({ l, today }: { l: Listing; today: string }) {
   return (
     <Stack gap={1}>
-      <Details l={l} today={today} />
+      <Details l={l} today={today} lines />
       {l.url && <a className={styles.open} href={l.url} target="_blank" rel="noopener noreferrer">Öppna annons på {l.sourceName} ›</a>}
     </Stack>
   );

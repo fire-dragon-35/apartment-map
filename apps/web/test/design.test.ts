@@ -32,7 +32,7 @@ const FORMATS: Record<string, string> = {   // DESIGN.md §5
   alder: `idag|\\d+${NB}d`,
 };
 // DESIGN.md §3, written out here on purpose: the test must not trust the code it checks
-const BANDS: [number, string, string][] = [[250, '#C9D9C3', '#A3B89C'], [300, '#9FBFA8', '#7A9E85'], [350, '#6F9C8E', '#527D70'], [400, '#4A6F7A', '#35545D'], [Infinity, '#2E4057', '#1D2A3A']];
+const BANDS: [number, string, string][] = [[250, '#4F8A6B', '#3B6D53'], [350, '#8AAE86', '#6D9069'], [450, '#C9A989', '#AA8B6C'], [550, '#C98068', '#A8644E'], [Infinity, '#A8524A', '#873E37']];
 const ACCENT = '#007AFF';
 
 const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png' };

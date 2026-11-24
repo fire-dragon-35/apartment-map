@@ -15,12 +15,32 @@ const Joined = ({ parts }: { parts: (ReactNode | null)[] }) =>
   <>{parts.filter(Boolean).map((p, i) => <Fragment key={i}>{i > 0 && SEP}{p}</Fragment>)}</>;
 
 /**
- * DESIGN.md §7: the same grid on the card and in the popup. Numbers sit in fixed columns so cards compare top to bottom:
- * name | hyra | restid, then size · rum | kr/m² chip, then the grey meta line.
+ * DESIGN.md §7. Card: a grid with the numbers in fixed columns so cards compare top to bottom (name | hyra | restid,
+ * then size · rum | kr/m² chip, then the grey meta line). Popup (`lines`): the same atoms as plain lines, as it is too narrow for the grid.
  */
-export function Details({ l, today }: { l: Listing; today: string }) {
+export function Details({ l, today, lines = false }: { l: Listing; today: string; lines?: boolean }) {
   const rum = fmt.rum(l.rooms), alder = fmt.alder(l.firstSeen, today);
   const kpm = priceChip(l.kpm), source = sourceChip(l.sourceName);
+  const meta = <Meta l={l} today={today} alder={alder} source={source} />;
+  if (lines) return (
+    <>
+      <span data-line="1">
+        <Joined parts={[
+          <Fragment key="p"><Atom name="adress" className={text.t1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" className={text.t3}>{l.area}</Atom></>}</Fragment>,
+          <Atom key="r" name="restid" className={`${text.t1} ${text.nb}`}>{fmt.restid(l.t)}</Atom>,
+        ]} />
+      </span>
+      <span data-line="2" className={text.t2}>
+        <Joined parts={[
+          <Atom key="h" name="hyra" className={`${text.t1} ${text.nb}`}>{fmt.hyra(l.rent)}</Atom>,
+          <Atom key="s" name="storlek" className={text.nb}>{fmt.storlek(l.m2)}</Atom>,
+          rum ? <Atom key="u" name="rum" className={text.nb}>{rum}</Atom> : null,
+          <Chip key="k" fg={kpm.color} bg={kpm.background}><Atom name="kpm">{fmt.kpm(l.kpm)}</Atom></Chip>,
+        ]} />
+      </span>
+      {meta}
+    </>
+  );
   return (
     <span className={styles.grid}>
       <span data-line="1" className={styles.row}>
@@ -37,6 +57,15 @@ export function Details({ l, today }: { l: Listing; today: string }) {
         </span>
         <span className={styles.chip}><Chip fg={kpm.color} bg={kpm.background}><Atom name="kpm">{fmt.kpm(l.kpm)}</Atom></Chip></span>
       </span>
+      {meta}
+    </span>
+  );
+}
+
+/** Line 3, tags and warning: the same on the card and in the popup. */
+function Meta({ l, today, alder, source }: { l: Listing; today: string; alder: string; source: { color: string; background: string } }) {
+  return (
+    <>
       <span data-line="3" className={`${text.t3} ${styles.full}`}>
         <Joined parts={[
           <Atom key="a" name="avtal" className={text.nb}>{fmt.avtal(l.start, l.end, today)}</Atom>,
@@ -50,7 +79,7 @@ export function Details({ l, today }: { l: Listing; today: string }) {
         </Stack>
       )}
       {l.warn && <span className={`${styles.warn} ${styles.full}`}>! långt under marknadspris, kontrollera</span>}
-    </span>
+    </>
   );
 }
 

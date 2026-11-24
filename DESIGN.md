@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 3.2, 24 nov 2026 (3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 3.3, 24 nov 2026 (3.3: price scale green → beige → red, bands in steps of 100 from 250; popup back to plain lines. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
@@ -40,15 +40,15 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `price.1` … `price.5` | #C9D9C3, #9FBFA8, #6F9C8E, #4A6F7A, #2E4057 (one muted scale, light to dark) | pin fill and price dot: under 250, 250 till 299, 300 till 349, 350 till 399, 400 och mer kr/m² |
+| `price.1` … `price.5` | #4F8A6B, #8AAE86, #C9A989, #C98068, #A8524A (muted green → beige → red) | pin fill and price dot: under 250, 250 till 349, 350 till 449, 450 till 549, 550 och mer kr/m² |
 | `price.unknown` | #AEAEB2 | no kr/m² |
-| `price.edge.1` … `.5` | #A3B89C, #7A9E85, #527D70, #35545D, #1D2A3A (unknown: #8E8E93) | pin edge, a darker shade of the fill |
+| `price.edge.1` … `.5` | #3B6D53, #6D9069, #AA8B6C, #A8644E, #873E37 (unknown: #8E8E93) | pin edge, a darker shade of the fill |
 | `text.1` / `.2` / `.3` | #1C1C1E / #3A3A3C / #6C6C70 | primary / secondary / tertiary text |
 | `line` | #E5E5EA | dividers |
 | `accent` | #007AFF | Karlaplan, links |
 | `new.bg` | #EEF5FF | card of a listing new today |
 | `selected` | #1C1C1E | pin ring, card outline |
-| `price.text.1` … `.5` | #4E6B47, #3F6A4C, #2F5F51, #2C4E58, #2E4057 | text in the kr/m² chip (background: the price colour at 20 %) |
+| `price.text.1` … `.5` | #2F5E45, #46683F, #7A5A3C, #8A4733, #7E2E28 | text in the kr/m² chip (background: the price colour at 20 %) |
 | source colours | Qasa #4B48C9, Bostadsförmedlingen #0A6F8E, Samtrygg #8A3FB5, HomeQ #1F7A5C, Facebook #1662C4, other #6C6C70 | text in the source chip (background: same colour at 12 %) |
 
 Type: system font (SF Pro / Inter), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid, hyra). T2 13 / 400 `text.2` (size, rooms, kr/m², contract, route). T3 12 / 400 `text.3` (area, source, age, legend).
@@ -59,7 +59,7 @@ SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18,
 
 1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 17k kr · ≥ 20 m² · ≥ 6 mån · ≤ 30 min`; a `<details>` labelled `Filter` and, beside it, a checkbox `Visa resväg` (on by default, remembered). The details hold three sliders (Restid 10 to 30 min step 1, Hyra 8k to 17k kr step 500, Storlek 20 to 60 m² step 5; remembered in the browser) and a checkbox `Bara nya`.
 2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
-3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 299`, `300 till 349`, `350 till 399`, `400+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
+3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 349`, `350 till 449`, `450 till 549`, `550+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
 4. **List** of cards in a flush panel, divider between cards, sorted by restid then hyra.
 
 ## 5. Data formats
@@ -116,7 +116,7 @@ Row 1: Adress, Område | Hyra | Restid. Row 2: Storlek, Rum | Pris per m². Line
 
 New today: `new.bg` background. Selected: 2 px `selected` outline inside.
 
-**Popup** (Leaflet popup, max width 280): lines 1 to 3, tags and warning as on the card, then the link `Öppna annons på {källa} ›`. No route line.
+**Popup** (Leaflet popup, max width 280): plain lines, not the card grid: `adress område · restid`, `hyra · storlek · rum · [kr/m²]`, then line 3, tags and warning as on the card, then the link `Öppna annons på {källa} ›`. No route line.
 
 **Route on the map** (while the popup is open and `Visa resväg` is on): each leg on its own geometry. Walk: 3 px `#3A3A3C` dots. Transit: 4 px line colour on 7 px white. Walking only: one dotted line pin → Karlaplan.
 
