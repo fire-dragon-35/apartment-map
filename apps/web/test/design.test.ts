@@ -32,7 +32,7 @@ const FORMATS: Record<string, string> = {   // DESIGN.md §5
   alder: `idag|\\d+${NB}d`,
 };
 // DESIGN.md §3, written out here on purpose: the test must not trust the code it checks
-const BANDS: [number, string][] = [[250, '#34C759'], [300, '#A3D63C'], [350, '#FFCC00'], [400, '#FF9500'], [Infinity, '#FF3B30']];
+const BANDS: [number, string, string][] = [[250, '#C9D9C3', '#A3B89C'], [300, '#9FBFA8', '#7A9E85'], [350, '#6F9C8E', '#527D70'], [400, '#4A6F7A', '#35545D'], [Infinity, '#2E4057', '#1D2A3A']];
 const ACCENT = '#007AFF';
 
 const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png' };
@@ -155,7 +155,8 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
     `[...__lgh.markers].map(([id,m])=>{const l=__lgh.visible.find(x=>x.id===id),o=m.options,a=Math.sqrt(20),b=Math.sqrt(65);
       return {id,fill:o.fillColor,kpm:l.kpm,radius:o.radius,expected:6+6*Math.min(1,Math.max(0,(Math.sqrt(l.m2||20)-a)/(b-a))),weight:o.weight,color:o.color,on:id===__lgh.selectedId}})`);
   const priceOf = (kpm: number | null) => (kpm === null ? '#AEAEB2' : BANDS.find(([max]) => kpm < max)![1]);
-  const r5 = pins.length > 0 && pins.every(p => p.fill === priceOf(p.kpm) && Math.abs(p.radius - p.expected) < 1e-9 && (p.on ? p.weight === 3 && p.color === '#1C1C1E' : p.weight === 1.5 && p.color === '#fff'));
+  const edgeOf = (kpm: number | null) => (kpm === null ? '#8E8E93' : BANDS.find(([max]) => kpm < max)![2]);
+  const r5 = pins.length > 0 && pins.every(p => p.fill === priceOf(p.kpm) && Math.abs(p.radius - p.expected) < 1e-9 && (p.on ? p.weight === 3 && p.color === '#1C1C1E' : p.weight === 1.5 && p.color === edgeOf(p.kpm)));
   check('R5 pins: fill = price, radius = size, ring only when selected', r5 && pins.filter(p => p.on).length === 1);
 
   // R6: every atom in cards and the open popup

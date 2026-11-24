@@ -25,7 +25,7 @@ const Pin = memo(function Pin({ l, on, renderer, onSelect, register }: {
 }) {
   const options = useMemo(() => ({
     fillColor: (priceBand(l.kpm) ?? PRICE_UNKNOWN).color, fillOpacity: 0.9,
-    color: on ? TOKENS.selected : '#fff', weight: on ? 3 : 1.5, bubblingMouseEvents: false,
+    color: on ? TOKENS.selected : (priceBand(l.kpm) ?? PRICE_UNKNOWN).edge, weight: on ? 3 : 1.5, bubblingMouseEvents: false,
   }), [l.kpm, on]);
   return (
     <CircleMarker ref={m => register(l.id, m)} center={l.latlng} radius={l.radius} pathOptions={options} renderer={renderer}

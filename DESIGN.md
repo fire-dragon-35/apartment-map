@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 3.1, 24 nov 2026 (3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 3.2, 24 nov 2026 (3.2: muted price scale, pin edge in a darker shade of its fill. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
@@ -40,14 +40,15 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `price.1` … `price.5` | #34C759, #A3D63C, #FFCC00, #FF9500, #FF3B30 | pin fill and price dot: under 250, 250 till 299, 300 till 349, 350 till 399, 400 och mer kr/m² |
+| `price.1` … `price.5` | #C9D9C3, #9FBFA8, #6F9C8E, #4A6F7A, #2E4057 (one muted scale, light to dark) | pin fill and price dot: under 250, 250 till 299, 300 till 349, 350 till 399, 400 och mer kr/m² |
 | `price.unknown` | #AEAEB2 | no kr/m² |
+| `price.edge.1` … `.5` | #A3B89C, #7A9E85, #527D70, #35545D, #1D2A3A (unknown: #8E8E93) | pin edge, a darker shade of the fill |
 | `text.1` / `.2` / `.3` | #1C1C1E / #3A3A3C / #6C6C70 | primary / secondary / tertiary text |
 | `line` | #E5E5EA | dividers |
 | `accent` | #007AFF | Karlaplan, links |
 | `new.bg` | #EEF5FF | card of a listing new today |
 | `selected` | #1C1C1E | pin ring, card outline |
-| `price.text.1` … `.5` | #1E7B34, #4A7208, #7F6200, #9C4E00, #B42318 | text in the kr/m² chip (background: the price colour at 20 %) |
+| `price.text.1` … `.5` | #4E6B47, #3F6A4C, #2F5F51, #2C4E58, #2E4057 | text in the kr/m² chip (background: the price colour at 20 %) |
 | source colours | Qasa #4B48C9, Bostadsförmedlingen #0A6F8E, Samtrygg #8A3FB5, HomeQ #1F7A5C, Facebook #1662C4, other #6C6C70 | text in the source chip (background: same colour at 12 %) |
 
 Type: system font (SF Pro / Inter), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid, hyra). T2 13 / 400 `text.2` (size, rooms, kr/m², contract, route). T3 12 / 400 `text.3` (area, source, age, legend).
@@ -96,7 +97,7 @@ restid = walk if sl is missing or walk ≤ sl, else sl
 
 ## 7. Components
 
-**Pin** (Leaflet `circleMarker` on one canvas renderer in its own pane above rings and routes, tap tolerance 8 px; rings, route and Karlaplan are non interactive SVG): radius 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1); fill price colour, opacity 0.9; white 1.5 px edge. Selected: `selected` 3 px edge, brought to front. Smaller pins drawn above larger.
+**Pin** (Leaflet `circleMarker` on one canvas renderer in its own pane above rings and routes, tap tolerance 8 px; rings, route and Karlaplan are non interactive SVG): radius 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1); fill price colour, opacity 0.9; 1.5 px edge in its `price.edge` colour. Selected: `selected` 3 px edge, brought to front. Smaller pins drawn above larger.
 
 **Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
 
@@ -169,7 +170,7 @@ Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ slider, contract �
 * R2: tapping each pin centre in view selects the pin on top there, opens a popup and outlines its card; page and list scroll positions are unchanged.
 * R3: after scrolling down and tapping a card: page is at the top, the pin is inside the map, zoom ≥ 14, popup open. Tapping again closes.
 * R4: popup × closes; empty map tap closes; Esc closes.
-* R5: every pin's fill equals its price colour, its radius follows section 7; only the selected pin has the dark ring.
+* R5: every pin's fill equals its price colour, its edge its `price.edge` colour, its radius follows section 7; only the selected pin has the dark ring.
 * R6: every card and popup atom matches section 5, and card line 1 and 2 hold the atoms of section 7 in that order.
 * R7: no en dash or em dash in page text.
 * R8: the `nya` number equals new listings under the current filters, after changing a filter.

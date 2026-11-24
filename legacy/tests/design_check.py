@@ -120,7 +120,7 @@ with sync_playwright() as pw:
     # R5: pins carry only price colour and size; ring only on the selected pin
     open_one()
     r5 = js("""[...app.map.markers].every(([id,m])=>{const l=app.visible.find(x=>x.id===id),o=m.options,on=l===app.selected;
-        return o.fillColor===Fmt.priceColor(l.kpm)&&Math.abs(o.radius-l.radius)<1e-9&&(on?o.weight===3&&o.color==='#1C1C1E':o.weight===1.5&&o.color==='#fff')})""")
+        return o.fillColor===Fmt.priceColor(l.kpm)&&Math.abs(o.radius-l.radius)<1e-9&&(on?o.weight===3&&o.color==='#1C1C1E':o.weight===1.5&&o.color===Fmt.priceEdge(l.kpm))})""")
     check('R5 pins: fill = price, radius = size, ring only when selected', r5)
 
     # R6: every atom in cards and the open popup
