@@ -3,7 +3,7 @@
  * One source for every value: @lk/shared.
  */
 import type { Theme } from '@frame/themes';
-import { cssVariables, PRICE_BANDS, TOKENS } from '@lk/shared';
+import { cssVariables, TOKENS } from '@lk/shared';
 
 const FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif';
 
@@ -17,8 +17,8 @@ export const appTheme: Theme = {
     border: TOKENS.line,
     primary: TOKENS.accent,
     primaryForeground: '#ffffff',
-    danger: PRICE_BANDS[4]!.text,
-    success: PRICE_BANDS[0]!.text,
+    danger: '#B42318',
+    success: '#1E7B34',
     muted: TOKENS.text3,
   },
   typography: { body: FONT, heading: FONT },

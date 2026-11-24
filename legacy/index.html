@@ -72,9 +72,10 @@ const KARLAPLAN=L.latLng(59.3389,18.0907);
 const NB=' ',SEP=' · ';
 const TODAY=new Date().toLocaleDateString('sv-SE'),YEAR=new Date().getFullYear();
 const MONTHS=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
-const PRICE=[[250,'#34C759','<250'],[300,'#A3D63C','250 till 299'],[350,'#FFCC00','300 till 349'],[400,'#FF9500','350 till 399'],[Infinity,'#FF3B30','400+ kr/m²']];
+const PRICE=[[250,'#C9D9C3','<250'],[300,'#9FBFA8','250 till 299'],[350,'#6F9C8E','300 till 349'],[400,'#4A6F7A','350 till 399'],[Infinity,'#2E4057','400+ kr/m²']];
+const PRICE_EDGE=['#A3B89C','#7A9E85','#527D70','#35545D','#1D2A3A'];
 const UNKNOWN='#AEAEB2';
-const PRICE_TEXT=['#1E7B34','#4A7208','#7F6200','#9C4E00','#B42318'];
+const PRICE_TEXT=['#4E6B47','#3F6A4C','#2F5F51','#2C4E58','#2E4057'];
 const SOURCE={'Qasa':'#4B48C9','Bostadsförmedlingen':'#0A6F8E','Samtrygg':'#8A3FB5','HomeQ':'#1F7A5C','Facebook':'#1662C4'};
 const LINES={metro:{10:'#0072BC',11:'#0072BC',13:'#E3242B',14:'#E3242B',17:'#2EA84A',18:'#2EA84A',19:'#2EA84A'},train:'#EC619F',tram:'#F28C00',bus:'#E3242B',boat:'#00A3AD'};
 const WALK_COLOR='#3A3A3C';
@@ -87,6 +88,7 @@ const Fmt={
   k:v=>Math.round(v/100)/10+'k',
   thousands:n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,NB),
   priceColor:k=>k==null?UNKNOWN:PRICE.find(([max])=>k<max)[1],
+  priceEdge:k=>k==null?'#8E8E93':PRICE_EDGE[PRICE.findIndex(([max])=>k<max)],
   date(s){const d=new Date(s+'T00:00:00');return isNaN(d)?'?':d.getDate()+NB+MONTHS[d.getMonth()]+(d.getFullYear()!==YEAR?NB+d.getFullYear():'')},
   restid:l=>(l.approx?'~':'')+l.t+NB+'min',
   hyra:l=>(l.rent?Fmt.k(l.rent):'?')+NB+'kr',
@@ -207,7 +209,7 @@ class MapView{
     this.popup=L.popup({maxWidth:280,autoPanPadding:[16,16]}).on('remove',()=>this.#clear());
     this.hover=matchMedia('(hover:hover) and (pointer:fine)').matches;
   }
-  #style(l,on){return {renderer:this.canvas,radius:l.radius,fillColor:Fmt.priceColor(l.kpm),fillOpacity:.9,color:on?'#1C1C1E':'#fff',weight:on?3:1.5,bubblingMouseEvents:false}}
+  #style(l,on){return {renderer:this.canvas,radius:l.radius,fillColor:Fmt.priceColor(l.kpm),fillOpacity:.9,color:on?'#1C1C1E':Fmt.priceEdge(l.kpm),weight:on?3:1.5,bubblingMouseEvents:false}}
   show(items,routes){
     this.close();this.pins.clearLayers();this.markers.clear();this.routes=routes;
     /* larger first, so smaller pins are drawn on top */

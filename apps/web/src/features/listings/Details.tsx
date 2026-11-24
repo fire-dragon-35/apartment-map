@@ -14,27 +14,30 @@ const Atom = ({ name, className, children }: { name: string; className?: string;
 const Joined = ({ parts }: { parts: (ReactNode | null)[] }) =>
   <>{parts.filter(Boolean).map((p, i) => <Fragment key={i}>{i > 0 && SEP}{p}</Fragment>)}</>;
 
-/** DESIGN.md §7: the same lines in the same order on the card and in the popup. */
+/**
+ * DESIGN.md §7: the same grid on the card and in the popup. Numbers sit in fixed columns so cards compare top to bottom:
+ * name | hyra | restid, then size · rum | kr/m² chip, then the grey meta line.
+ */
 export function Details({ l, today }: { l: Listing; today: string }) {
   const rum = fmt.rum(l.rooms), alder = fmt.alder(l.firstSeen, today);
   const kpm = priceChip(l.kpm), source = sourceChip(l.sourceName);
   return (
-    <>
-      <span data-line="1">
-        <Joined parts={[
-          <Fragment key="p"><Atom name="adress" className={text.t1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" className={text.t3}>{l.area}</Atom></>}</Fragment>,
-          <Atom key="r" name="restid" className={`${text.t1} ${text.nb}`}>{fmt.restid(l.t)}</Atom>,
-        ]} />
+    <span className={styles.grid}>
+      <span data-line="1" className={styles.row}>
+        <span className={styles.name}><Atom name="adress" className={text.t1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" className={text.t3}>{l.area}</Atom></>}</span>
+        <Atom name="hyra" className={`${text.t1} ${text.nb} ${styles.num}`}>{fmt.hyra(l.rent)}</Atom>
+        <Atom name="restid" className={`${text.t1} ${text.nb} ${styles.num} ${styles.time}`}>{fmt.restid(l.t)}</Atom>
       </span>
-      <span data-line="2" className={text.t2}>
-        <Joined parts={[
-          <Atom key="h" name="hyra" className={`${text.t1} ${text.nb}`}>{fmt.hyra(l.rent)}</Atom>,
-          <Atom key="s" name="storlek" className={text.nb}>{fmt.storlek(l.m2)}</Atom>,
-          rum ? <Atom key="u" name="rum" className={text.nb}>{rum}</Atom> : null,
-          <Chip key="k" fg={kpm.color} bg={kpm.background}><Atom name="kpm">{fmt.kpm(l.kpm)}</Atom></Chip>,
-        ]} />
+      <span data-line="2" className={styles.row}>
+        <span className={text.t2}>
+          <Joined parts={[
+            <Atom key="s" name="storlek" className={text.nb}>{fmt.storlek(l.m2)}</Atom>,
+            rum ? <Atom key="u" name="rum" className={text.nb}>{rum}</Atom> : null,
+          ]} />
+        </span>
+        <span className={styles.chip}><Chip fg={kpm.color} bg={kpm.background}><Atom name="kpm">{fmt.kpm(l.kpm)}</Atom></Chip></span>
       </span>
-      <span data-line="3" className={text.t3}>
+      <span data-line="3" className={`${text.t3} ${styles.full}`}>
         <Joined parts={[
           <Atom key="a" name="avtal" className={text.nb}>{fmt.avtal(l.start, l.end, today)}</Atom>,
           <Chip key="c" fg={source.color} bg={source.background}><Atom name="kalla">{l.sourceName}</Atom></Chip>,
@@ -42,12 +45,12 @@ export function Details({ l, today }: { l: Listing; today: string }) {
         ]} />
       </span>
       {l.tags.length > 0 && (
-        <Stack as="span" direction="row" gap={2} wrap>
+        <Stack as="span" direction="row" gap={2} wrap className={styles.full}>
           {l.tags.map(t => <span className={styles.tag} key={t}>{t}</span>)}
         </Stack>
       )}
-      {l.warn && <span className={styles.warn}>! långt under marknadspris, kontrollera</span>}
-    </>
+      {l.warn && <span className={`${styles.warn} ${styles.full}`}>! långt under marknadspris, kontrollera</span>}
+    </span>
   );
 }
 

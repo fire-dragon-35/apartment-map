@@ -11,7 +11,7 @@ export const Card = memo(function Card({ l, today, selected, onPick }: { l: List
       aria-pressed={selected} onClick={() => onPick(l)}>
       <Stack as="span" gap={1}>
         <Details l={l} today={today} />
-        <RouteLine l={l} />
+        {selected && <RouteLine l={l} />}
       </Stack>
     </button>
   );
