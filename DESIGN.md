@@ -116,7 +116,7 @@ Row 1: Adress, Område | Hyra | Restid. Row 2: Storlek, Rum | Pris per m². Line
 
 New today: `new.bg` background. Selected: 2 px `selected` outline inside.
 
-**Popup** (Leaflet popup, max width 280): plain lines, not the card grid: `adress område · restid`, `hyra · storlek · rum · [kr/m²]`, then line 3, tags and warning as on the card, then the link `Öppna annons på {källa} ›`. No route line.
+**Popup** (Leaflet popup, max width 280): plain lines, not the card grid: `adress område · restid`, `hyra · storlek · rum · [kr/m²]`, then line 3, tags and warning as on the card, then the link `Öppna annons på {källa} ›`, discreet: T3, underlined. No route line.
 
 **Route on the map** (while the popup is open and `Visa resväg` is on): each leg on its own geometry. Walk: 3 px `#3A3A3C` dots. Transit: 4 px line colour on 7 px white. Walking only: one dotted line pin → Karlaplan.
 
