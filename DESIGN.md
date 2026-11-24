@@ -202,7 +202,7 @@ ThemeProvider (theme from section 3)
 ```
 
 * **Spacing** comes from Frame's tokens (`--space-*`, `--space-gutter`); no pixel values in app CSS except the ones this file names (card padding 12 16, map height, pin and ring sizes).
-* **Controls:** `Checkbox` from `@frame/ui` for `Bara nya` and `Visa resväg`; the sliders are native range inputs laid out with `Grid` (label 3, slider 6, value 3 columns).
-* **Colours** from section 3 reach CSS as custom properties on `:root` (one source: `@lk/shared`). A colour that depends on data (price band, source, line) is passed to its element as a CSS custom property, the one sanctioned inline style.
+* **Components:** from `@frame/ui` wherever one fits (see `vendor/frame/AGENTS.md`, "Which component for what"): `Text` for every text (T1 = `size="md" weight="semibold"`, T2 = `size="sm" tone="secondary"`, T3 = `size="xs" tone="muted"`), `Badge` for the kr/m² and source chips, line pills, tags and legend dots (`tone="custom"` for data colours), `Slider` for the three filters, `Checkbox` for `Bara nya` and `Visa resväg`. The card stays an app component (a button plus the source link, which cannot sit inside a button).
+* **Tokens:** section 3 values reach Frame through `app/global.css` (`--text-xs/sm/md/lg` = 12/13/15/20 px, `--color-foreground-secondary`, `--color-highlight`, `--color-selected`) and `app/theme.ts`. No inline styles in app code.
 * **Folders:** `src/app` (entry, theme, providers, page composition), `src/features/listings` (Listing, data hook, list, card, details), `src/features/filters` (state, header), `src/features/map` (Leaflet map, pins, popup, route). CSS Modules next to their component.
 * **New shared components** go through Frame's approval rule; app components need none.

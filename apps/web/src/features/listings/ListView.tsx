@@ -1,4 +1,4 @@
-import text from '../../app/text.module.css';
+import { Text } from '@frame/ui';
 import { Card } from './Card.tsx';
 import type { Listing } from './Listing.ts';
 import styles from './ListView.module.css';
@@ -8,10 +8,10 @@ export function ListView({ items, today, selectedId, onPick, error }: { items: L
   return (
     <div id="list" className={styles.list}>
       {error
-        ? <p className={`${styles.empty} ${text.t3}`}>{error.message}</p>
+        ? <Text as="p" size="xs" tone="muted" className={styles.empty}>{error.message}</Text>
         : items.length
           ? items.map(l => <Card key={l.id} l={l} today={today} selected={l.id === selectedId} onPick={onPick} />)
-          : <p className={`${styles.empty} ${text.t2}`}>Inga träffar med de här filtren</p>}
+          : <Text as="p" tone="secondary" className={styles.empty}>Inga träffar med de här filtren</Text>}
     </div>
   );
 }

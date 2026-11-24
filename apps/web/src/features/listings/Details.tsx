@@ -1,14 +1,17 @@
 import { Stack } from '@frame/core';
 import { Fragment, type ReactNode } from 'react';
 import { fmt, lineStyle, priceChip, SEP, sourceChip } from '@lk/shared';
-import text from '../../app/text.module.css';
-import { Chip, Pill } from '../../app/Tones.tsx';
+import { Badge, Text, type TextProps } from '@frame/ui';
 import type { Listing } from './Listing.ts';
 import styles from './Details.module.css';
 
 /** One datum of DESIGN.md §5; `data-a` names it for the page rules test. */
-const Atom = ({ name, className, children }: { name: string; className?: string; children: ReactNode }) =>
-  <span data-a={name} className={className}>{children}</span>;
+const Atom = ({ name, ...text }: { name: string } & TextProps) => <Text data-a={name} {...text} />;
+
+/** DESIGN.md §3 type steps: T1 15/600, T2 13 secondary, T3 12 muted. */
+const T1 = { size: 'md', weight: 'semibold' } as const;
+const T2 = { size: 'sm', tone: 'secondary' } as const;
+const T3 = { size: 'xs', tone: 'muted' } as const;
 
 /** Atoms separated by ` · `; empty ones are left out. */
 const Joined = ({ parts }: { parts: (ReactNode | null)[] }) =>
@@ -25,20 +28,20 @@ export function Details({ l, today }: { l: Listing; today: string }) {
   return (
     <span className={styles.grid}>
       <span data-line="1" className={styles.row}>
-        <span className={styles.name}><Atom name="adress" className={text.t1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" className={text.t3}>{l.area}</Atom></>}</span>
-        <Atom name="restid" className={`${text.t1} ${text.nb} ${styles.num}`}>{fmt.restid(l.t)}</Atom>
+        <span className={styles.name}><Atom name="adress" {...T1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" {...T3}>{l.area}</Atom></>}</span>
+        <Atom name="restid" {...T1} nowrap className={styles.num}>{fmt.restid(l.t)}</Atom>
       </span>
       <span data-line="2" className={styles.row}>
-        <span className={`${text.t2} ${text.nb}`}>
+        <Text {...T2} nowrap>
           <Joined parts={[
-            <Atom key="s" name="storlek" className={text.nb}>{fmt.storlek(l.m2)}</Atom>,
-            rum ? <Atom key="u" name="rum" className={text.nb}>{rum}</Atom> : null,
+            <Atom key="s" name="storlek" {...T2} nowrap>{fmt.storlek(l.m2)}</Atom>,
+            rum ? <Atom key="u" name="rum" {...T2} nowrap>{rum}</Atom> : null,
           ]} />
-        </span>
-        <span className={`${styles.num} ${text.nb}`}>
-          <Atom name="hyra" className={text.t1}>{fmt.hyra(l.rent)}</Atom>{' '}
-          <Chip fg={kpm.color} bg={kpm.background}><Atom name="kpm">{fmt.kpm(l.kpm)}</Atom></Chip>
-        </span>
+        </Text>
+        <Text nowrap className={styles.num}>
+          <Atom name="hyra" {...T1}>{fmt.hyra(l.rent)}</Atom>{' '}
+          <Badge tone="custom" color={kpm.color} background={kpm.background}><span data-a="kpm">{fmt.kpm(l.kpm)}</span></Badge>
+        </Text>
       </span>
       {meta}
     </span>
@@ -49,19 +52,19 @@ export function Details({ l, today }: { l: Listing; today: string }) {
 function Meta({ l, today, alder, source }: { l: Listing; today: string; alder: string; source: { color: string; background: string } }) {
   return (
     <>
-      <span data-line="3" className={`${text.t3} ${styles.full}`}>
+      <Text data-line="3" {...T3} className={styles.full}>
         <Joined parts={[
-          <Atom key="a" name="avtal" className={text.nb}>{fmt.avtal(l.start, l.end, today)}</Atom>,
-          <Chip key="c" fg={source.color} bg={source.background}><Atom name="kalla">{l.sourceName}</Atom></Chip>,
-          alder ? <Atom key="d" name="alder">{alder}</Atom> : null,
+          <Atom key="a" name="avtal" {...T3} nowrap>{fmt.avtal(l.start, l.end, today)}</Atom>,
+          <Badge key="c" tone="custom" color={source.color} background={source.background}><span data-a="kalla">{l.sourceName}</span></Badge>,
+          alder ? <Atom key="d" name="alder" {...T3}>{alder}</Atom> : null,
         ]} />
-      </span>
+      </Text>
       {l.tags.length > 0 && (
         <Stack as="span" direction="row" gap={2} wrap className={styles.full}>
-          {l.tags.map(t => <span className={styles.tag} key={t}>{t}</span>)}
+          {l.tags.map(t => <Badge key={t}>{t}</Badge>)}
         </Stack>
       )}
-      {l.warn && <span className={`${styles.warn} ${styles.full}`}>! långt under marknadspris, kontrollera</span>}
+      {l.warn && <Text size="xs" weight="semibold" className={styles.full}>! långt under marknadspris, kontrollera</Text>}
     </>
   );
 }
@@ -78,8 +81,8 @@ export function RouteLine({ l }: { l: Listing }) {
     : (l.legs ?? []).flatMap<ReactNode>(([mode, line, , minutes, stops], i) => {
         if (mode === 'walk') return minutes ? [fmt.gang(minutes)] : [];
         const { name, color } = lineStyle(mode, line);
-        return [<Fragment key={i}><Pill color={color}>{name}</Pill>{stops ? ` · ${stops} stopp` : ''}</Fragment>];
+        return [<Fragment key={i}><Badge tone="custom" shape="pill" color="#fff" background={color}>{name}</Badge>{stops ? ` · ${stops} stopp` : ''}</Fragment>];
       });
   if (!steps.length) return null;
-  return <span className={text.t2}>{[...steps, 'Karlaplan'].map((s, i) => <Fragment key={i}>{i > 0 && ' › '}{s}</Fragment>)}</span>;
+  return <Text {...T2}>{[...steps, 'Karlaplan'].map((s, i) => <Fragment key={i}>{i > 0 && ' › '}{s}</Fragment>)}</Text>;
 }

@@ -1,6 +1,14 @@
 /* The app's whole global stylesheet (Frame §10: small). Layout belongs to Frame primitives, the rest to CSS Modules. */
 :root {
   --container-max: 45rem; /* DESIGN.md §4: one column, max width 720 px */
+  /* DESIGN.md §3 type scale and colours, in the token names Frame's Text, Badge and Slider read */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 15px;
+  --text-lg: 20px;
+  --color-foreground-secondary: var(--t2);
+  --color-highlight: var(--new);
+  --color-selected: var(--selected);
 }
 body {
   font: 400 13px/1.4 var(--font-body);
