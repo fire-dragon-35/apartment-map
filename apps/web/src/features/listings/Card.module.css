@@ -1,26 +1,31 @@
 /* DESIGN.md §7: padding 12 16, divider between cards, new.bg when new today, 2 px selected outline inside. */
+.item {
+  border-bottom: 1px solid var(--line);
+}
+.item:last-child {
+  border-bottom: 0;
+}
+.item:has([data-new]) {
+  background: var(--new);
+}
+.item:has([aria-pressed='true']) {
+  box-shadow: inset 0 0 0 2px var(--selected);
+}
 .card {
   display: block;
   width: 100%;
-  padding: 12px 16px;
+  padding: 12px 16px 4px;
   font: inherit;
   color: inherit;
   text-align: left;
   cursor: pointer;
   background: none;
   border: 0;
-  border-bottom: 1px solid var(--line);
-}
-.card:last-child {
-  border-bottom: 0;
-}
-.card[data-new] {
-  background: var(--new);
-}
-.card[aria-pressed='true'] {
-  box-shadow: inset 0 0 0 2px var(--selected);
 }
 .card:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+}
+.foot {
+  padding: 0 16px 12px;
 }

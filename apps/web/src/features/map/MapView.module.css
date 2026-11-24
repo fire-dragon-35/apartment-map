@@ -17,11 +17,3 @@
   font: inherit;
 }
 /* .popup scope outranks Leaflet's own `.leaflet-container a` colour */
-.popup .open {
-  color: var(--t3);
-  font-size: 12px;
-  font-weight: 400;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  margin-top: var(--space-1);
-}

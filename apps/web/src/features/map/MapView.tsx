@@ -76,7 +76,7 @@ function RouteLayer({ selected, show }: { selected: Listing | null; show: boolea
  */
 function SelectionPopup({ selected, today, onClose }: { selected: Listing | null; today: string; onClose: () => void }) {
   const map = useMap();
-  const popup = useMemo(() => L.popup({ maxWidth: 280, autoPanPadding: [16, 16], className: styles.popup }), []);
+  const popup = useMemo(() => L.popup({ minWidth: 300, maxWidth: 320, autoPanPadding: [16, 16], className: styles.popup }), []);
   const node = useMemo(() => document.createElement('div'), []);
   const closed = useRef(onClose);
   closed.current = onClose;

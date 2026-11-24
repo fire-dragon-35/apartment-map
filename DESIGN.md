@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 3.3, 24 nov 2026 (3.3: price scale green → beige → red, bands in steps of 100 from 250; popup back to plain lines. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 3.3, 24 nov 2026 (3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
@@ -101,7 +101,7 @@ restid = walk if sl is missing or walk ≤ sl, else sl
 
 **Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
 
-**Card** (a `<button>`, full width, padding 12 16). Card and popup show the same grid, three columns (name, numbers right aligned with tabular figures, restid):
+**Card** (a full width `<button>`, then the source link below it, padding 12 16). Card and popup are identical: the same grid, the same link, three columns (name, numbers right aligned with tabular figures, restid):
 
 ```
 Hornsgatan Södermalm          15.2k kr   23 min      (T1, area T3; restid spans two rows)
@@ -110,13 +110,14 @@ Hornsgatan Södermalm          15.2k kr   23 min      (T1, area T3; restid spans
 [förstahand]
 ! långt under marknadspris, kontrollera
 gång 8 min › T18 · 1 stopp › T13 · 2 stopp › gång 5 min › Karlaplan   (selected card only)
+Öppna annons på Samtrygg ›                           (T3, underlined)
 ```
 
 Row 1: Adress, Område | Hyra | Restid. Row 2: Storlek, Rum | Pris per m². Line 3: Avtal, Källa, Ålder. Then tags, warning. The selected card ends with the route line: `gång N min › Karlaplan` when walking wins; line names `T` + number for metro, on their line colour.
 
 New today: `new.bg` background. Selected: 2 px `selected` outline inside.
 
-**Popup** (Leaflet popup, max width 280): plain lines, not the card grid: `adress område · restid`, `hyra · storlek · rum · [kr/m²]`, then line 3, tags and warning as on the card, then the link `Öppna annons på {källa} ›`, discreet: T3, underlined. No route line.
+**Popup** (Leaflet popup, width 300 to 320): exactly the card (grid and link). No route line, as the map draws the route.
 
 **Route on the map** (while the popup is open and `Visa resväg` is on): each leg on its own geometry. Walk: 3 px `#3A3A3C` dots. Transit: 4 px line colour on 7 px white. Walking only: one dotted line pin → Karlaplan.
 

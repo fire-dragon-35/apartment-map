@@ -15,32 +15,13 @@ const Joined = ({ parts }: { parts: (ReactNode | null)[] }) =>
   <>{parts.filter(Boolean).map((p, i) => <Fragment key={i}>{i > 0 && SEP}{p}</Fragment>)}</>;
 
 /**
- * DESIGN.md §7. Card: a grid with the numbers in fixed columns so cards compare top to bottom (name | hyra | restid,
- * then size · rum | kr/m² chip, then the grey meta line). Popup (`lines`): the same atoms as plain lines, as it is too narrow for the grid.
+ * DESIGN.md §7: one layout for the card and the popup, a grid with the numbers in fixed columns
+ * (name | hyra | restid, then size · rum | kr/m² chip, then the grey meta line, tags, warning).
  */
-export function Details({ l, today, lines = false }: { l: Listing; today: string; lines?: boolean }) {
+export function Details({ l, today }: { l: Listing; today: string }) {
   const rum = fmt.rum(l.rooms), alder = fmt.alder(l.firstSeen, today);
   const kpm = priceChip(l.kpm), source = sourceChip(l.sourceName);
   const meta = <Meta l={l} today={today} alder={alder} source={source} />;
-  if (lines) return (
-    <>
-      <span data-line="1">
-        <Joined parts={[
-          <Fragment key="p"><Atom name="adress" className={text.t1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" className={text.t3}>{l.area}</Atom></>}</Fragment>,
-          <Atom key="r" name="restid" className={`${text.t1} ${text.nb}`}>{fmt.restid(l.t)}</Atom>,
-        ]} />
-      </span>
-      <span data-line="2" className={text.t2}>
-        <Joined parts={[
-          <Atom key="h" name="hyra" className={`${text.t1} ${text.nb}`}>{fmt.hyra(l.rent)}</Atom>,
-          <Atom key="s" name="storlek" className={text.nb}>{fmt.storlek(l.m2)}</Atom>,
-          rum ? <Atom key="u" name="rum" className={text.nb}>{rum}</Atom> : null,
-          <Chip key="k" fg={kpm.color} bg={kpm.background}><Atom name="kpm">{fmt.kpm(l.kpm)}</Atom></Chip>,
-        ]} />
-      </span>
-      {meta}
-    </>
-  );
   return (
     <span className={styles.grid}>
       <span data-line="1" className={styles.row}>
@@ -49,7 +30,7 @@ export function Details({ l, today, lines = false }: { l: Listing; today: string
         <Atom name="restid" className={`${text.t1} ${text.nb} ${styles.num} ${styles.time}`}>{fmt.restid(l.t)}</Atom>
       </span>
       <span data-line="2" className={styles.row}>
-        <span className={text.t2}>
+        <span className={`${text.t2} ${text.nb}`}>
           <Joined parts={[
             <Atom key="s" name="storlek" className={text.nb}>{fmt.storlek(l.m2)}</Atom>,
             rum ? <Atom key="u" name="rum" className={text.nb}>{rum}</Atom> : null,
@@ -81,6 +62,11 @@ function Meta({ l, today, alder, source }: { l: Listing; today: string; alder: s
       {l.warn && <span className={`${styles.warn} ${styles.full}`}>! långt under marknadspris, kontrollera</span>}
     </>
   );
+}
+
+/** The link to the original ad, the last line of both card and popup. */
+export function SourceLink({ l }: { l: Listing }) {
+  return l.url ? <a className={styles.link} href={l.url} target="_blank" rel="noopener noreferrer">Öppna annons på {l.sourceName} ›</a> : null;
 }
 
 /** The card's last line: `gång 8 min › T18 · 1 stopp › … › Karlaplan`. Nothing when there is no route to describe. */
