@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 3.2, 24 nov 2026 (3.2: muted price scale, pin edge in a darker shade of its fill. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 3.2, 24 nov 2026 (3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
@@ -101,18 +101,18 @@ restid = walk if sl is missing or walk ≤ sl, else sl
 
 **Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
 
-**Card** (a `<button>`, full width, padding 12 16). Card and popup show the same lines in the same order:
+**Card** (a `<button>`, full width, padding 12 16). Card and popup show the same grid, three columns (name, numbers right aligned with tabular figures, restid):
 
 ```
-Hornsgatan Södermalm · 23 min                        (T1, area T3)
-15.2k kr · 52 m² · 2 rok · [296 kr/m²]               (T2, hyra T1)
-15 dec → 15 dec 2027 · [Samtrygg] · 9 d              (T3)
+Hornsgatan Södermalm          15.2k kr   23 min      (T1, area T3; restid spans two rows)
+52 m² · 2 rok               [296 kr/m²]              (T2)
+15 dec → 15 dec 2027 · [Samtrygg] · 9 d              (T3, full width)
 [förstahand]
 ! långt under marknadspris, kontrollera
-gång 8 min › T18 · 1 stopp › T13 · 2 stopp › gång 5 min › Karlaplan   (card only)
+gång 8 min › T18 · 1 stopp › T13 · 2 stopp › gång 5 min › Karlaplan   (selected card only)
 ```
 
-Line 1: Adress, Område, Restid. Line 2: Hyra, Storlek, Rum, Pris per m². Line 3: Avtal, Källa, Ålder. Then tags, warning. The card ends with the route line: `gång N min › Karlaplan` when walking wins; line names `T` + number for metro, on their line colour.
+Row 1: Adress, Område | Hyra | Restid. Row 2: Storlek, Rum | Pris per m². Line 3: Avtal, Källa, Ålder. Then tags, warning. The selected card ends with the route line: `gång N min › Karlaplan` when walking wins; line names `T` + number for metro, on their line colour.
 
 New today: `new.bg` background. Selected: 2 px `selected` outline inside.
 
