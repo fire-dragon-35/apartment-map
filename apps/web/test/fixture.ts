@@ -78,9 +78,9 @@ export function buildRows(today: string, count = 32): Row[] {
   Object.assign(rows[3]!, { area: 'Stockholm' });
   Object.assign(rows[4]!, { area: rows[4]!.street });
   Object.assign(rows[5]!, { start_date: day(today, 30), end_date: day(today, 120) });   // 90 days: filtered out
-  // small and dear (400+ kr/m²), close to Karlaplan: the red band within the rent limit
-  Object.assign(rows[8]!, { m2: 30, rent: 12900, kpm: 430, lat: 59.3465, lon: 18.0907, transit_min: null, legs: null, end_date: null });
-  Object.assign(rows[9]!, { m2: 26, rent: 11200, kpm: 431, lat: 59.3389, lon: 18.1043, transit_min: null, legs: null, end_date: null });
+  // small and dear (450 till 549 and 550+ kr/m²), close to Karlaplan: the two top bands within the rent limit
+  Object.assign(rows[8]!, { m2: 30, rent: 14700, kpm: 490, lat: 59.3465, lon: 18.0907, transit_min: null, legs: null, end_date: null });
+  Object.assign(rows[9]!, { m2: 26, rent: 15100, kpm: 581, lat: 59.3389, lon: 18.1043, transit_min: null, legs: null, end_date: null });
   Object.assign(rows[6]!, { transit_min: 45, legs: null, lat: 59.3689, lon: 18.2407 }); // far: restid over 30, filtered out
   return rows;
 }

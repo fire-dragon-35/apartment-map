@@ -32,7 +32,7 @@ const FORMATS: Record<string, string> = {   // DESIGN.md §5
   alder: `idag|\\d+${NB}d`,
 };
 // DESIGN.md §3, written out here on purpose: the test must not trust the code it checks
-const BANDS: [number, string, string][] = [[250, '#C9D9C3', '#A3B89C'], [300, '#9FBFA8', '#7A9E85'], [350, '#6F9C8E', '#527D70'], [400, '#4A6F7A', '#35545D'], [Infinity, '#2E4057', '#1D2A3A']];
+const BANDS: [number, string, string][] = [[250, '#4F8A6B', '#3B6D53'], [350, '#8AAE86', '#6D9069'], [450, '#C9A989', '#AA8B6C'], [550, '#C98068', '#A8644E'], [Infinity, '#A8524A', '#873E37']];
 const ACCENT = '#007AFF';
 
 const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png' };
@@ -165,8 +165,8 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   const wrong = atoms.filter(([a, t]) => !new RegExp(`^(?:${FORMATS[a]!})$`).test(t));
   check('R6 data formats (cards and popup)', atoms.length > 0 && inPopup > 0 && wrong.length === 0, JSON.stringify(wrong.slice(0, 5)));
   const order = await js(`[...document.querySelectorAll('[data-card]')].every(c=>{const n=s=>[...c.querySelectorAll(s+' [data-a]')].map(e=>e.dataset.a).join(',');
-    return /^adress(,omrade)?,hyra,restid$/.test(n('[data-line="1"]'))&&/^storlek(,rum)?,kpm$/.test(n('[data-line="2"]'))})`);
-  check('R6 card grid: adress | hyra | restid / storlek · rum | kr/m²', order);
+    return /^adress(,omrade)?,restid$/.test(n('[data-line="1"]'))&&/^storlek(,rum)?,hyra,kpm$/.test(n('[data-line="2"]'))})`);
+  check('R6 card grid: adress | restid / storlek · rum | hyra kr/m²', order);
   const unknowns = await js<string>(`document.body.innerText`);
   check('R6 unknown values show as ? (rent, size, kr/m²)', unknowns.includes(`?${NB}kr`) && unknowns.includes(`?${NB}m²`) && unknowns.includes(`?${NB}kr/m²`));
 

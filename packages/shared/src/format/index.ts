@@ -4,11 +4,11 @@ export const SEP = ' · ';
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 
 export const PRICE_BANDS = [
-  { below: 250, color: '#C9D9C3', edge: '#A3B89C', text: '#4E6B47', label: '<250' },
-  { below: 300, color: '#9FBFA8', edge: '#7A9E85', text: '#3F6A4C', label: '250 till 299' },
-  { below: 350, color: '#6F9C8E', edge: '#527D70', text: '#2F5F51', label: '300 till 349' },
-  { below: 400, color: '#4A6F7A', edge: '#35545D', text: '#2C4E58', label: '350 till 399' },
-  { below: Infinity, color: '#2E4057', edge: '#1D2A3A', text: '#2E4057', label: '400+ kr/m²' },
+  { below: 250, color: '#4F8A6B', edge: '#3B6D53', text: '#2F5E45', label: '<250' },
+  { below: 350, color: '#8AAE86', edge: '#6D9069', text: '#46683F', label: '250 till 349' },
+  { below: 450, color: '#C9A989', edge: '#AA8B6C', text: '#7A5A3C', label: '350 till 449' },
+  { below: 550, color: '#C98068', edge: '#A8644E', text: '#8A4733', label: '450 till 549' },
+  { below: Infinity, color: '#A8524A', edge: '#873E37', text: '#7E2E28', label: '550+ kr/m²' },
 ] as const;
 export const PRICE_UNKNOWN = { color: '#AEAEB2', edge: '#8E8E93', text: '#6C6C70' } as const;
 

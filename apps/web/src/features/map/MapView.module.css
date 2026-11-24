@@ -12,14 +12,8 @@
 }
 /* Leaflet's popup, given this class through its options: only its content box is restyled */
 .popup :global(.leaflet-popup-content) {
-  margin: 12px 14px;
+  margin: 12px 32px 12px 14px; /* right: room for the close button beside restid */
   min-width: 220px;
   font: inherit;
 }
-/* .popup scope outranks Leaflet's own `.leaflet-container a` colour */
-.popup .open {
-  color: var(--accent);
-  font-size: 15px;
-  font-weight: 600;
-  margin-top: var(--space-1);
-}
+
