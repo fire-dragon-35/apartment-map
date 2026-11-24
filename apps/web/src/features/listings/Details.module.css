@@ -9,10 +9,10 @@
   font-size: 12px;
   font-weight: 600;
 }
-/* DESIGN.md §7 card grid: name | hyra | restid (spans two rows); size · rum | kr/m²; then full width lines. */
+/* DESIGN.md §7 card grid: name | restid; size · rum | hyra and kr/m²; then full width lines. */
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 3.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
   column-gap: 14px;
   row-gap: 2px;
   align-items: baseline;
@@ -27,17 +27,9 @@
   white-space: nowrap;
 }
 .num {
+  justify-self: end;
   text-align: right;
   font-variant-numeric: tabular-nums;
-}
-.time {
-  grid-column: 3;
-  grid-row: 1 / span 2;
-  align-self: center;
-}
-.chip {
-  grid-column: 2;
-  justify-self: end;
 }
 .full {
   grid-column: 1 / -1;

@@ -101,11 +101,11 @@ restid = walk if sl is missing or walk ≤ sl, else sl
 
 **Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
 
-**Card** (a full width `<button>`, then the source link below it, padding 12 16). Card and popup are identical: the same grid, the same link, three columns (name, numbers right aligned with tabular figures, restid):
+**Card** (a full width `<button>`, then the source link below it, padding 12 16). Card and popup are identical: the same grid, the same link, two columns (text left, numbers right aligned with tabular figures):
 
 ```
-Hornsgatan Södermalm          15.2k kr   23 min      (T1, area T3; restid spans two rows)
-52 m² · 2 rok               [296 kr/m²]              (T2)
+Hornsgatan Södermalm                     23 min      (T1, area T3; restid right aligned)
+52 m² · 2 rok                  15.2k kr [296 kr/m²]  (T2, hyra T1; right aligned)
 15 dec → 15 dec 2027 · [Samtrygg] · 9 d              (T3, full width)
 [förstahand]
 ! långt under marknadspris, kontrollera
@@ -113,11 +113,11 @@ gång 8 min › T18 · 1 stopp › T13 · 2 stopp › gång 5 min › Karlaplan 
 Öppna annons på Samtrygg ›                           (T3, underlined)
 ```
 
-Row 1: Adress, Område | Hyra | Restid. Row 2: Storlek, Rum | Pris per m². Line 3: Avtal, Källa, Ålder. Then tags, warning. The selected card ends with the route line: `gång N min › Karlaplan` when walking wins; line names `T` + number for metro, on their line colour.
+Row 1: Adress, Område | Restid. Row 2: Storlek, Rum | Hyra, Pris per m². Line 3: Avtal, Källa, Ålder. Then tags, warning. The selected card ends with the route line: `gång N min › Karlaplan` when walking wins; line names `T` + number for metro, on their line colour.
 
-New today: `new.bg` background. Selected: 2 px `selected` outline inside.
+New today: `new.bg` background. Selected and keyboard focus: 2 px `selected` outline inside, round the whole card; the first and last card take the panel's corner radius so the outline is never clipped. No blue focus ring.
 
-**Popup** (Leaflet popup, width 300 to 320): exactly the card (grid and link). No route line, as the map draws the route.
+**Popup** (Leaflet popup, content 270 to 290 wide, room on the right for the close button): exactly the card (grid and link). No route line, as the map draws the route.
 
 **Route on the map** (while the popup is open and `Visa resväg` is on): each leg on its own geometry. Walk: 3 px `#3A3A3C` dots. Transit: 4 px line colour on 7 px white. Walking only: one dotted line pin → Karlaplan.
 

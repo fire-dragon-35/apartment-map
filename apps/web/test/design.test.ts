@@ -165,8 +165,8 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   const wrong = atoms.filter(([a, t]) => !new RegExp(`^(?:${FORMATS[a]!})$`).test(t));
   check('R6 data formats (cards and popup)', atoms.length > 0 && inPopup > 0 && wrong.length === 0, JSON.stringify(wrong.slice(0, 5)));
   const order = await js(`[...document.querySelectorAll('[data-card]')].every(c=>{const n=s=>[...c.querySelectorAll(s+' [data-a]')].map(e=>e.dataset.a).join(',');
-    return /^adress(,omrade)?,hyra,restid$/.test(n('[data-line="1"]'))&&/^storlek(,rum)?,kpm$/.test(n('[data-line="2"]'))})`);
-  check('R6 card grid: adress | hyra | restid / storlek · rum | kr/m²', order);
+    return /^adress(,omrade)?,restid$/.test(n('[data-line="1"]'))&&/^storlek(,rum)?,hyra,kpm$/.test(n('[data-line="2"]'))})`);
+  check('R6 card grid: adress | restid / storlek · rum | hyra kr/m²', order);
   const unknowns = await js<string>(`document.body.innerText`);
   check('R6 unknown values show as ? (rent, size, kr/m²)', unknowns.includes(`?${NB}kr`) && unknowns.includes(`?${NB}m²`) && unknowns.includes(`?${NB}kr/m²`));
 

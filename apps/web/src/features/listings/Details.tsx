@@ -16,7 +16,7 @@ const Joined = ({ parts }: { parts: (ReactNode | null)[] }) =>
 
 /**
  * DESIGN.md §7: one layout for the card and the popup, a grid with the numbers in fixed columns
- * (name | hyra | restid, then size · rum | kr/m² chip, then the grey meta line, tags, warning).
+ * (name | restid, then size · rum | hyra and kr/m² chip, then the grey meta line, tags, warning).
  */
 export function Details({ l, today }: { l: Listing; today: string }) {
   const rum = fmt.rum(l.rooms), alder = fmt.alder(l.firstSeen, today);
@@ -26,8 +26,7 @@ export function Details({ l, today }: { l: Listing; today: string }) {
     <span className={styles.grid}>
       <span data-line="1" className={styles.row}>
         <span className={styles.name}><Atom name="adress" className={text.t1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" className={text.t3}>{l.area}</Atom></>}</span>
-        <Atom name="hyra" className={`${text.t1} ${text.nb} ${styles.num}`}>{fmt.hyra(l.rent)}</Atom>
-        <Atom name="restid" className={`${text.t1} ${text.nb} ${styles.num} ${styles.time}`}>{fmt.restid(l.t)}</Atom>
+        <Atom name="restid" className={`${text.t1} ${text.nb} ${styles.num}`}>{fmt.restid(l.t)}</Atom>
       </span>
       <span data-line="2" className={styles.row}>
         <span className={`${text.t2} ${text.nb}`}>
@@ -36,7 +35,10 @@ export function Details({ l, today }: { l: Listing; today: string }) {
             rum ? <Atom key="u" name="rum" className={text.nb}>{rum}</Atom> : null,
           ]} />
         </span>
-        <span className={styles.chip}><Chip fg={kpm.color} bg={kpm.background}><Atom name="kpm">{fmt.kpm(l.kpm)}</Atom></Chip></span>
+        <span className={`${styles.num} ${text.nb}`}>
+          <Atom name="hyra" className={text.t1}>{fmt.hyra(l.rent)}</Atom>{' '}
+          <Chip fg={kpm.color} bg={kpm.background}><Atom name="kpm">{fmt.kpm(l.kpm)}</Atom></Chip>
+        </span>
       </span>
       {meta}
     </span>
