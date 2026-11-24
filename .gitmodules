@@ -1,0 +1,3 @@
+[submodule "vendor/frame"]
+	path = vendor/frame
+	url = https://github.com/fire-dragon-35/frame.git

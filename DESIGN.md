@@ -1,8 +1,8 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 3.0, 23 nov 2026.
+Status: **locked**. Version 3.1, 24 nov 2026 (3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
-This file is the single source of truth for the page: today `legacy/index.html`, later `apps/web`. Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `legacy/tests/design_check.py`.
+This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
 **Changing the design:** edit this file first, then the page, then run the check. A change is done only when the check prints ALL PASS.
 
@@ -56,10 +56,10 @@ SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18,
 
 ## 4. Layout (top to bottom, one column, max width 720 px)
 
-1. **Header** (padding 12 16): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 17k kr · ≥ 20 m² · ≥ 6 mån · ≤ 30 min`; a `<details>` labelled `Filter` and, beside it, a checkbox `Visa resväg` (on by default, remembered). The details hold three sliders (Restid 10 to 30 min step 1, Hyra 8k to 17k kr step 500, Storlek 20 to 60 m² step 5; remembered in the browser) and a checkbox `Bara nya`.
-2. **Map**, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
+1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 17k kr · ≥ 20 m² · ≥ 6 mån · ≤ 30 min`; a `<details>` labelled `Filter` and, beside it, a checkbox `Visa resväg` (on by default, remembered). The details hold three sliders (Restid 10 to 30 min step 1, Hyra 8k to 17k kr step 500, Storlek 20 to 60 m² step 5; remembered in the browser) and a checkbox `Bara nya`.
+2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
 3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 299`, `300 till 349`, `350 till 399`, `400+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
-4. **List** of cards, divider between cards, sorted by restid then hyra.
+4. **List** of cards in a flush panel, divider between cards, sorted by restid then hyra.
 
 ## 5. Data formats
 
@@ -178,3 +178,29 @@ Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ slider, contract �
 * R11: never more than one popup, outlined card or ringed pin.
 
 Run: `pip install playwright && playwright install chromium && python legacy/tests/design_check.py`
+
+The same checks run on `apps/web` with `npm test -w @lk/web`. That test finds elements by ids and data attributes, never by CSS class names (CSS Modules hash them): `#map`, `#list`, `#nya`, `#f-min`, `#f-rent`, `#f-m2`, `#f-new`, `#f-route`, `#c{id}` and `[data-card]` for cards, `aria-pressed="true"` for the selected card, `[data-new]` for a card new today, `[data-line="1"]` / `[data-line="2"]` for card lines, `[data-a]` for atoms.
+
+## 12. Structure (Frame)
+
+`apps/web` is built on Frame (`vendor/frame`, a git submodule pinned to one commit; never edited here). Its rules apply: `vendor/frame/AGENTS.md` and `FRAME.md`.
+
+**Composition** (top to bottom, one column):
+
+```
+ThemeProvider (theme from section 3)
+└ AppShell
+  └ Container              max width 720 px (token --container-max), gutters from Frame
+    └ Page
+      ├ Page.Header        Header: title, meta line, Filter <details>, Visa resväg
+      └ Page.Content
+        ├ Panel flush      Map
+        ├ Legend           Stack, row, wrap
+        └ Panel flush      List (cards with dividers)
+```
+
+* **Spacing** comes from Frame's tokens (`--space-*`, `--space-gutter`); no pixel values in app CSS except the ones this file names (card padding 12 16, map height, pin and ring sizes).
+* **Controls:** `Checkbox` from `@frame/ui` for `Bara nya` and `Visa resväg`; the sliders are native range inputs laid out with `Grid` (label 3, slider 6, value 3 columns).
+* **Colours** from section 3 reach CSS as custom properties on `:root` (one source: `@lk/shared`). A colour that depends on data (price band, source, line) is passed to its element as a CSS custom property, the one sanctioned inline style.
+* **Folders:** `src/app` (entry, theme, providers, page composition), `src/features/listings` (Listing, data hook, list, card, details), `src/features/filters` (state, header), `src/features/map` (Leaflet map, pins, popup, route). CSS Modules next to their component.
+* **New shared components** go through Frame's approval rule; app components need none.

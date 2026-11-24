@@ -10,6 +10,9 @@
     "test": "npm run build:test && tsx --test test/*.test.ts"
   },
   "dependencies": {
+    "@frame/core": "*",
+    "@frame/themes": "*",
+    "@frame/ui": "*",
     "@lk/shared": "*",
     "@supabase/supabase-js": "^2.46.1",
     "@tanstack/react-query": "^5.62.0",
@@ -26,6 +29,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "playwright": "^1.49.0",
     "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
     "vite": "^6.0.0"
   }
 }

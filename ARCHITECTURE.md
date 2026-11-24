@@ -249,7 +249,7 @@ Karlaplan times are computed by the worker for every new place and are free; oth
 
 ## 9. Web app
 
-* **Stack:** Vite + React + TypeScript, Leaflet (react-leaflet), TanStack Query, supabase-js (anon key, row level security). Hosted on Vercel. No state library and no UI framework: React state, TanStack Query, plain CSS.
+* **Stack:** Vite + React + TypeScript on **Frame** (`vendor/frame`, a git submodule pinned to one commit and never edited here: layout primitives from `@frame/core`, controls from `@frame/ui`, theme through `@frame/themes`), CSS Modules, Leaflet (react-leaflet), TanStack Query, supabase-js (anon key, row level security). Hosted on Vercel. No state library: React state and TanStack Query. Composition and folder rules: DESIGN.md §12; Frame's own rules: `vendor/frame/AGENTS.md`.
 * **Behaviour and look:** exactly `DESIGN.md` (v3, locked): one scrolling page, map on top, list below, one Leaflet popup, `Visa resväg`. Formats, price bands, source and line colours, the walk rule, the contract rule, the pin radius and the note tags live in `packages/shared` and are never repeated in the app; the design tokens are set as CSS variables from the same shared constants.
 * **Step 5 scope:** Karlaplan only. Own pins, sign in and payment (step 6) have seams but no code; Facebook listings (step 3) are not shown yet.
 * **Data loading:** one read of the view `listings_karlaplan` (migration `20261124030000`): active listings, copies hidden, with `source_id`, the Karlaplan travel time and legs, and `also_on` (the other sites that list the same flat). The view holds only rows the page can ever show with its slider limits (restid at most 31 minutes in the database, which still has to be corrected by the page's own walk estimate; rent at most 17 000 or unknown; size at least 20 m² or unknown), so the payload stays small; the page loads it whole (paged past 1 000 rows), keeps it in TanStack Query with `staleTime` one hour, and filters on the client. `restid` is computed in the page from the exact position as DESIGN.md §6 says: `travelMinutes(walkMinutes(listing, Karlaplan), transit_min)`. "Ny" is `first_seen` equal to today in Stockholm (R8). Missing values render as `?` or not at all; a null never crashes the page. Route lines come from `legs`; with no legs and walking faster nothing is drawn.
@@ -350,7 +350,8 @@ apps/worker/test/             tests 1 and 2 of §13 (node:test)
 apps/worker/systemd/          daily timer for this laptop + install.sh
 apps/worker/router/           r5py matrix builder (Python subprocess), requirements.txt, setup.sh
 apps/worker/cache/            GTFS, cropped OSM, JDK (gitignored)
-apps/web/                     React app (step 5): src/ (hooks, components, styles), test/ (page rules)
+apps/web/                     React app on Frame: src/app, src/features/{listings,filters,map}, test/ (page rules); DESIGN.md §12
+vendor/frame/                 Frame, git submodule (read only)
 supabase/migrations/          SQL in §5
 supabase/functions/           travel-times (thin Deno wrapper); later extract-fb, stripe-webhook, notify (steps 3, 6)
 legacy/                       old pipeline, still running

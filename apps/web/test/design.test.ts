@@ -116,7 +116,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
     await page.touchscreen.tap(xy[0], xy[1]);
     await wait(700);
     const s = await sel();
-    const outlined = s !== null && await js(`document.querySelector('.card.sel')?.id==='c'+${s}`);
+    const outlined = s !== null && await js(`document.querySelector('[data-card][aria-pressed="true"]')?.id==='c'+${s}`);
     const still = (await js('scrollY')) === y0 && (await js("document.getElementById('list').scrollTop")) === l0;
     if (!(s !== null && under.includes(s) && await isOpen() && outlined && still)) bad.push(lid);
   }
@@ -159,12 +159,12 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   check('R5 pins: fill = price, radius = size, ring only when selected', r5 && pins.filter(p => p.on).length === 1);
 
   // R6: every atom in cards and the open popup
-  const atoms = await js<[string, string][]>(`[...document.querySelectorAll('.card [data-a], .leaflet-popup [data-a]')].map(e=>[e.dataset.a,e.textContent])`);
+  const atoms = await js<[string, string][]>(`[...document.querySelectorAll('[data-card] [data-a], .leaflet-popup [data-a]')].map(e=>[e.dataset.a,e.textContent])`);
   const inPopup = await js<number>("document.querySelectorAll('.leaflet-popup [data-a]').length");
   const wrong = atoms.filter(([a, t]) => !new RegExp(`^(?:${FORMATS[a]!})$`).test(t));
   check('R6 data formats (cards and popup)', atoms.length > 0 && inPopup > 0 && wrong.length === 0, JSON.stringify(wrong.slice(0, 5)));
-  const order = await js(`[...document.querySelectorAll('.card')].every(c=>{const n=s=>[...c.querySelectorAll(s+' [data-a]')].map(e=>e.dataset.a).join(',');
-    return /^adress(,omrade)?,restid$/.test(n('.l1'))&&/^hyra,storlek(,rum)?,kpm$/.test(n('.l2'))})`);
+  const order = await js(`[...document.querySelectorAll('[data-card]')].every(c=>{const n=s=>[...c.querySelectorAll(s+' [data-a]')].map(e=>e.dataset.a).join(',');
+    return /^adress(,omrade)?,restid$/.test(n('[data-line="1"]'))&&/^hyra,storlek(,rum)?,kpm$/.test(n('[data-line="2"]'))})`);
   check('R6 card line order: adress · restid / hyra · storlek · rum · kr/m²', order);
   const unknowns = await js<string>(`document.body.innerText`);
   check('R6 unknown values show as ? (rent, size, kr/m²)', unknowns.includes(`?${NB}kr`) && unknowns.includes(`?${NB}m²`) && unknowns.includes(`?${NB}kr/m²`));
@@ -179,7 +179,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
 
   // R11: one selection at a time
   await openOne(); await scrollTo(0); await page.locator(`#c${ids[1]}`).scrollIntoViewIfNeeded(); await page.click(`#c${ids[1]}`); await wait(1500);
-  const one = await js(`document.querySelectorAll('.card.sel').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&[...__lgh.markers.values()].filter(m=>m.options.weight===3).length===1`);
+  const one = await js(`document.querySelectorAll('[data-card][aria-pressed="true"]').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&[...__lgh.markers.values()].filter(m=>m.options.weight===3).length===1`);
   check('R11 one popup, one outlined card, one ringed pin', one);
   await close();
 
@@ -197,7 +197,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   const n2 = await expectedNya(), s2 = await shown();
   check('R8 nya counts within filters', s1 === `${n1}${NB}nya` && s2 === `${n2}${NB}nya` && n1 !== n2, `${s1}/${n1} ${s2}/${n2}`);
   await page.check('#f-new'); await wait(200);
-  check('R8 Bara nya keeps the nya count and shows only new cards', (await shown()) === `${n2}${NB}nya` && (await js<number>("document.querySelectorAll('.card:not(.new)').length")) === 0);
+  check('R8 Bara nya keeps the nya count and shows only new cards', (await shown()) === `${n2}${NB}nya` && (await js<number>("document.querySelectorAll('[data-card]:not([data-new])').length")) === 0);
   await page.uncheck('#f-new');
 
   // R9: restid = min(walk, SL), walk = haversine × 1.3 / 80 (written out here, not taken from the page)

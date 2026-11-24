@@ -1,0 +1,9 @@
+/* Clips card backgrounds to the panel's rounded corners. */
+.list {
+  border-radius: inherit;
+  overflow: hidden;
+}
+.empty {
+  margin: 0;
+  padding: var(--space-6) var(--space-4);
+}

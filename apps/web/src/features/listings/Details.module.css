@@ -1,0 +1,11 @@
+.tag {
+  font-size: 12px;
+  color: var(--t2);
+  background: var(--tag);
+  border-radius: 6px;
+  padding: 1px 7px;
+}
+.warn {
+  font-size: 12px;
+  font-weight: 600;
+}

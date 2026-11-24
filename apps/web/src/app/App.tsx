@@ -1,17 +1,19 @@
+import { AppShell, Container, Page, Panel } from '@frame/core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { passesFilters, type PageFilters } from '@lk/shared';
-import { Header } from './components/Header.tsx';
-import { Legend } from './components/Legend.tsx';
-import { ListView } from './components/ListView.tsx';
-import { MapView, type MapHandle } from './components/MapView.tsx';
-import { useListings } from './data/useListings.ts';
-import type { Listing } from './domain/Listing.ts';
-import { useFilters, useRouteToggle } from './state/useFilters.ts';
+import { Header } from '../features/filters/Header.tsx';
+import { useFilters, useRouteToggle } from '../features/filters/useFilters.ts';
+import type { Listing } from '../features/listings/Listing.ts';
+import { ListView } from '../features/listings/ListView.tsx';
+import { useListings } from '../features/listings/useListings.ts';
+import { Legend } from '../features/map/Legend.tsx';
+import { MapView, type MapHandle } from '../features/map/MapView.tsx';
 import { hooks } from './test-hooks.ts';
 
 const REDUCED = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
-export default function App() {
+/** The page (DESIGN.md §12): state lives here, the features only render and report. */
+export function App() {
   const { listings, today, loaded, error } = useListings();
   const [filters, setFilters] = useFilters();
   const [routes, setRoutes] = useRouteToggle();
@@ -51,11 +53,24 @@ export default function App() {
   if (import.meta.env.MODE === 'test') Object.assign(hooks, { all: listings, visible, selectedId, today });
 
   return (
-    <>
-      <Header filters={filters} onFilters={changeFilters} routes={routes} onRoutes={setRoutes} shown={visible.length} newCount={newCount} loaded={loaded} error={error} />
-      <MapView ref={map} items={visible} today={today} selected={selected} showRoutes={routes} onSelect={select} onClose={close} />
-      <Legend />
-      <ListView items={visible} today={today} selectedId={selected?.id ?? null} onPick={pick} error={error} />
-    </>
+    <AppShell>
+      <Container>
+        <Page>
+          <Page.Header>
+            <Header filters={filters} onFilters={changeFilters} routes={routes} onRoutes={setRoutes}
+              shown={visible.length} newCount={newCount} loaded={loaded} error={error} />
+          </Page.Header>
+          <Page.Content>
+            <Panel flush aria-label="Karta">
+              <MapView ref={map} items={visible} today={today} selected={selected} showRoutes={routes} onSelect={select} onClose={close} />
+            </Panel>
+            <Legend />
+            <Panel flush aria-label="Annonser">
+              <ListView items={visible} today={today} selectedId={selected?.id ?? null} onPick={pick} error={error} />
+            </Panel>
+          </Page.Content>
+        </Page>
+      </Container>
+    </AppShell>
   );
 }

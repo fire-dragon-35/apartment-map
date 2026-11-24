@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { stockholmToday } from '@lk/shared';
-import { Listing, type ListingRow } from '../domain/Listing.ts';
-import { supabase } from './supabase.ts';
+import { Listing, type ListingRow } from './Listing.ts';
+import { supabase } from '../../app/supabase.ts';
 
 const PAGE = 1000;   // PostgREST returns at most this many rows per request
 

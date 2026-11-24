@@ -1,0 +1,17 @@
+/* DESIGN.md §3 type scale, shared by every feature. */
+.t1 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--t1);
+}
+.t2 {
+  font-size: 13px;
+  color: var(--t2);
+}
+.t3 {
+  font-size: 12px;
+  color: var(--t3);
+}
+.nb {
+  white-space: nowrap;
+}

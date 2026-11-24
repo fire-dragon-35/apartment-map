@@ -1,0 +1,20 @@
+/* The app's whole global stylesheet (Frame §10: small). Layout belongs to Frame primitives, the rest to CSS Modules. */
+:root {
+  --container-max: 45rem; /* DESIGN.md §4: one column, max width 720 px */
+}
+body {
+  font: 400 13px/1.4 var(--font-body);
+  color: var(--t1);
+  background: var(--color-background);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}

@@ -1,0 +1,25 @@
+/* DESIGN.md §4.2: 55 vh, at least 320 px, inside a flush panel whose corners it follows. */
+.map {
+  height: 55vh;
+  min-height: 320px;
+  border-radius: inherit;
+  background: var(--map-bg);
+  font: inherit;
+}
+/* DESIGN.md §7: pins on their own canvas pane above rings and routes */
+.pins {
+  z-index: 450;
+}
+/* Leaflet's popup, given this class through its options: only its content box is restyled */
+.popup :global(.leaflet-popup-content) {
+  margin: 12px 14px;
+  min-width: 220px;
+  font: inherit;
+}
+/* .popup scope outranks Leaflet's own `.leaflet-container a` colour */
+.popup .open {
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: var(--space-1);
+}

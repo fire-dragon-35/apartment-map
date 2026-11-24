@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": false, "declaration": false, "emitDeclarationOnly": false, "noEmit": true,
+    "module": "ESNext", "moduleResolution": "Bundler",
     "jsx": "react-jsx", "lib": ["ES2022", "DOM", "DOM.Iterable"], "types": ["vite/client", "node"],
     "allowImportingTsExtensions": true, "isolatedModules": true
   },

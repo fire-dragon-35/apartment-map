@@ -1,0 +1,19 @@
+.meta {
+  margin: 0;
+}
+.summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+.filters {
+  margin-top: var(--space-2);
+}
+.range {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.value {
+  display: block;
+  text-align: right;
+}

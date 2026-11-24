@@ -3,10 +3,11 @@ import 'leaflet/dist/leaflet.css';
 import { forwardRef, memo, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Circle, CircleMarker, MapContainer, Pane, TileLayer, Tooltip, useMap } from 'react-leaflet';
-import { fmt, KARLAPLAN, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR, lineStyle } from '@lk/shared';
-import type { Listing } from '../domain/Listing.ts';
-import { hooks } from '../test-hooks.ts';
-import { PopupBody } from './Popup.tsx';
+import { fmt, KARLAPLAN, lineStyle, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR } from '@lk/shared';
+import { hooks } from '../../app/test-hooks.ts';
+import type { Listing } from '../listings/Listing.ts';
+import { Popup } from './Popup.tsx';
+import styles from './MapView.module.css';
 
 const CENTRE: [number, number] = [KARLAPLAN.lat, KARLAPLAN.lon];
 const REDUCED = matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -75,7 +76,7 @@ function RouteLayer({ selected, show }: { selected: Listing | null; show: boolea
  */
 function SelectionPopup({ selected, today, onClose }: { selected: Listing | null; today: string; onClose: () => void }) {
   const map = useMap();
-  const popup = useMemo(() => L.popup({ maxWidth: 280, autoPanPadding: [16, 16] }), []);
+  const popup = useMemo(() => L.popup({ maxWidth: 280, autoPanPadding: [16, 16], className: styles.popup }), []);
   const node = useMemo(() => document.createElement('div'), []);
   const closed = useRef(onClose);
   closed.current = onClose;
@@ -91,7 +92,7 @@ function SelectionPopup({ selected, today, onClose }: { selected: Listing | null
     popup.options.offset = L.point(0, -selected.radius);
     popup.setLatLng(selected.latlng).setContent(node).openOn(map);
   }, [selected, map, popup, node]);
-  return selected ? createPortal(<PopupBody l={selected} today={today} />, node) : null;
+  return selected ? createPortal(<Popup l={selected} today={today} />, node) : null;
 }
 
 const Controller = forwardRef<MapHandle, { onSelect: (id: number) => void }>(function Controller({ onSelect }, ref) {
@@ -115,6 +116,7 @@ interface Props {
   onClose: () => void;
 }
 
+/** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the rings, the pins, the popup and the route. */
 export const MapView = forwardRef<MapHandle, Props>(function MapView({ items, today, selected, showRoutes, onSelect, onClose }, ref) {
   const markers = useRef(new Map<number, L.CircleMarker>());
   const register = useRef((id: number, m: L.CircleMarker | null) => { if (m) markers.current.set(id, m); else markers.current.delete(id); }).current;
@@ -126,7 +128,7 @@ export const MapView = forwardRef<MapHandle, Props>(function MapView({ items, to
   useEffect(() => { if (selected) markers.current.get(selected.id)?.bringToFront(); }, [selected]);
 
   return (
-    <MapContainer id="map" aria-label="Karta" center={CENTRE} zoom={13} zoomControl={false}>
+    <MapContainer id="map" className={styles.map} center={CENTRE} zoom={13} zoomControl={false}>
       <TileLayer url={esri('Base')} maxZoom={17} attribution="Esri, HERE, OpenStreetMap" />
       <TileLayer url={esri('Reference')} maxZoom={17} opacity={0.55} />
       {[2, 4, 6].map(km => <Circle key={km} center={CENTRE} radius={km * 1000} pathOptions={{ color: '#8E8E93', weight: 1, dashArray: '4 4', fill: false }} interactive={false} />)}
@@ -134,7 +136,7 @@ export const MapView = forwardRef<MapHandle, Props>(function MapView({ items, to
         <Tooltip permanent direction="right" offset={[8, 0]}>Karlaplan</Tooltip>
       </CircleMarker>
       {/* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */}
-      <Pane name="pins" style={{ zIndex: 450 }}>
+      <Pane name="pins" className={styles.pins}>
         {ordered.map(l => <Pin key={l.id} l={l} on={l.id === selected?.id} renderer={canvas} onSelect={onSelect} register={register} />)}
       </Pane>
       <RouteLayer selected={selected} show={showRoutes} />

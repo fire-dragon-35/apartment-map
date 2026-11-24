@@ -4,7 +4,10 @@
   "type": "module",
   "workspaces": [
     "packages/*",
-    "apps/*"
+    "apps/*",
+    "vendor/frame/packages/core",
+    "vendor/frame/packages/ui",
+    "vendor/frame/packages/themes"
   ],
   "scripts": {
     "typecheck": "tsc -b && tsc -p apps/web",
@@ -17,8 +20,10 @@
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "eslint": "^9.15.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "supabase": "^3.3.0",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.15.0",
-    "supabase": "^3.3.0"
+    "typescript-eslint": "^8.15.0"
   }
 }
