@@ -14,13 +14,13 @@ export const SLIDERS = {
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 
 export const PRICE_BANDS = [
-  { below: 250, color: '#4F8A6B', edge: '#3B6D53', text: '#2F5E45', label: '<250' },
-  { below: 350, color: '#8AAE86', edge: '#6D9069', text: '#46683F', label: '250 till 349' },
-  { below: 450, color: '#C9A989', edge: '#AA8B6C', text: '#7A5A3C', label: '350 till 449' },
-  { below: 550, color: '#C98068', edge: '#A8644E', text: '#8A4733', label: '450 till 549' },
-  { below: Infinity, color: '#A8524A', edge: '#873E37', text: '#7E2E28', label: '550+ kr/m²' },
+  { below: 250, color: '#34C759', edge: '#FFFFFF', text: '#1E7B34', label: '<250' },
+  { below: 350, color: '#A3D63C', edge: '#FFFFFF', text: '#4A7208', label: '250 till 349' },
+  { below: 450, color: '#FFCC00', edge: '#FFFFFF', text: '#7F6200', label: '350 till 449' },
+  { below: 550, color: '#FF9500', edge: '#FFFFFF', text: '#9C4E00', label: '450 till 549' },
+  { below: Infinity, color: '#FF3B30', edge: '#FFFFFF', text: '#B42318', label: '550+ kr/m²' },
 ] as const;
-export const PRICE_UNKNOWN = { color: '#AEAEB2', edge: '#8E8E93', text: '#6C6C70' } as const;
+export const PRICE_UNKNOWN = { color: '#AEAEB2', edge: '#FFFFFF', text: '#6E6E6E' } as const;
 
 export const priceBand = (kpm: number | null) => (kpm === null ? null : PRICE_BANDS.find(b => kpm < b.below)!);
 

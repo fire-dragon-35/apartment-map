@@ -14,7 +14,7 @@ import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, before, test } from 'node:test';
 import { chromium, type Browser, type Page } from 'playwright';
-import { stockholmToday } from '@lk/shared';
+import { PRICE_BANDS, PRICE_UNKNOWN, stockholmToday, TOKENS } from '@lk/shared';
 import { buildRows } from './fixture.ts';
 
 const DIST = fileURLToPath(new URL('../dist-test/', import.meta.url));
@@ -32,8 +32,8 @@ const FORMATS: Record<string, string> = {   // DESIGN.md §5
   alder: `idag|\\d+${NB}d`,
 };
 // DESIGN.md §3, written out here on purpose: the test must not trust the code it checks
-const BANDS: [number, string, string][] = [[250, '#4F8A6B', '#3B6D53'], [350, '#8AAE86', '#6D9069'], [450, '#C9A989', '#AA8B6C'], [550, '#C98068', '#A8644E'], [Infinity, '#A8524A', '#873E37']];
-const ACCENT = '#007AFF';
+const BANDS: [number, string, string][] = PRICE_BANDS.map(b => [b.below, b.color, b.edge]);
+const ACCENT = TOKENS.accent.toUpperCase();
 const statusRow = (source: string, over: Record<string, unknown> = {}) => ({
   source, started_at: new Date().toISOString(), finished_at: new Date().toISOString(), complete: true, pages: 3, fetched: 210,
   skipped: 5, invalid: 1, kept: 204, error: null, duration_ms: 4000, usual_kept: 200, usual_runs: 7,
@@ -161,9 +161,9 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   const pins = await js<{ id: number; fill: string; kpm: number | null; radius: number; expected: number; weight: number; color: string; on: boolean }[]>(
     `[...__lgh.markers].map(([id,m])=>{const l=__lgh.visible.find(x=>x.id===id),o=m.options,a=Math.sqrt(20),b=Math.sqrt(65);
       return {id,fill:o.fillColor,kpm:l.kpm,radius:o.radius,expected:6+6*Math.min(1,Math.max(0,(Math.sqrt(l.m2||20)-a)/(b-a))),weight:o.weight,color:o.color,on:id===__lgh.selectedId}})`);
-  const priceOf = (kpm: number | null) => (kpm === null ? '#AEAEB2' : BANDS.find(([max]) => kpm < max)![1]);
-  const edgeOf = (kpm: number | null) => (kpm === null ? '#8E8E93' : BANDS.find(([max]) => kpm < max)![2]);
-  const r5 = pins.length > 0 && pins.every(p => p.fill === priceOf(p.kpm) && Math.abs(p.radius - p.expected) < 1e-9 && (p.on ? p.weight === 2 && p.color === '#1C1C1E' : p.weight === 1.5 && p.color === edgeOf(p.kpm)));
+  const priceOf = (kpm: number | null) => (kpm === null ? PRICE_UNKNOWN.color : BANDS.find(([max]) => kpm < max)![1]);
+  const edgeOf = (kpm: number | null) => (kpm === null ? PRICE_UNKNOWN.edge : BANDS.find(([max]) => kpm < max)![2]);
+  const r5 = pins.length > 0 && pins.every(p => p.fill === priceOf(p.kpm) && Math.abs(p.radius - p.expected) < 1e-9 && (p.on ? p.weight === 2 && p.color === TOKENS.selected : p.weight === 1.5 && p.color === edgeOf(p.kpm)));
   check('R5 pins: fill = price, radius = size, ring only when selected', r5 && pins.filter(p => p.on).length === 1);
 
   // R6: every atom in cards and the open popup
@@ -214,10 +214,10 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
     return l.t===((l.sl==null||w<=l.sl)?w:l.sl)})`);
   check('R9 restid = min(walk, SL)', r9);
 
-  // R12: blue (accent) is only Karlaplan on the map: no pin, ring or route in the accent colour
+  // R12: the accent is only Karlaplan and the selected pin's ring on the map: no other pin, ring or route in it
   await openOne();
-  const blue = await js<boolean>(`[...__lgh.markers.values()].some(m=>[m.options.color,m.options.fillColor].some(c=>String(c).toUpperCase()==='${ACCENT}'))||__lgh.route.getLayers().some(p=>String(p.options.color).toUpperCase()==='${ACCENT}')`);
-  check('R12 no accent blue on the map except Karlaplan', !blue && (await count()) > 0);
+  const blue = await js<boolean>(`[...__lgh.markers.entries()].filter(([id])=>id!==__lgh.selectedId).map(([,m])=>m).some(m=>[m.options.color,m.options.fillColor].some(c=>String(c).toUpperCase()==='${ACCENT}'))||__lgh.route.getLayers().some(p=>String(p.options.color).toUpperCase()==='${ACCENT}')`);
+  check('R12 accent on the map only for Karlaplan and the selected ring', !blue && (await count()) > 0);
   await close();
 
   // Datakällor: the scrape's state is on the page, and an incomplete source is not hidden behind a green line

@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 3.9, 25 nov 2026 (3.9: the app gets a navbar, a footer and a landing page, section 13; the map page moves to `#/karta`, every rule in sections 1 to 11 applies to that page. 3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 4.0, 25 nov 2026 (4.0: brand EnkelLGH; black and white with one indigo accent; original traffic light price colours in steps of 100; sources and tags neutral grey; warning black; Inter Tight; selected pin ring and card outline in indigo; R13. 3.9: the app gets a navbar, a footer and a landing page, section 13; the map page moves to `#/karta`, every rule in sections 1 to 11 applies to that page. 3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
@@ -27,31 +27,39 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | R2 ✓ | Tapping a pin MUST open its popup, draw its route and outline its card, and MUST NOT scroll the page or the list. |
 | R3 ✓ | Tapping a card MUST select it: outline the card, draw its route and open its popup. It MUST NOT scroll the page or move the map (no pan, no zoom). Tapping the selected card again closes it. |
 | R4 ✓ | The popup's close button, a tap on empty map, and Esc MUST close the popup and clear the selection. |
-| R5 ✓ | A pin MUST show only price per m² (fill) and size (radius). Selected adds a dark ring. Nothing else. |
+| R5 ✓ | A pin MUST show only price per m² (fill) and size (radius). Selected adds an indigo (`selected`) ring. Nothing else. |
 | R6 ✓ | Every datum MUST use the format in section 5, in cards and popups. |
 | R7 ✓ | UI text MUST NOT contain en dashes or em dashes. |
 | R8 ✓ | The "nya" count MUST count only new listings that match the other filters. |
 | R9 ✓ | Restid MUST be the faster of walking and SL (section 6). |
 | R10 ✓ | With `Visa resväg` on, the selected listing's route MUST be drawn on the map while its popup is open and removed when it closes. With it off, no route is drawn. |
 | R11 ✓ | Only one listing can be selected: one popup, one outlined card, one ringed pin. |
-| R12 | Blue (`accent`) MUST NOT appear on the map except Karlaplan. |
+| R12 ✓ | The accent (indigo) MUST NOT appear on the map except Karlaplan and the selected pin's ring. |
+| R13 | A selected or highlighted card's outline and background MUST follow the list's rounded corners (first and last card inherit the radius); no clipped corners. |
 
 ## 3. Tokens
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `price.1` … `price.5` | #4F8A6B, #8AAE86, #C9A989, #C98068, #A8524A (muted green → beige → red) | pin fill and price dot: under 250, 250 till 349, 350 till 449, 450 till 549, 550 och mer kr/m² |
+| `price.1` … `price.5` | #34C759, #A3D63C, #FFCC00, #FF9500, #FF3B30 (traffic light) | pin fill and price dot: under 250, 250 till 349, 350 till 449, 450 till 549, 550 och mer kr/m² |
 | `price.unknown` | #AEAEB2 | no kr/m² |
-| `price.edge.1` … `.5` | #3B6D53, #6D9069, #AA8B6C, #A8644E, #873E37 (unknown: #8E8E93) | pin edge, a darker shade of the fill |
-| `text.1` / `.2` / `.3` | #1C1C1E / #3A3A3C / #6C6C70 | primary / secondary / tertiary text |
-| `line` | #E5E5EA | dividers |
-| `accent` | #007AFF | Karlaplan, links |
-| `new.bg` | #EEF5FF | card of a listing new today |
-| `selected` | #1C1C1E | pin ring, card outline |
-| `price.text.1` … `.5` | #2F5E45, #46683F, #7A5A3C, #8A4733, #7E2E28 | text in the kr/m² chip (background: the price colour at 20 %) |
-| source colours | Qasa #4B48C9, Bostadsförmedlingen #0A6F8E, Samtrygg #8A3FB5, HomeQ #1F7A5C, Facebook #1662C4, other #6C6C70 | text in the source chip (background: same colour at 12 %) |
+| `price.edge` | #FFFFFF | pin edge, every band |
+| `price.text.1` … `.5` | #1E7B34, #4A7208, #7F6200, #9C4E00, #B42318 | text in the kr/m² chip (background: the price colour at 20 %) |
+| `text.1` / `.2` / `.3` | #0A0A0A / #3A3A3A / #6E6E6E | primary / secondary / tertiary text |
+| `line` | #EAEAEA | dividers |
+| `accent` | #5B4BFF (indigo) | logo `LGH`, primary buttons, links, Karlaplan, the `ny` badge text colour family; never a data colour |
+| `accent.text` | #3A2DC2 | text on `new.bg`, the `ny` badge and the `{N} nya` count |
+| `new.bg` | #EEEBFF | `ny` badge background and the card of a listing new today |
+| `selected` | #5B4BFF | pin ring, card outline (2 px) |
+| `tag.bg` | #F0F0F2 | source chip and tag badges (text `text.2`); sources are told apart by name, never by colour |
+| `warn.bg` / `warn.text` | #16161C / #FFFFFF | the warning badge (`! …`); red and orange belong to price |
+| `map.bg` | #F1F1EE | map background |
 
-Type: system font (SF Pro / Inter), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid). Hyra on the card is 15 / 400 `text.1`, without `kr`. T2 13 / 400 `text.2` (size, rooms, kr/m², contract, route). T3 12 / 400 `text.3` (area, source, age, legend).
+**Colour jobs (never mix):** traffic light = price only; indigo = the app (brand, selection, new, actions); black = warning; grey = everything else.
+
+**Brand:** name `EnkelLGH`; wordmark `Enkel` regular + `LGH` 800 in `accent`, letter spacing −0.02 em. No icon yet.
+
+Type: Inter Tight (self hosted, `@fontsource-variable/inter-tight`), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid). Hyra on the card is 15 / 400 `text.1`, without `kr`. T2 13 / 400 `text.2` (size, rooms, kr/m², contract, route). T3 12 / 400 `text.3` (area, source, age, legend).
 
 SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18, 19 #2EA84A; pendeltåg #EC619F; spårväg #F28C00; buss #E3242B; båt #00A3AD; gång #3A3A3C.
 

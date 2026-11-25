@@ -1,3 +1,4 @@
+import '@fontsource-variable/inter-tight';
 import '@frame/core/styles.css';
 import './app/global.css';
 import { ThemeProvider } from '@frame/themes';

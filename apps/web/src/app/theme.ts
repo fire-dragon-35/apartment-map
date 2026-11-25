@@ -5,7 +5,7 @@
 import type { Theme } from '@frame/themes';
 import { cssVariables, TOKENS } from '@lk/shared';
 
-const FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif';
+const FONT = '"Inter Tight Variable", system-ui, -apple-system, sans-serif';
 
 export const appTheme: Theme = {
   name: 'lagenhetskartan',

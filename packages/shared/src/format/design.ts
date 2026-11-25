@@ -5,9 +5,10 @@
 import { SOURCE_NAMES, type Source } from '../domain/source.ts';
 import { PRICE_BANDS, PRICE_UNKNOWN, priceBand, SLIDERS } from './index.ts';
 
+/** DESIGN.md §3 (v4.0, EnkelLGH): black and white, one indigo accent, traffic light only for price. */
 export const TOKENS = {
-  text1: '#1C1C1E', text2: '#3A3A3C', text3: '#6C6C70', line: '#E5E5EA', accent: '#007AFF',
-  newBg: '#EEF5FF', selected: '#1C1C1E', tagBg: '#F2F2F7', mapBg: '#F2F2EF',
+  text1: '#0A0A0A', text2: '#3A3A3A', text3: '#6E6E6E', line: '#EAEAEA', accent: '#5B4BFF', accentText: '#3A2DC2',
+  newBg: '#EEEBFF', selected: '#5B4BFF', tagBg: '#F0F0F2', mapBg: '#F1F1EE', warnBg: '#16161C', warnText: '#FFFFFF',
 } as const;
 
 /** CSS custom properties for :root, so the style sheet never repeats a token. */
@@ -15,15 +16,15 @@ export function cssVariables(): Record<string, string> {
   return {
     '--t1': TOKENS.text1, '--t2': TOKENS.text2, '--t3': TOKENS.text3, '--line': TOKENS.line, '--accent': TOKENS.accent,
     '--new': TOKENS.newBg, '--selected': TOKENS.selected, '--tag': TOKENS.tagBg, '--map-bg': TOKENS.mapBg,
+    '--accent-text': TOKENS.accentText, '--warn-bg': TOKENS.warnBg, '--warn-text': TOKENS.warnText,
     ...Object.fromEntries(PRICE_BANDS.flatMap((b, i) => [[`--price-${i + 1}`, b.color], [`--price-text-${i + 1}`, b.text]])),
     '--price-unknown': PRICE_UNKNOWN.color,
   };
 }
 
-export const SOURCE_COLORS: Record<string, string> = {
-  Qasa: '#4B48C9', Bostadsförmedlingen: '#0A6F8E', Samtrygg: '#8A3FB5', HomeQ: '#1F7A5C', Facebook: '#1662C4',
-};
-export const SOURCE_OTHER = '#6C6C70';
+/** Sources are neutral (DESIGN.md §3): the name tells them apart; colour belongs to price. */
+export const SOURCE_COLORS: Record<string, string> = {};
+export const SOURCE_OTHER = TOKENS.text2;
 
 export interface PageFilters { min: number; rent: number; m2: number; m2Max: number; rooms: number; roomsMax: number; onlyNew: boolean }
 export const DEFAULT_FILTERS: PageFilters = {
@@ -61,7 +62,7 @@ export function priceChip(kpm: number | null): { background: string; color: stri
 /** The source chip: the platform colour at 12 % behind itself. */
 export function sourceChip(sourceName: string): { background: string; color: string } {
   const c = SOURCE_COLORS[sourceName] ?? SOURCE_OTHER;
-  return { background: `${c}1F`, color: c };
+  return { background: TOKENS.tagBg, color: c };
 }
 
 /** Pin radius in px: 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1). Unknown size counts as 20 m². */

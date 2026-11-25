@@ -4,7 +4,7 @@ import { ROUTES, type RouteId } from '../../app/useRoute.ts';
 import { Logo } from './Logo.tsx';
 import styles from './Navbar.module.css';
 
-export const BRAND = 'Lägenhetskartan';
+export const BRAND = 'EnkelLGH';
 
 const LINKS = [
   { id: 'hem', label: 'Hem' },

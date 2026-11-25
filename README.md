@@ -5,6 +5,8 @@ Daily Stockholm apartment search → map at https://fire-dragon-35.github.io/apa
 The repo is moving to the architecture in [ARCHITECTURE.md](ARCHITECTURE.md). Until each step is done, the
 **legacy pipeline** below keeps running unchanged.
 
+**Plan to v1: [ROADMAP.md](ROADMAP.md).**
+
 ## New layout (in progress)
 
 ```
