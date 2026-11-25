@@ -3,6 +3,7 @@ import { Footer } from '../features/shell/Footer.tsx';
 import { Navbar } from '../features/shell/Navbar.tsx';
 import { Landing } from '../features/landing/Landing.tsx';
 import { ComingSoon } from '../features/shell/ComingSoon.tsx';
+import { Account } from '../features/shell/Account.tsx';
 import { MapPage } from './MapPage.tsx';
 import { useRoute } from './useRoute.ts';
 
@@ -14,6 +15,8 @@ export function App() {
     <AppShell navigation={<Navbar route={route} size={size} />}>
       {route === 'karta' ? <Container size={size}><MapPage /></Container>
         : route === 'hem' ? <Landing />
+        : route === 'logga-in' ? <Account title="Logga in" />
+        : route === 'skapa-konto' ? <Account title="Skapa konto" />
         : <ComingSoon route={route} />}
       <Footer size={size} />
     </AppShell>

@@ -262,6 +262,8 @@ Karlaplan times are computed by the worker for every new place and are free; oth
 
 ## 10. Payments
 
+> Now provided by Frame: `@frame/supabase` (client) and its synced backend (`supabase/migrations/20260101000000_frame_billing.sql`, `supabase/functions/frame-*`); `is_paying` calls `frame_is_active`. Text below is the original plan.
+
 Stripe Checkout for a monthly subscription, Stripe Customer Portal for cancel and card changes. `stripe-webhook` verifies the signature and upserts `subscriptions`. A user is paying when `status in ('active','trialing') and current_period_end > now()`. Prices and trial live in Stripe, not in code.
 
 ## 11. Data guardrails

@@ -7,7 +7,7 @@ green and this file updated. Nothing visual is decided in prompts: DESIGN.md is 
 |---|---|---|---|
 | 1 | **Design system** (DESIGN.md 4.0): EnkelLGH, black and white, indigo accent, traffic light price, neutral sources, black warning, Inter Tight | tokens in `@lk/shared`, DESIGN.md §3, font self hosted, page rules test reads its colours from `@lk/shared` | ✅ 25 nov |
 | 2 | **Cleanup** | see below | ⬜ |
-| 3 | **Auth and payment** | see below | ⬜ |
+| 3 | **Auth and payment** | see below | 🟡 code done (Frame `@frame/supabase`); deploy and Stripe setup left |
 | 4 | **Landing page** | see below | ⬜ |
 | 5 | **Launch** | see below | ⬜ |
 
@@ -22,6 +22,11 @@ green and this file updated. Nothing visual is decided in prompts: DESIGN.md is 
 * Budgets, checked in the report: app CSS under 400 lines, JS under 150 KB gzip, lint with 0 errors.
 
 ## 3. Auth and payment (one or two sessions)
+
+Built into Frame (`@frame/supabase`, see `vendor/frame/docs/backend/auth-billing.md`); the app has `#/logga-in` with
+magic link, paywall, checkout and portal. Left, on the laptop: `supabase db push --include-all`, deploy the three
+`frame-*` functions, set the four Supabase secrets, create the Stripe price, webhook and portal, add the site URL
+to Supabase Auth. After a Frame update: `npx frame-supabase sync .`.
 
 * Supabase magic link only (no passwords, no social logins).
 * One plan, Stripe Checkout + one webhook Edge Function (idempotent, test 5). Price: decide before building (pricing notes: 149 to 199 kr per month, competitors 79 to 349).

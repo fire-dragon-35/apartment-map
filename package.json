@@ -8,7 +8,8 @@
     "vendor/frame/packages/core",
     "vendor/frame/packages/ui",
     "vendor/frame/packages/themes",
-    "vendor/frame/packages/site"
+    "vendor/frame/packages/site",
+    "vendor/frame/packages/supabase"
   ],
   "scripts": {
     "typecheck": "tsc -b && tsc -p apps/web",
