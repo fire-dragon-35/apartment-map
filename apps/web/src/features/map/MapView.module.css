@@ -88,6 +88,3 @@
   box-shadow: 0 0 0 1px var(--accent);
   cursor: grab;
 }
-.adding {
-  cursor: crosshair;
-}

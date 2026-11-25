@@ -21,8 +21,7 @@ export function MapPage() {
   const { listings: base0, today, loaded, error } = useListings();
   const [filters, setFilters] = useFilters();
   // paid (CORE.md): own pins, a saved search with a daily email; free: Karlaplan
-  const { pins, canEdit, signedIn, error: pinError, add, move, remove } = usePins();
-  const [adding, setAdding] = useState(false);
+  const { pins, canEdit, signedIn, error: pinError, move, reset } = usePins();
   const placeIds = useMemo(() => [...new Set(base0.map(l => l.placeId))], [base0]);
   const { minutes, loading: timesLoading } = usePinTimes(isDefault(pins) ? [] : pins, placeIds);
   const { saved, save, error: saveError } = useSavedSearch();
@@ -37,7 +36,7 @@ export function MapPage() {
     applied.current = true;
     if (!location.search) setFilters(saved.filters);
   }, [saved, setFilters]);
-  const addPin = useCallback((lat: number, lon: number) => { setAdding(false); void add(lat, lon); }, [add]);
+
   const [routes, setRoutes] = useRouteToggle();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   /** the listing under the pointer, in the list or on the map: the other side lights up too */
@@ -88,10 +87,10 @@ export function MapPage() {
           shown={visible.length} newCount={newCount} loaded={loaded} error={error} />
       </Page.Header>
       <Page.Content>
-        <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} adding={adding} onAdding={setAdding} onRemove={p => void remove(p)}
+        <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} onReset={() => void reset()}
           alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} loading={timesLoading} error={pinError ?? saveError} />
         <Panel flush aria-label="Karta">
-          <MapView pins={pins} editablePins={canEdit} adding={adding} onAddPin={addPin} onMovePin={(p, la, lo) => void move(p, la, lo)} loaded={loaded} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
+          <MapView pins={pins} editablePins={canEdit} onMovePin={(p, la, lo) => void move(p, la, lo)} loaded={loaded} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
         </Panel>
         <Legend />
         <Panel flush aria-label="Annonser">

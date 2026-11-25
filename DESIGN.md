@@ -230,15 +230,15 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
 * **Footer** on every page: brand line, three link columns (all pointing at placeholders for now), a legal line.
 * **Colour:** the accent is used for the primary buttons and the hero eyebrow; R12 only concerns the map.
 
-## 14. Pins and saved search (paid, CORE.md)
+## 14. Own pin and saved search (paid, CORE.md)
 
+* **One pin** restid is measured to: Karlaplan for everyone; Plus can drag it to an own place ("Din plats") and
+  back with `Tillbaka till Karlaplan`. No extra pins.
 * **Pin bar** above the map. Free: "Restid till Karlaplan." and `Egna platser och bevakning`, which opens the Plus
-  offer (`CheckoutButton`, or log in first). Plus: one chip per pin (indigo dot, label, × to remove), `+ Lägg till plats`
-  (the next tap on the map places it; at most 3), a hint that pins drag, `Spara sökning` and `Mejla mig nya träffar`.
-* **Pins on the map:** indigo dots with a permanent label (Karlaplan, A, B, C); draggable for Plus. The 2/4/6 km rings
-  follow the first pin.
-* **Restid with own pins:** the longest restid to any pin (the filter means "within the limit of every pin"); custom
-  pins come from the travel matrix and show as `~18 min`. The card's route line lists each pin (`Karlaplan 12 min · A
-  ~18 min`) instead of Karlaplan's route, and no route is drawn.
-* **Saved search:** one per user: the filters (not "Bara nya") and the pins. Opening the map without a filter query
+  offer (`CheckoutButton`, or log in first). Plus: the pin's chip, the drag hint, `Spara sökning` and
+  `Mejla mig nya träffar`.
+* **The pin on the map:** an indigo dot with a permanent label; draggable for Plus. The 2/4/6 km rings follow it.
+* **Restid to an own place** comes from the travel matrix and shows as `~18 min`; the card's route line shows
+  `Din plats ~18 min` instead of Karlaplan's route, and no route is drawn.
+* **Saved search:** one per user: the filters (not "Bara nya") and the pin. Opening the map without a filter query
   applies it. The email (07:45, edge function `notify-matches`) lists that morning's new matches once a day.

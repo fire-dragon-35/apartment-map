@@ -6,14 +6,14 @@ import { isKarlaplan, KARLAPLAN } from '@lk/shared';
 export interface Pin { id: number | null; label: string; lat: number; lon: number }
 
 export const KARLAPLAN_PIN: Pin = { id: null, label: 'Karlaplan', lat: KARLAPLAN.lat, lon: KARLAPLAN.lon };
-export const MAX_PINS = 3;
+export const OWN_LABEL = 'Din plats';
 export const pinKey = (p: { lat: number; lon: number }) => `${p.lat.toFixed(4)},${p.lon.toFixed(4)}`;
 export const isDefault = (pins: Pin[]) => pins.length === 1 && isKarlaplan(pins[0]!);
 const round = (n: number) => Math.round(n * 1e4) / 1e4;
 
 /**
- * The user's pins (table destinations; RLS lets only paying users store other places than Karlaplan). Free users and
- * paying users without own pins get Karlaplan. Editing is for paying users only (`canEdit`).
+ * The one pin restid is measured to (CORE.md): Karlaplan, or for paying users their own place (table destinations,
+ * at most one row; RLS lets only paying users store another place than Karlaplan).
  */
 export function usePins() {
   const client = useSupabase();
@@ -41,18 +41,13 @@ export function usePins() {
     await load();
   }, [load]);
 
-  const add = useCallback((lat: number, lon: number) => run(async () => {
-    const rows = stored.length ? [] : [{ user_id: user!.id, label: KARLAPLAN_PIN.label, lat: KARLAPLAN.lat, lon: KARLAPLAN.lon }];
-    const used = new Set(pins.map(p => p.label));
-    const label = ['A', 'B', 'C'].find(l => !used.has(l)) ?? 'Plats';
-    return client.from('destinations').insert([...rows, { user_id: user!.id, label, lat: round(lat), lon: round(lon) }]);
-  }), [run, stored.length, pins, client, user]);
-
+  /** the one pin: moving Karlaplan stores it as the user's own place, moving that updates it */
   const move = useCallback((pin: Pin, lat: number, lon: number) => run(async () => pin.id === null
-    ? client.from('destinations').insert({ user_id: user!.id, label: pin.label, lat: round(lat), lon: round(lon) })
+    ? client.from('destinations').insert({ user_id: user!.id, label: OWN_LABEL, lat: round(lat), lon: round(lon) })
     : client.from('destinations').update({ lat: round(lat), lon: round(lon) }).eq('id', pin.id)), [run, client, user]);
 
-  const remove = useCallback((pin: Pin) => run(async () => client.from('destinations').delete().eq('id', pin.id!)), [run, client]);
+  /** back to Karlaplan */
+  const reset = useCallback(() => run(async () => client.from('destinations').delete().eq('user_id', user!.id)), [run, client, user]);
 
-  return { pins, canEdit, signedIn: !!user, error, add, move, remove };
+  return { pins, canEdit, signedIn: !!user, error, move, reset };
 }
