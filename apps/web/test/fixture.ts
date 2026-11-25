@@ -13,7 +13,7 @@ export interface Row {
   rent: number | null; m2: number | null; rooms: number | null; kpm: number | null;
   start_date: string | null; end_date: string | null; first_hand: boolean | null; student: boolean | null; furnished: boolean | null;
   notes: string[]; flags: string[]; first_seen: string | null; lat: number; lon: number; exact: boolean;
-  transit_min: number | null; minutes: number | null; legs: Leg[] | null; also_on: string[];
+  transit_min: number | null; minutes: number | null; legs: Leg[] | null; also_on: string[]; steps?: unknown[] | null;
 }
 
 const day = (today: string, offset: number) => new Date(Date.parse(today) + offset * 864e5).toISOString().slice(0, 10);
@@ -82,5 +82,6 @@ export function buildRows(today: string, count = 32): Row[] {
   Object.assign(rows[8]!, { m2: 30, rent: 14700, kpm: 490, lat: 59.3465, lon: 18.0907, transit_min: null, legs: null, end_date: null });
   Object.assign(rows[9]!, { m2: 26, rent: 15100, kpm: 581, lat: 59.3389, lon: 18.1043, transit_min: null, legs: null, end_date: null });
   Object.assign(rows[6]!, { transit_min: 45, legs: null, lat: 59.3689, lon: 18.2407 }); // far: restid over 30, filtered out
+  for (const r of rows) r.steps = r.legs && r.legs.map(([mode, line, , minutes, stops]) => [mode, line, null, minutes, stops]);   // as the view
   return rows;
 }

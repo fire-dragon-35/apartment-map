@@ -90,9 +90,9 @@ export function MapPage() {
       </Page.Header>
       <Page.Content>
         <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} onReset={() => void reset()} placing={placing} onPlacing={on => { setSelectedId(null); setPlacing(on); }}
-          alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} loading={timesLoading} error={pinError ?? saveError} />
+          alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} error={pinError ?? saveError} />
         <Panel flush aria-label="Karta">
-          <MapView pins={pins} editablePins={canEdit} placing={placing} onPlace={place} onMovePin={(p, la, lo) => void move(p, la, lo)} loaded={loaded} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
+          <MapView pins={pins} editablePins={canEdit} placing={placing} onPlace={place} busy={!loaded ? 'Laddar annonser…' : timesLoading ? 'Räknar restider…' : null} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
         </Panel>
         <Legend />
         <Panel flush aria-label="Annonser">

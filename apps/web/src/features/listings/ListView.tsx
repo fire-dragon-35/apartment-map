@@ -39,7 +39,7 @@ export function ListView({ items, today, selectedId, hoveredId, onPick, onHover,
       {error
         ? <Text as="p" size="xs" tone="muted" className={styles.empty}>{error.message}</Text>
         : !loaded
-          ? <Text as="p" size="xs" tone="muted" className={styles.empty} role="status">Laddar annonser…</Text>
+          ? null   // loading is shown on the map only
           : items.length
           ? items.map(l => <Card key={l.id} l={l} today={today} selected={l.id === selectedId} hot={l.id === hoveredId} onPick={onPick} onHover={onHover} />)
           : <Text as="p" tone="secondary" className={styles.empty}>Inga träffar med de här filtren</Text>}

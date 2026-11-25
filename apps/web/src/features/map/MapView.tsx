@@ -2,8 +2,10 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useSupabase } from '@frame/supabase';
 import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet';
-import { fmt, KARLAPLAN, lineStyle, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR } from '@lk/shared';
+import { fmt, KARLAPLAN, lineStyle, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR, type Leg } from '@lk/shared';
+import { rest } from '../../app/api.ts';
 import { CAN_HOVER as HOVER } from '../../app/hover.ts';
 import { hooks } from '../../app/test-hooks.ts';
 import type { Listing } from '../listings/Listing.ts';
@@ -54,26 +56,54 @@ function FitOnce({ items }: { items: Listing[] }) {
   return null;
 }
 
-/** The selected listing's route while its popup is open and `Visa resväg` is on (R10). Not interactive, below the pins. */
-function RouteLayer({ selected, show }: { selected: Listing | null; show: boolean }) {
+/** Routes with coordinates, fetched once each: the page loads only the steps, so the map fetches the one it draws. */
+const routes = new Map<string, Promise<Leg[] | null>>();
+function route(key: string, load: () => Promise<Leg[] | null>): Promise<Leg[] | null> {
+  let r = routes.get(key);
+  if (!r) {
+    r = load().catch(() => { routes.delete(key); return null; });
+    routes.set(key, r);
+  }
+  return r;
+}
+
+/**
+ * The selected listing's route while its popup is open and `Visa resväg` is on (R10). Not interactive, below the pins.
+ * To Karlaplan: the listing's legs. To an own pin: the exact SL trip from `travel-times` (paid; slow the first time, then cached).
+ */
+function RouteLayer({ selected, show, pin }: { selected: Listing | null; show: boolean; pin: Place }) {
   const map = useMap();
+  const client = useSupabase();
   const group = useMemo(() => L.layerGroup(), []);
   useEffect(() => { group.addTo(map); hooks.route = group; return () => { group.remove(); }; }, [map, group]);
   useEffect(() => {
     group.clearLayers();
     if (!selected || !show) return;
     const walk = { color: WALK_COLOR, weight: 3, dashArray: '0 8', lineCap: 'round', interactive: false } as const;
-    if (!selected.legs) {
+    const own = selected.pinTimes !== null;
+    if (!own && !selected.legs) {
       if (selected.byFoot) L.polyline([selected.latlng, CENTRE], walk).addTo(group);
       return;
     }
-    for (const [mode, line, coords] of selected.legs) {
-      if (!coords || coords.length < 2) continue;
-      if (mode === 'walk') { L.polyline(coords, walk).addTo(group); continue; }
-      L.polyline(coords, { color: '#fff', weight: 7, opacity: 0.9, interactive: false }).addTo(group);
-      L.polyline(coords, { color: lineStyle(mode, line).color, weight: 4, interactive: false }).addTo(group);
-    }
-  }, [selected, show, group]);
+    const legs = own
+      ? route(`${pin.lat},${pin.lon}:${selected.placeId}`, async () => {
+          const { data, error } = await client.functions.invoke<{ results: { legs: Leg[] | null }[] }>('travel-times', { body: { lat: pin.lat, lon: pin.lon, placeId: selected.placeId } });
+          if (error) throw error;   // not cached: the next selection tries again
+          return data?.results[0]?.legs ?? null;
+        })
+      : route(String(selected.id), async () => (await rest<{ legs: Leg[] | null }[]>(`listings_karlaplan?select=legs&id=eq.${selected.id}`))[0]?.legs ?? null);
+    let alive = true;
+    void legs.then(legs => {
+      if (!alive) return;
+      for (const [mode, line, coords] of legs ?? []) {
+        if (!coords || coords.length < 2) continue;
+        if (mode === 'walk') { L.polyline(coords, walk).addTo(group); continue; }
+        L.polyline(coords, { color: '#fff', weight: 7, opacity: 0.9, interactive: false }).addTo(group);
+        L.polyline(coords, { color: lineStyle(mode, line).color, weight: 4, interactive: false }).addTo(group);
+      }
+    });
+    return () => { alive = false; };
+  }, [selected, show, group, pin, client]);
   return null;
 }
 
@@ -103,10 +133,10 @@ function SelectionPopup({ selected, today, autoPan, onClose }: { selected: Listi
   return selected ? createPortal(<Popup l={selected} today={today} />, node) : null;
 }
 
-/** A pin restid is measured to. Subscribers drag it to move it; everyone else sees a fixed dot (CORE.md: paid). */
-function PlaceMarker({ place, editable, onMove }: { place: Place; editable: boolean; onMove: (p: Place, lat: number, lon: number) => void }) {
+/** A pin restid is measured to. Subscribers drag it while placing; everyone else sees a fixed dot (CORE.md: paid). */
+function PlaceMarker({ place, editable, placing, onMove }: { place: Place; editable: boolean; placing: boolean; onMove: (lat: number, lon: number) => void }) {
   const icon = useMemo(() => L.divIcon({ className: styles.place, iconSize: [22, 22], html: '' }), []);
-  const events = useMemo(() => ({ dragend: (e: L.DragEndEvent) => { const { lat, lng } = (e.target as L.Marker).getLatLng(); onMove(place, lat, lng); } }), [place, onMove]);
+  const events = useMemo(() => ({ dragend: (e: L.DragEndEvent) => { const { lat, lng } = (e.target as L.Marker).getLatLng(); onMove(lat, lng); } }), [onMove]);
   if (!editable) {
     return (
       <CircleMarker center={[place.lat, place.lon]} radius={7} pathOptions={{ color: '#fff', weight: 2, fillColor: TOKENS.accent, fillOpacity: 1 }} interactive={false}>
@@ -115,13 +145,13 @@ function PlaceMarker({ place, editable, onMove }: { place: Place; editable: bool
     );
   }
   return (
-    <Marker position={[place.lat, place.lon]} icon={icon} draggable eventHandlers={events} keyboard={false}>
+    <Marker position={[place.lat, place.lon]} icon={icon} draggable={placing} eventHandlers={events} keyboard={false}>
       <Tooltip permanent direction="right" offset={[10, 0]}>{place.label}</Tooltip>
     </Marker>
   );
 }
 
-/** While placing the pin, the next tap anywhere on the map puts it there (the listing dots ignore taps meanwhile). */
+/** While placing the pin, the next tap anywhere on the map puts it there, as does dropping the dragged pin. */
 function PlaceOnTap({ placing, onPlace }: { placing: boolean; onPlace: (lat: number, lon: number) => void }) {
   useMapEvents({ click: e => { if (placing) onPlace(e.latlng.lat, e.latlng.lng); } });
   return null;
@@ -135,7 +165,8 @@ function MapHooks() {
 }
 
 interface Props {
-  loaded: boolean;
+  /** the page's one loading message ("Laddar annonser…", "Räknar restider…"), shown over the map; null when idle */
+  busy: string | null;
   items: Listing[];
   today: string;
   selected: Listing | null;
@@ -148,14 +179,13 @@ interface Props {
   onClose: () => void;
   pins: Place[];
   editablePins: boolean;
-  /** "Flytta pinnen" is on: listing dots fade and the next map tap places the pin */
+  /** "Flytta pinnen" is on: listing dots are hidden, the pin can be dragged and the next map tap or drop places it */
   placing: boolean;
   onPlace: (lat: number, lon: number) => void;
-  onMovePin: (p: Place, lat: number, lon: number) => void;
 }
 
 /** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the pins, the popup and the route. */
-export function MapView({ loaded, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose, pins, editablePins, placing, onPlace, onMovePin }: Props) {
+export function MapView({ busy, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose, pins, editablePins, placing, onPlace }: Props) {
   const first: [number, number] = [pins[0]!.lat, pins[0]!.lon];
   const markers = useRef(new Map<number, L.CircleMarker>());
   const register = useRef((id: number, m: L.CircleMarker | null) => { if (m) markers.current.set(id, m); else markers.current.delete(id); }).current;
@@ -165,23 +195,24 @@ export function MapView({ loaded, items, today, selected, autoPan, showRoutes, h
   hooks.markers = markers.current;
 
   return (
-    <div className={styles.wrap}>
-    <MapContainer id="map" className={`${styles.map} ${placing ? styles.placing : ''}`} center={CENTRE} zoom={13} zoomControl={false}>
+    // placing goes on the wrapper: MapContainer reads className only once, at mount
+    <div className={`${styles.wrap} ${placing ? styles.placing : ''}`}>
+    <MapContainer id="map" className={styles.map} center={CENTRE} zoom={11} zoomControl={false}>
       <TileLayer url={esri('Base')} maxZoom={17} attribution="Esri, HERE, OpenStreetMap" />
       <TileLayer url={esri('Reference')} maxZoom={17} opacity={0.55} />
       {[2, 4, 6].map(km => <Circle key={km} center={first} radius={km * 1000} pathOptions={{ color: '#8E8E93', weight: 1, dashArray: '4 4', fill: false }} interactive={false} />)}
       <PlaceOnTap placing={placing} onPlace={onPlace} />
-      {pins.map(p => <PlaceMarker key={p.id ?? 'karlaplan'} place={p} editable={editablePins} onMove={onMovePin} />)}
+      {pins.map(p => <PlaceMarker key={p.id ?? 'karlaplan'} place={p} editable={editablePins} placing={placing} onMove={onPlace} />)}
       {/* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */}
       <Pane name="pins" className={styles.pins}>
         {ordered.map(l => <Pin key={l.id} l={l} on={l.id === selected?.id} hot={l.id === hoveredId} renderer={canvas} onSelect={onSelect} onHover={onHover} register={register} />)}
       </Pane>
-      <RouteLayer selected={selected} show={showRoutes} />
+      <RouteLayer selected={selected} show={showRoutes} pin={pins[0]!} />
       <SelectionPopup selected={selected} today={today} autoPan={autoPan} onClose={onClose} />
       <FitOnce items={items} />
       <MapHooks />
     </MapContainer>
-    {!loaded && <div className={styles.loading} role="status">Laddar annonser…</div>}
+    {busy && <div className={styles.loading} role="status">{busy}</div>}
     </div>
   );
 }

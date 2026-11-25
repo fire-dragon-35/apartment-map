@@ -17,7 +17,7 @@
   font: inherit;
 }
 
-/* shown over the map until the listings have arrived */
+/* the page's one loading message, over the map */
 .wrap {
   position: relative;
   border-radius: inherit;
@@ -44,11 +44,10 @@
   box-shadow: 0 0 0 1px var(--accent);
   cursor: grab;
 }
-/* "Flytta pinnen": the listing dots step back and let every tap through to the map */
-.placing {
+/* "Flytta pinnen": the listing dots are hidden so every tap reaches the map */
+.placing :global(.leaflet-grab) {
   cursor: crosshair;
 }
 .placing .pins {
-  opacity: 0.35;
-  pointer-events: none;
+  display: none;
 }

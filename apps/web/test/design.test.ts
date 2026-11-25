@@ -81,7 +81,7 @@ test('page rules R1 to R13 (DESIGN.md v4)', async () => {
     if (url.includes('supabase.test')) {
       const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*', 'access-control-expose-headers': '*' };
       if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
-      return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify(url.includes('/source_status') ? STATUS : rows) });
+      return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify(url.includes('/source_status') ? STATUS : url.includes('id=eq.') ? rows.filter(r => url.endsWith(`id=eq.${r.id}`)) : rows) });
     }
     return route.abort();   // map tiles are irrelevant to the rules, and nothing else may leave the machine
   });

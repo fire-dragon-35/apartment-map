@@ -234,13 +234,14 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
 
 * **One pin** restid is measured to: Karlaplan for everyone; Plus moves it to an own place ("Din plats") and back
   with `Tillbaka till Karlaplan`. No extra pins. Moving: `Flytta pinnen` turns on a placing mode (the listing dots
-  fade to 35 % and ignore taps, the popup closes, the cursor is a crosshair); the next tap on the map places the pin;
-  `Avbryt` leaves the mode. Dragging the pin (22 px) also works.
+  are hidden, the popup closes, the cursor is a crosshair); the pin (22 px) can be dragged only in this mode; dropping it or the next tap on the map
+  places it and ends the mode; `Avbryt` leaves it unchanged.
 * **Pin bar** above the map. Free: "Restid till Karlaplan." and `Egna platser och bevakning`, which opens the Plus
   offer (`CheckoutButton`, or log in first). Plus: the pin's chip, `Flytta pinnen`, `Spara sökning` and
   `Mejla mig nya träffar`.
 * **The pin on the map:** an indigo dot with a permanent label; draggable for Plus. The 2/4/6 km rings follow it.
 * **Restid to an own place** comes from the travel matrix and shows as `~18 min`; the card's route line shows
-  `Din plats ~18 min` instead of Karlaplan's route, and no route is drawn.
+  `Din plats ~18 min` instead of Karlaplan's route; the map draws the exact SL trip to the pin for the selected
+  listing (`travel-times` with one `placeId`: slow the first time, then cached), so it can differ from `~18 min` by a few minutes.
 * **Saved search:** one per user: the filters (not "Bara nya") and the pin. Opening the map without a filter query
   applies it. The email (07:45, edge function `notify-matches`) lists that morning's new matches once a day.

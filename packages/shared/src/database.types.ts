@@ -274,7 +274,7 @@ isOneToOne: false
                   ]
                 },"listings_karlaplan": {
                   Row: {
-                    "also_on": (string)[] | null,"area": string | null,"end_date": string | null,"exact": boolean,"first_hand": boolean | null,"first_seen": string,"flags": (string)[],"furnished": boolean | null,"id": number,"kpm": number | null,"lat": number,"legs": Json | null,"lon": number,"m2": number | null,"minutes": number | null,"notes": (string)[],"rent": number | null,"rooms": number | null,"source": string,"source_id": string,"start_date": string | null,"street": string | null,"student": boolean | null,"transit_min": number | null,"url": string,"place_id": number
+                    "also_on": (string)[] | null,"area": string | null,"end_date": string | null,"exact": boolean,"first_hand": boolean | null,"first_seen": string,"flags": (string)[],"furnished": boolean | null,"id": number,"kpm": number | null,"lat": number,"legs": Json | null,"lon": number,"m2": number | null,"minutes": number | null,"notes": (string)[],"rent": number | null,"rooms": number | null,"source": string,"source_id": string,"start_date": string | null,"street": string | null,"student": boolean | null,"transit_min": number | null,"url": string,"place_id": number,"steps": Json | null
                   }
                   ComputedFields: never
                   Relationships: [

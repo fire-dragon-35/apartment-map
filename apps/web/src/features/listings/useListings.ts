@@ -4,12 +4,14 @@ import { rest } from '../../app/api.ts';
 import { Listing, type ListingRow } from './Listing.ts';
 
 const PAGE = 1000;   // PostgREST returns at most this many rows per request
+/** what the page reads: `steps` (the route without coordinates) instead of `legs`, which is 40 times heavier */
+const COLUMNS = 'id,place_id,source,url,street,area,rent,m2,rooms,kpm,start_date,end_date,first_hand,student,furnished,notes,flags,first_seen,lat,lon,transit_min,also_on,steps';
 
 /** The whole view, page by page; normally one request. */
 async function fetchRows(): Promise<ListingRow[]> {
   const rows: ListingRow[] = [];
   for (let offset = 0; ; offset += PAGE) {
-    const data = await rest<ListingRow[]>(`listings_karlaplan?select=*&order=id&limit=${PAGE}&offset=${offset}`);
+    const data = await rest<ListingRow[]>(`listings_karlaplan?select=${COLUMNS}&order=id&limit=${PAGE}&offset=${offset}`);
     rows.push(...data);
     if (data.length < PAGE) return rows;
   }

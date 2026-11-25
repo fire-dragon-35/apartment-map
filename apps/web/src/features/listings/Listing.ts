@@ -35,7 +35,7 @@ export class Listing {
   readonly byFoot: boolean;
   /** restid */
   readonly t: number;
-  /** the route to draw; null when walking is faster or there is no route */
+  /** the route's steps (coordinates null: the map fetches them for the selected listing); null when walking is faster or there is no route */
   readonly legs: Leg[] | null;
   readonly radius: number;
   readonly isNew: boolean;
@@ -67,7 +67,7 @@ export class Listing {
     this.sl = row.transit_min;
     this.t = travelMinutes(this.walk, this.sl);
     this.byFoot = this.t === this.walk;
-    this.legs = this.byFoot ? null : (row.legs as unknown as Leg[] | null);
+    this.legs = this.byFoot ? null : (row.steps as unknown as Leg[] | null);
 
     this.radius = pinRadius(this.m2);
     this.isNew = row.first_seen === today;
