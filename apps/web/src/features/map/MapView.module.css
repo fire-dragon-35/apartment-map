@@ -80,3 +80,14 @@
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation-duration: 3s; }
 }
+/* a pin restid is measured to, draggable for subscribers */
+.place {
+  border: 2px solid var(--color-background);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  cursor: grab;
+}
+.adding {
+  cursor: crosshair;
+}

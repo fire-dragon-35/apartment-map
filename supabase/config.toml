@@ -433,3 +433,8 @@ enabled = true
 [functions.travel-times]
 enabled = true
 verify_jwt = false
+
+# pg_cron calls it with x-cron-secret, no Supabase token
+[functions.notify-matches]
+enabled = true
+verify_jwt = false

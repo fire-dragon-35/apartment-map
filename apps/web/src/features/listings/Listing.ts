@@ -6,8 +6,12 @@ import {
 
 export type ListingRow = Database['public']['Views']['listings_karlaplan']['Row'];
 
+/** restid to one of the user's pins (paid); null while unknown or unreachable. */
+export interface PinTime { label: string; minutes: number | null; approx: boolean }
+
 export class Listing {
   readonly id: number;
+  readonly placeId: number;
   readonly url: string | null;
   readonly sourceName: string;
   /** adress: the street, else the area, else ? */
@@ -36,9 +40,12 @@ export class Listing {
   readonly radius: number;
   readonly isNew: boolean;
   readonly contractOk: boolean;
+  /** set by forPins when the user has own pins: one entry per pin, and `t` is the longest of them */
+  readonly pinTimes: PinTime[] | null = null;
 
   constructor(row: ListingRow, today: string) {
     this.id = row.id!;
+    this.placeId = row.place_id;
     this.url = row.url;
     this.sourceName = SOURCE_NAMES[row.source as Source] ?? row.source ?? '?';
     this.street = row.street ?? row.area ?? '?';
@@ -65,5 +72,15 @@ export class Listing {
     this.radius = pinRadius(this.m2);
     this.isNew = row.first_seen === today;
     this.contractOk = contractOk(this.start, this.end, today);
+  }
+
+  /**
+   * The same listing measured against the user's pins (CORE.md, paid): `t` becomes the longest restid, so the restid
+   * filter means "within the limit of every pin"; unknown counts as unreachable. Karlaplan's route is not drawn then.
+   */
+  forPins(times: PinTime[]): Listing {
+    const known = times.every(p => p.minutes !== null);
+    const t = known ? Math.max(...times.map(p => p.minutes!)) : Number.POSITIVE_INFINITY;
+    return Object.assign(Object.create(Listing.prototype) as Listing, this, { t, pinTimes: times, legs: null, byFoot: false });
   }
 }

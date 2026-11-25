@@ -1,6 +1,6 @@
 import { Page, Panel } from '@frame/core';
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
-import { passesFilters, type PageFilters } from '@lk/shared';
+import { isKarlaplan, passesFilters, type PageFilters } from '@lk/shared';
 import { Header } from '../features/filters/Header.tsx';
 import { useFilters, useRouteToggle } from '../features/filters/useFilters.ts';
 import type { Listing } from '../features/listings/Listing.ts';
@@ -10,12 +10,34 @@ import { DEFAULT_SORT, sortListings, type SortState } from '../features/listings
 import { useListings } from '../features/listings/useListings.ts';
 import { Legend } from '../features/map/Legend.tsx';
 import { MapView } from '../features/map/MapView.tsx';
+import { PinBar } from '../features/pins/PinBar.tsx';
+import { isDefault, usePins } from '../features/pins/usePins.ts';
+import { usePinTimes } from '../features/pins/usePinTimes.ts';
+import { useSavedSearch } from '../features/pins/useSavedSearch.ts';
 import { hooks } from './test-hooks.ts';
 
 /** The map page (DESIGN.md §12): state lives here, the features only render and report. */
 export function MapPage() {
-  const { listings, today, loaded, error } = useListings();
+  const { listings: base0, today, loaded, error } = useListings();
   const [filters, setFilters] = useFilters();
+  // paid (CORE.md): own pins, a saved search with a daily email; free: Karlaplan
+  const { pins, canEdit, signedIn, error: pinError, add, move, remove } = usePins();
+  const [adding, setAdding] = useState(false);
+  const placeIds = useMemo(() => [...new Set(base0.map(l => l.placeId))], [base0]);
+  const { minutes, loading: timesLoading } = usePinTimes(isDefault(pins) ? [] : pins, placeIds);
+  const { saved, save, error: saveError } = useSavedSearch();
+  const listings = useMemo(() => isDefault(pins) ? base0 : base0.map(l => l.forPins(pins.map(p => isKarlaplan(p)
+    ? { label: p.label, minutes: l.t, approx: false }
+    : { label: p.label, minutes: minutes(p, l.placeId), approx: true }))),
+    [base0, pins, minutes]);
+  // a saved search fills the filters once, when the page opens without filters of its own
+  const applied = useRef(false);
+  useEffect(() => {
+    if (applied.current || !saved) return;
+    applied.current = true;
+    if (!location.search) setFilters(saved.filters);
+  }, [saved, setFilters]);
+  const addPin = useCallback((lat: number, lon: number) => { setAdding(false); void add(lat, lon); }, [add]);
   const [routes, setRoutes] = useRouteToggle();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   /** the listing under the pointer, in the list or on the map: the other side lights up too */
@@ -66,8 +88,10 @@ export function MapPage() {
           shown={visible.length} newCount={newCount} loaded={loaded} error={error} />
       </Page.Header>
       <Page.Content>
+        <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} adding={adding} onAdding={setAdding} onRemove={p => void remove(p)}
+          alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} loading={timesLoading} error={pinError ?? saveError} />
         <Panel flush aria-label="Karta">
-          <MapView loaded={loaded} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
+          <MapView pins={pins} editablePins={canEdit} adding={adding} onAddPin={addPin} onMovePin={(p, la, lo) => void move(p, la, lo)} loaded={loaded} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
         </Panel>
         <Legend />
         <Panel flush aria-label="Annonser">

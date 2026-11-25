@@ -183,24 +183,16 @@ isOneToOne: false
                   ]
                 },"saved_searches": {
                   Row: {
-                    "alerts": boolean,"destination_id": number | null,"id": number,"max_minutes": number | null,"max_rent": number | null,"min_m2": number | null,"min_months": number | null,"user_id": string
+                    "alerts": boolean,"filters": Json,"id": number,"last_sent_on": string | null,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "alerts"?: boolean,"destination_id"?: number | null,"id"?: never,"max_minutes"?: number | null,"max_rent"?: number | null,"min_m2"?: number | null,"min_months"?: number | null,"user_id": string
+                    "alerts"?: boolean,"filters"?: Json,"id"?: never,"last_sent_on"?: string | null,"user_id": string
                   }
                   Update: {
-                    "alerts"?: boolean,"destination_id"?: number | null,"id"?: never,"max_minutes"?: number | null,"max_rent"?: number | null,"min_m2"?: number | null,"min_months"?: number | null,"user_id"?: string
+                    "alerts"?: boolean,"filters"?: Json,"id"?: never,"last_sent_on"?: string | null,"user_id"?: string
                   }
-                  Relationships: [
-                    {
-      foreignKeyName: "saved_searches_destination_id_fkey"
-      columns: ["destination_id"]
-isOneToOne: false
-      referencedRelation: "destinations"
-      referencedColumns: ["id"]
-    }
-                  ]
+                  Relationships: []
                 },"source_runs": {
                   Row: {
                     "complete": boolean,"duration_ms": number | null,"error": string | null,"fetched": number,"invalid": number,"kept": number,"pages": number | null,"raw_path": string | null,"raw_sha256": string | null,"run_id": number,"skipped": number,"source": string
@@ -282,7 +274,7 @@ isOneToOne: false
                   ]
                 },"listings_karlaplan": {
                   Row: {
-                    "also_on": (string)[] | null,"area": string | null,"end_date": string | null,"exact": boolean,"first_hand": boolean | null,"first_seen": string,"flags": (string)[],"furnished": boolean | null,"id": number,"kpm": number | null,"lat": number,"legs": Json | null,"lon": number,"m2": number | null,"minutes": number | null,"notes": (string)[],"rent": number | null,"rooms": number | null,"source": string,"source_id": string,"start_date": string | null,"street": string | null,"student": boolean | null,"transit_min": number | null,"url": string
+                    "also_on": (string)[] | null,"area": string | null,"end_date": string | null,"exact": boolean,"first_hand": boolean | null,"first_seen": string,"flags": (string)[],"furnished": boolean | null,"id": number,"kpm": number | null,"lat": number,"legs": Json | null,"lon": number,"m2": number | null,"minutes": number | null,"notes": (string)[],"rent": number | null,"rooms": number | null,"source": string,"source_id": string,"start_date": string | null,"street": string | null,"student": boolean | null,"transit_min": number | null,"url": string,"place_id": number
                   }
                   ComputedFields: never
                   Relationships: [

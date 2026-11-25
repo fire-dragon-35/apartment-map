@@ -1,0 +1,33 @@
+.upsell {
+  padding: var(--space-3);
+  border-radius: var(--radius-panel);
+  background: var(--new);
+}
+.pin {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.remove {
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--t3);
+  cursor: pointer;
+}
+.remove:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}

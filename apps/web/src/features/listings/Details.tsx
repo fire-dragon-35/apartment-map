@@ -31,7 +31,7 @@ export function Details({ l }: { l: Listing }) {
         {l.isNew && <> <Badge tone="custom" color={TOKENS.accent} background={TOKENS.newBg} data-badge="ny">Ny</Badge></>}
       </span>
       <span data-line="1" className={styles.restid}>
-        <Atom name="restid" {...T1} nowrap>{fmt.restid(l.t)}</Atom>
+        <Atom name="restid" {...T1} nowrap>{Number.isFinite(l.t) ? fmt.restid(l.t, l.pinTimes?.some(p => p.approx)) : '?'}</Atom>
       </span>
       <Text data-line="2" {...T2} nowrap className={styles.size}>
         <Joined parts={[
@@ -74,6 +74,8 @@ export function Meta({ l, today }: { l: Listing; today: string }) {
 
 /** The card's route line, r4 full width, plain text: `gång 8 min > T18 · 1 stopp > … > Karlaplan`. Nothing when there is no route to describe. */
 export function RouteLine({ l }: { l: Listing }) {
+  // own pins: restid to each instead of Karlaplan's route ("Karlaplan 12 min · A ~18 min")
+  if (l.pinTimes) return <Text {...T2} className={styles.route}>{l.pinTimes.map(p => `${p.label} ${p.minutes === null ? '?' : fmt.restid(p.minutes, p.approx)}`).join(' · ')}</Text>;
   const steps: string[] = l.byFoot
     ? [fmt.gang(l.walk)]
     : (l.legs ?? []).flatMap<string>(([mode, line, , minutes, stops]) => {

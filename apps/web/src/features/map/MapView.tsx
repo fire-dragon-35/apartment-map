@@ -2,11 +2,12 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap } from 'react-leaflet';
+import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import { fmt, KARLAPLAN, lineStyle, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR } from '@lk/shared';
 import { CAN_HOVER as HOVER } from '../../app/hover.ts';
 import { hooks } from '../../app/test-hooks.ts';
 import type { Listing } from '../listings/Listing.ts';
+import type { Pin as Place } from '../pins/usePins.ts';
 import { Popup } from './Popup.tsx';
 import styles from './MapView.module.css';
 
@@ -111,6 +112,30 @@ function SelectionPopup({ selected, today, autoPan, onClose }: { selected: Listi
   return selected ? createPortal(<Popup l={selected} today={today} />, node) : null;
 }
 
+/** A pin restid is measured to. Subscribers drag it to move it; everyone else sees a fixed dot (CORE.md: paid). */
+function PlaceMarker({ place, editable, onMove }: { place: Place; editable: boolean; onMove: (p: Place, lat: number, lon: number) => void }) {
+  const icon = useMemo(() => L.divIcon({ className: styles.place, iconSize: [16, 16], html: '' }), []);
+  const events = useMemo(() => ({ dragend: (e: L.DragEndEvent) => { const { lat, lng } = (e.target as L.Marker).getLatLng(); onMove(place, lat, lng); } }), [place, onMove]);
+  if (!editable) {
+    return (
+      <CircleMarker center={[place.lat, place.lon]} radius={7} pathOptions={{ color: '#fff', weight: 2, fillColor: TOKENS.accent, fillOpacity: 1 }} interactive={false}>
+        <Tooltip permanent direction="right" offset={[8, 0]}>{place.label}</Tooltip>
+      </CircleMarker>
+    );
+  }
+  return (
+    <Marker position={[place.lat, place.lon]} icon={icon} draggable eventHandlers={events} keyboard={false}>
+      <Tooltip permanent direction="right" offset={[10, 0]}>{place.label}</Tooltip>
+    </Marker>
+  );
+}
+
+/** While adding a pin, the next tap on the map places it. */
+function AddOnTap({ adding, onAdd }: { adding: boolean; onAdd: (lat: number, lon: number) => void }) {
+  useMapEvents({ click: e => { if (adding) onAdd(e.latlng.lat, e.latlng.lng); } });
+  return null;
+}
+
 /** Publishes the Leaflet map to the test hooks. */
 function MapHooks() {
   const map = useMap();
@@ -130,10 +155,16 @@ interface Props {
   onHover: (id: number | null) => void;
   onSelect: (id: number) => void;
   onClose: () => void;
+  pins: Place[];
+  editablePins: boolean;
+  adding: boolean;
+  onAddPin: (lat: number, lon: number) => void;
+  onMovePin: (p: Place, lat: number, lon: number) => void;
 }
 
 /** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the rings, the pins, the popup and the route. */
-export function MapView({ loaded, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose }: Props) {
+export function MapView({ loaded, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose, pins, editablePins, adding, onAddPin, onMovePin }: Props) {
+  const first: [number, number] = [pins[0]!.lat, pins[0]!.lon];
   const markers = useRef(new Map<number, L.CircleMarker>());
   const register = useRef((id: number, m: L.CircleMarker | null) => { if (m) markers.current.set(id, m); else markers.current.delete(id); }).current;
   const canvas = useMemo(() => L.canvas({ pane: 'pins', tolerance: 8 }), []);
@@ -143,13 +174,12 @@ export function MapView({ loaded, items, today, selected, autoPan, showRoutes, h
 
   return (
     <div className={styles.wrap}>
-    <MapContainer id="map" className={styles.map} center={CENTRE} zoom={13} zoomControl={false}>
+    <MapContainer id="map" className={`${styles.map} ${adding ? styles.adding : ''}`} center={CENTRE} zoom={13} zoomControl={false}>
       <TileLayer url={esri('Base')} maxZoom={17} attribution="Esri, HERE, OpenStreetMap" />
       <TileLayer url={esri('Reference')} maxZoom={17} opacity={0.55} />
-      {[2, 4, 6].map(km => <Circle key={km} center={CENTRE} radius={km * 1000} pathOptions={{ color: '#8E8E93', weight: 1, dashArray: '4 4', fill: false }} interactive={false} />)}
-      <CircleMarker center={CENTRE} radius={7} pathOptions={{ color: '#fff', weight: 2, fillColor: TOKENS.accent, fillOpacity: 1 }} interactive={false}>
-        <Tooltip permanent direction="right" offset={[8, 0]}>Karlaplan</Tooltip>
-      </CircleMarker>
+      {[2, 4, 6].map(km => <Circle key={km} center={first} radius={km * 1000} pathOptions={{ color: '#8E8E93', weight: 1, dashArray: '4 4', fill: false }} interactive={false} />)}
+      {pins.map(p => <PlaceMarker key={p.id ?? 'karlaplan'} place={p} editable={editablePins} onMove={onMovePin} />)}
+      <AddOnTap adding={adding} onAdd={onAddPin} />
       {/* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */}
       <Pane name="pins" className={styles.pins}>
         {ordered.map(l => <Pin key={l.id} l={l} on={l.id === selected?.id} hot={l.id === hoveredId} renderer={canvas} onSelect={onSelect} onHover={onHover} register={register} />)}
