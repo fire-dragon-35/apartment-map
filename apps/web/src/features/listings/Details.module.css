@@ -8,40 +8,29 @@
   align-items: baseline;
 }
 .name {
-  grid-column: 1;
-  grid-row: 1;
+  grid-area: 1 / 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.restid {
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: end;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.size {
-  grid-column: 1;
-  grid-row: 2;
-  margin-top: 2px;
-}
+.restid,
 .price {
-  grid-column: 2;
-  grid-row: 2;
   justify-self: end;
-  margin-top: 2px;
   text-align: right;
-  font-variant-numeric: tabular-nums;
 }
-.meta {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  position: relative;
-  z-index: 1;
+.restid { grid-area: 1 / 2; }
+.size { grid-area: 2 / 1; }
+.price { grid-area: 2 / 2; }
+.meta { grid-area: 3 / 1 / auto / -1; position: relative; z-index: 1; pointer-events: none; }
+.route { grid-area: 4 / 1 / auto / -1; }
+.tags { grid-area: 5 / 1 / auto / -1; }
+.size,
+.price,
+.meta,
+.route,
+.tags {
   margin-top: 2px;
-  pointer-events: none;
 }
 /* the source chip is the link to the original ad: the only part of line 3 that takes clicks */
 .source {
@@ -52,23 +41,12 @@
   font-weight: 600;
   line-height: 1.5;
   white-space: nowrap;
-  text-decoration: none;
   pointer-events: auto;
   color: var(--t2);
   background: var(--tag);
 }
 a.source:hover {
   text-decoration: underline;
-}
-.tags {
-  grid-column: 1 / -1;
-  grid-row: 5;
-  margin-top: 2px;
-}
-.route {
-  grid-column: 1 / -1;
-  grid-row: 4;
-  margin-top: 2px;
 }
 :global(.leaflet-container) .source {
   color: inherit;
