@@ -1,6 +1,6 @@
 import { Stack } from '@frame/core';
 import { Fragment, type ReactNode } from 'react';
-import { fmt, lineStyle, priceChip, SEP, sourceChip } from '@lk/shared';
+import { fmt, lineStyle, priceChip, SEP, sourceChip, TOKENS } from '@lk/shared';
 import { Badge, Text, type TextProps } from '@frame/ui';
 import type { Listing } from './Listing.ts';
 import styles from './Details.module.css';
@@ -28,6 +28,7 @@ export function Details({ l }: { l: Listing }) {
     <>
       <span data-line="1" className={styles.name}>
         <Atom name="adress" {...T1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" {...T3}>{l.area}</Atom></>}
+        {l.isNew && <> <Badge tone="custom" color={TOKENS.accent} background={TOKENS.newBg} data-badge="ny">Ny</Badge></>}
       </span>
       <span data-line="1" className={styles.restid}>
         <Atom name="restid" {...T1} nowrap>{fmt.restid(l.t)}</Atom>

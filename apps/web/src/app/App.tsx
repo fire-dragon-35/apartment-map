@@ -5,12 +5,12 @@ import { Header } from '../features/filters/Header.tsx';
 import { useFilters, useRouteToggle } from '../features/filters/useFilters.ts';
 import type { Listing } from '../features/listings/Listing.ts';
 import { ListView } from '../features/listings/ListView.tsx';
+import { SortBar } from '../features/listings/SortBar.tsx';
+import { DEFAULT_SORT, sortListings, type SortState } from '../features/listings/sort.ts';
 import { useListings } from '../features/listings/useListings.ts';
 import { Legend } from '../features/map/Legend.tsx';
-import { MapView, type MapHandle } from '../features/map/MapView.tsx';
+import { MapView } from '../features/map/MapView.tsx';
 import { hooks } from './test-hooks.ts';
-
-const REDUCED = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
 /** The page (DESIGN.md §12): state lives here, the features only render and report. */
 export function App() {
@@ -18,7 +18,11 @@ export function App() {
   const [filters, setFilters] = useFilters();
   const [routes, setRoutes] = useRouteToggle();
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const map = useRef<MapHandle>(null);
+  /** the listing under the pointer, in the list or on the map: the other side lights up too */
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [sort, setSort] = useState<SortState>(DEFAULT_SORT);
+  /** false after a list tap: the popup opens without panning the map (R3) */
+  const [autoPan, setAutoPan] = useState(true);
   const selectedRef = useRef<number | null>(null);
   selectedRef.current = selectedId;
 
@@ -27,21 +31,21 @@ export function App() {
     const base = listings.filter(l => passesFilters(l, filters));
     return {
       newCount: base.filter(l => l.isNew).length,
-      visible: base.filter(l => !filters.onlyNew || l.isNew).sort((a, b) => a.t - b.t || (a.rent ?? 0) - (b.rent ?? 0)),
+      visible: sortListings(base.filter(l => !filters.onlyNew || l.isNew), sort),
     };
-  }, [listings, filters]);
+  }, [listings, filters, sort]);
   const selected = useMemo(() => visible.find(l => l.id === selectedId) ?? null, [visible, selectedId]);
 
   /** A filter change refilters, closes the popup and keeps the map where it is. */
   const changeFilters = useCallback((change: Partial<PageFilters>) => { setSelectedId(null); setFilters(change); }, [setFilters]);
   const close = useCallback(() => setSelectedId(null), []);
-  const select = useCallback((id: number) => setSelectedId(id), []);
+  const select = useCallback((id: number) => { setAutoPan(true); setSelectedId(id); }, []);
 
-  /** R3: a card tap scrolls to the top and brings the map to the pin; the selected card again closes. */
+  /** R3: a card tap selects the listing (outline, route, popup) and leaves the page and the map where they are; the selected card again closes. */
   const pick = useCallback((l: Listing) => {
     if (l.id === selectedRef.current) { setSelectedId(null); return; }
-    scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' });
-    map.current?.focus(l);
+    setAutoPan(false);
+    setSelectedId(l.id);
   }, []);
 
   useEffect(() => {   // R4: Esc
@@ -62,11 +66,12 @@ export function App() {
           </Page.Header>
           <Page.Content>
             <Panel flush aria-label="Karta">
-              <MapView ref={map} items={visible} today={today} selected={selected} showRoutes={routes} onSelect={select} onClose={close} />
+              <MapView items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
             </Panel>
             <Legend />
             <Panel flush aria-label="Annonser">
-              <ListView items={visible} today={today} selectedId={selected?.id ?? null} onPick={pick} error={error} />
+              <SortBar sort={sort} onSort={setSort} />
+              <ListView items={visible} today={today} selectedId={selected?.id ?? null} hoveredId={hoveredId} onPick={pick} onHover={setHoveredId} error={error} />
             </Panel>
           </Page.Content>
         </Page>

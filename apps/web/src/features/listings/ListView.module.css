@@ -1,7 +1,9 @@
-/* Clips card backgrounds to the panel's rounded corners. */
+/* Clips card backgrounds to the panel's rounded corners. The height (ten cards) is set by ListView; more scroll here. */
 .list {
   border-radius: inherit;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .empty {
   margin: 0;

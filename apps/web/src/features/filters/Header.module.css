@@ -1,7 +1,56 @@
-.summary {
-  cursor: pointer;
-  color: var(--accent);
+/* One row: the Filter toggle on the left, Visa resväg on the right. The panel floats over the page below it (no reflow). */
+.details {
+  position: relative;
 }
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  cursor: pointer;
+  list-style: none;
+}
+.summary::-webkit-details-marker {
+  display: none;
+}
+.toggle {
+  color: var(--accent);
+  font-weight: 600;
+}
+.toggle::before {
+  content: '▸';
+  display: inline-block;
+  width: 1em;
+  transition: transform 150ms ease;
+}
+.details[open] .toggle::before {
+  transform: rotate(90deg);
+}
+/* the label column is the same on every slider, so the tracks line up */
 .filters {
-  margin-top: var(--space-2);
+  display: grid;
+  gap: var(--space-3);
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 8px);
+}
+.filters label {
+  min-width: 0;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+@media (prefers-reduced-motion: reduce) {
+  .toggle::before { transition: none; }
 }

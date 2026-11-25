@@ -1,0 +1,97 @@
+.row {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr 6.5rem;
+  align-items: center;
+  gap: var(--space-4);
+}
+.label {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--t2);
+}
+.value {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--t1);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* one thin rail with the chosen part in the accent colour; the inputs sit on top with a see-through track */
+.track {
+  --thumb: 20px;
+  position: relative;
+  height: var(--thumb);
+  margin: 0 calc(var(--thumb) / 2);
+}
+.track::before,
+.track::after {
+  content: '';
+  position: absolute;
+  top: calc(50% - 2px);
+  height: 4px;
+  border-radius: 2px;
+  z-index: 0;
+}
+.track::before {
+  left: calc(var(--thumb) / -2);
+  right: calc(var(--thumb) / -2);
+  background: var(--line);
+}
+.track::after {
+  left: var(--lo);
+  right: calc(100% - var(--hi));
+  background: var(--accent);
+}
+.track input {
+  position: absolute;
+  left: calc(var(--thumb) / -2);
+  width: calc(100% + var(--thumb));
+  top: 0;
+  z-index: 1; /* the generated ::after rail comes last in the DOM; without this it paints over the thumbs */
+  height: var(--thumb);
+  margin: 0;
+  padding: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.track input[hidden] {
+  display: none;
+}
+.track input::-webkit-slider-runnable-track {
+  background: none;
+  height: var(--thumb);
+}
+.track input::-moz-range-track {
+  background: none;
+  height: var(--thumb);
+}
+.track input::-webkit-slider-thumb {
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 8%), 0 1px 4px rgb(0 0 0 / 28%);
+  cursor: grab;
+}
+.track input::-moz-range-thumb {
+  pointer-events: auto;
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 8%), 0 1px 4px rgb(0 0 0 / 28%);
+  cursor: grab;
+}
+.track input:active::-webkit-slider-thumb { cursor: grabbing; }
+.track input:focus-visible { outline: none; }
+.track input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgb(0 122 255 / 40%), 0 1px 4px rgb(0 0 0 / 28%); }
+.track input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgb(0 122 255 / 40%), 0 1px 4px rgb(0 0 0 / 28%); }

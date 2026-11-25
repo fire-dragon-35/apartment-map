@@ -123,14 +123,15 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   check(`R2 pin tap opens popup, outlines card, no scroll (${tapped} pins)`, tapped > 0 && bad.length === 0, `pins ${bad}`);
   await close();
 
-  // R3: card tap from far down the list
+  // R3: card tap from far down the list selects it; the page and the map stay where they are
   const target = ids[Math.floor((ids.length * 2) / 3)]!;
   await page.locator(`#c${target}`).scrollIntoViewIfNeeded(); await wait(200);
+  const mapBefore = await js<string>('JSON.stringify([__lgh.map.getCenter(),__lgh.map.getZoom()])');
+  const y0 = await js<number>('scrollY');
   await page.click(`#c${target}`, { position: { x: 24, y: 8 } }); await wait(1500);
-  const inmap = await js(`(()=>{const s=__lgh.map.getSize(),p=__lgh.map.latLngToContainerPoint(__lgh.visible.find(x=>x.id===${target}).latlng);return p.x>0&&p.y>0&&p.x<s.x&&p.y<s.y})()`);
-  const zoom = await js<number>('__lgh.map.getZoom()');
-  check('R3 card tap: top of page, pin in map, zoom >= 14, popup open', (await js('scrollY')) === 0 && (await sel()) === target && await isOpen() && inmap && zoom >= 14, `scrollY=${await js('scrollY')} sel=${await sel()} zoom=${zoom}`);
-  await page.locator(`#c${target}`).scrollIntoViewIfNeeded(); await page.click(`#c${target}`, { position: { x: 24, y: 8 } }); await wait(300);
+  const mapAfter = await js<string>('JSON.stringify([__lgh.map.getCenter(),__lgh.map.getZoom()])');
+  check('R3 card tap: page and map do not move, card selected, popup open', (await js('scrollY')) === y0 && mapAfter === mapBefore && (await sel()) === target && await isOpen() && await js(`document.querySelector('[data-card][aria-pressed="true"]')?.id==='c'+${target}`), `scrollY=${await js('scrollY')}/${y0} map ${mapBefore} -> ${mapAfter} sel=${await sel()}`);
+  await page.click(`#c${target}`, { position: { x: 24, y: 8 } }); await wait(300);
   check('R3 second card tap closes', (await sel()) === null && !(await isOpen()));
 
   // R4: close button, empty map, Esc
@@ -190,7 +191,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
 
   // R8: nya count follows filters (computed here from the raw fields, not with the page's own code)
   const expectedNya = () => js<number>(`(()=>{const v=id=>+document.getElementById(id).value,today=__lgh.today,days=(a,b)=>(Date.parse(a)-Date.parse(b))/864e5;
-    return __lgh.all.filter(l=>l.t<=v('f-min')&&(!l.rent||l.rent<=v('f-rent'))&&(!l.m2||l.m2>=v('f-m2'))&&(!l.end||days(l.end,(l.start&&l.start>today)?l.start:today)>=180)&&l.firstSeen===today).length})()`);
+    return __lgh.all.filter(l=>(v('f-min')>=30||l.t<=v('f-min'))&&(v('f-rent')>=30000||!l.rent||l.rent<=v('f-rent'))&&(!l.m2||l.m2>=v('f-m2'))&&(!l.end||days(l.end,(l.start&&l.start>today)?l.start:today)>=180)&&l.firstSeen===today).length})()`);
   const shown = () => js<string>("document.getElementById('nya').textContent");
   const n1 = await expectedNya(), s1 = await shown();
   await page.click('summary'); await wait(100);   // the filters are in a <details>

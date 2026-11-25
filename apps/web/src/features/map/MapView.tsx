@@ -1,39 +1,76 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { forwardRef, memo, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Circle, CircleMarker, MapContainer, Pane, TileLayer, Tooltip, useMap } from 'react-leaflet';
+import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import { fmt, KARLAPLAN, lineStyle, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR } from '@lk/shared';
+import { CAN_HOVER as HOVER } from '../../app/hover.ts';
 import { hooks } from '../../app/test-hooks.ts';
 import type { Listing } from '../listings/Listing.ts';
 import { Popup } from './Popup.tsx';
 import styles from './MapView.module.css';
 
 const CENTRE: [number, number] = [KARLAPLAN.lat, KARLAPLAN.lon];
-const REDUCED = matchMedia('(prefers-reduced-motion:reduce)').matches;
-const HOVER = matchMedia('(hover:hover) and (pointer:fine)').matches;
 const esri = (layer: 'Base' | 'Reference') => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_${layer}/MapServer/tile/{z}/{y}/{x}`;
 
-export interface MapHandle {
-  /** From the list (R3): centre on the pin at zoom 14 or more, then select it. */
-  focus(l: Listing): void;
-}
-
-/** One pin: price colour and size only; the dark ring only when selected (R5). */
-const Pin = memo(function Pin({ l, on, renderer, onSelect, register }: {
-  l: Listing; on: boolean; renderer: L.Canvas; onSelect: (id: number) => void; register: (id: number, m: L.CircleMarker | null) => void;
+/**
+ * One pin: price colour and size; the dark ring when selected or hovered (R5). A listing new today gets a white dot in
+ * the middle (price owns the fill, so the dot is the free channel). The dot is its own non-interactive marker on the same canvas.
+ */
+const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, register }: {
+  l: Listing; on: boolean; hot: boolean; renderer: L.Canvas; onSelect: (id: number) => void; onHover: (id: number | null) => void;
+  register: (id: number, m: L.CircleMarker | null) => void;
 }) {
+  const marker = useRef<L.CircleMarker | null>(null);
+  const dot = useRef<L.CircleMarker | null>(null);
+  const lit = on || hot;
   const options = useMemo(() => ({
-    fillColor: (priceBand(l.kpm) ?? PRICE_UNKNOWN).color, fillOpacity: 0.9,
-    color: on ? TOKENS.selected : (priceBand(l.kpm) ?? PRICE_UNKNOWN).edge, weight: on ? 3 : 1.5, bubblingMouseEvents: false,
-  }), [l.kpm, on]);
+    fillColor: (priceBand(l.kpm) ?? PRICE_UNKNOWN).color, fillOpacity: lit ? 1 : 0.9,
+    color: lit ? TOKENS.selected : (priceBand(l.kpm) ?? PRICE_UNKNOWN).edge, weight: lit ? 3 : 1.5, bubblingMouseEvents: false,
+  }), [l.kpm, lit]);
+  // the lit pin is drawn on top of its neighbours, and its dot on top of it
+  useEffect(() => { if (lit) { marker.current?.bringToFront(); dot.current?.bringToFront(); } }, [lit]);
+  const events = useMemo(() => HOVER
+    ? { click: () => onSelect(l.id), mouseover: () => onHover(l.id), mouseout: () => onHover(null) }
+    : { click: () => onSelect(l.id) }, [l.id, onSelect, onHover]);
   return (
-    <CircleMarker ref={m => register(l.id, m)} center={l.latlng} radius={l.radius} pathOptions={options} renderer={renderer}
-      eventHandlers={{ click: () => onSelect(l.id) }}>
-      {HOVER && <Tooltip direction="top">{`${l.street}${SEP}${fmt.restid(l.t)}${SEP}${fmt.hyra(l.rent)}`}</Tooltip>}
-    </CircleMarker>
+    <>
+      <CircleMarker ref={m => { marker.current = m; register(l.id, m); }} center={l.latlng} radius={l.radius} pathOptions={options} renderer={renderer}
+        eventHandlers={events}>
+        {HOVER && <Tooltip direction="top">{`${l.street}${SEP}${fmt.restid(l.t)}${SEP}${fmt.hyra(l.rent)}`}</Tooltip>}
+      </CircleMarker>
+      {l.isNew && (
+        <CircleMarker ref={dot} center={l.latlng} radius={Math.max(2.5, l.radius * 0.32)} renderer={renderer} interactive={false}
+          pathOptions={{ stroke: false, fillColor: '#fff', fillOpacity: 1 }} />
+      )}
+    </>
   );
 });
+
+/** A ring that grows from a pin and fades (CSS, in the `pulses` pane below the pins). Remount it to play it again. */
+function Pulse({ l, kind, delay = 0 }: { l: Listing; kind: 'select' | 'fresh'; delay?: number }) {
+  const icon = useMemo(() => L.divIcon({
+    className: '', iconSize: [0, 0],
+    html: `<span class="${styles.ring} ${styles[kind]}" style="--d:${l.radius * 2}px;--delay:${delay}ms"></span>`,
+  }), [l.radius, kind, delay]);
+  return <Marker position={l.latlng} icon={icon} pane="pulses" interactive={false} keyboard={false} />;
+}
+
+/** On arrival, the listings new today ripple three times, one after another, then rest. Once per page load. */
+function FreshPulses({ items }: { items: Listing[] }) {
+  const first = useRef<Listing[] | null>(null);
+  const [over, setOver] = useState(false);
+  if (!first.current && items.length) first.current = items.filter(l => l.isNew);
+  const started = first.current !== null;
+  useEffect(() => {
+    if (!started) return;
+    const t = setTimeout(() => setOver(true), 5000);
+    return () => clearTimeout(t);
+  }, [started]);
+  if (over || !first.current) return null;
+  const shown = new Set(items.map(l => l.id));
+  return <>{first.current.filter(l => shown.has(l.id)).map((l, i) => <Pulse key={l.id} l={l} kind="fresh" delay={Math.min(i * 80, 400)} />)}</>;
+}
 
 /** Fit Karlaplan and all pins once, max zoom 14 (DESIGN.md §8). */
 function FitOnce({ items }: { items: Listing[] }) {
@@ -74,7 +111,7 @@ function RouteLayer({ selected, show }: { selected: Listing | null; show: boolea
  * The one popup instance of the page. Leaflet owns the popup (autopan, the close button, a tap on the empty map); its
  * content is React, rendered into a node the popup holds. Closing in any way reports back through `onClose`.
  */
-function SelectionPopup({ selected, today, onClose }: { selected: Listing | null; today: string; onClose: () => void }) {
+function SelectionPopup({ selected, today, autoPan, onClose }: { selected: Listing | null; today: string; autoPan: boolean; onClose: () => void }) {
   const map = useMap();
   const popup = useMemo(() => L.popup({ minWidth: 270, maxWidth: 290, autoPanPadding: [16, 16], className: styles.popup }), []);
   const node = useMemo(() => document.createElement('div'), []);
@@ -90,42 +127,40 @@ function SelectionPopup({ selected, today, onClose }: { selected: Listing | null
   useLayoutEffect(() => {
     if (!selected) { map.closePopup(popup); return; }
     popup.options.offset = L.point(0, -selected.radius);
+    popup.options.autoPan = autoPan;
     popup.setLatLng(selected.latlng).setContent(node).openOn(map);
-  }, [selected, map, popup, node]);
+  }, [selected, autoPan, map, popup, node]);
   return selected ? createPortal(<Popup l={selected} today={today} />, node) : null;
 }
 
-const Controller = forwardRef<MapHandle, { onSelect: (id: number) => void }>(function Controller({ onSelect }, ref) {
+/** Publishes the Leaflet map to the test hooks. */
+function MapHooks() {
   const map = useMap();
   useEffect(() => { hooks.map = map; }, [map]);
-  useImperativeHandle(ref, () => ({
-    focus(l) {
-      map.once('moveend', () => onSelect(l.id));
-      map.setView(l.latlng, Math.max(map.getZoom(), 14), { animate: !REDUCED });
-    },
-  }), [map, onSelect]);
   return null;
-});
+}
 
 interface Props {
   items: Listing[];
   today: string;
   selected: Listing | null;
+  /** false after a list tap: the popup opens without moving the map (R3) */
+  autoPan: boolean;
   showRoutes: boolean;
+  hoveredId: number | null;
+  onHover: (id: number | null) => void;
   onSelect: (id: number) => void;
   onClose: () => void;
 }
 
 /** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the rings, the pins, the popup and the route. */
-export const MapView = forwardRef<MapHandle, Props>(function MapView({ items, today, selected, showRoutes, onSelect, onClose }, ref) {
+export function MapView({ items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose }: Props) {
   const markers = useRef(new Map<number, L.CircleMarker>());
   const register = useRef((id: number, m: L.CircleMarker | null) => { if (m) markers.current.set(id, m); else markers.current.delete(id); }).current;
   const canvas = useMemo(() => L.canvas({ pane: 'pins', tolerance: 8 }), []);
   // larger first, so smaller pins are drawn on top
   const ordered = useMemo(() => [...items].sort((a, b) => (b.m2 ?? 0) - (a.m2 ?? 0)), [items]);
   hooks.markers = markers.current;
-
-  useEffect(() => { if (selected) markers.current.get(selected.id)?.bringToFront(); }, [selected]);
 
   return (
     <MapContainer id="map" className={styles.map} center={CENTRE} zoom={13} zoomControl={false}>
@@ -137,12 +172,17 @@ export const MapView = forwardRef<MapHandle, Props>(function MapView({ items, to
       </CircleMarker>
       {/* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */}
       <Pane name="pins" className={styles.pins}>
-        {ordered.map(l => <Pin key={l.id} l={l} on={l.id === selected?.id} renderer={canvas} onSelect={onSelect} register={register} />)}
+        {ordered.map(l => <Pin key={l.id} l={l} on={l.id === selected?.id} hot={l.id === hoveredId} renderer={canvas} onSelect={onSelect} onHover={onHover} register={register} />)}
+      </Pane>
+      {/* rings sit below the pins and never take a click */}
+      <Pane name="pulses" className={styles.pulses}>
+        {selected && <Pulse key={selected.id} l={selected} kind="select" />}
+        <FreshPulses items={items} />
       </Pane>
       <RouteLayer selected={selected} show={showRoutes} />
-      <SelectionPopup selected={selected} today={today} onClose={onClose} />
+      <SelectionPopup selected={selected} today={today} autoPan={autoPan} onClose={onClose} />
       <FitOnce items={items} />
-      <Controller ref={ref} onSelect={onSelect} />
+      <MapHooks />
     </MapContainer>
   );
-});
+}

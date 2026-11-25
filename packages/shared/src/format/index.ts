@@ -1,6 +1,16 @@
 /** DESIGN.md §5. Every datum is formatted here and nowhere else. */
 export const NB = ' ';
 export const SEP = ' · ';
+/**
+ * DESIGN.md §4: the filter sliders. The ends of every slider mean no limit (`30+ min`, `100+ m²`, `4+ rum`), so the default
+ * shows everything. restid and hyra are upper limits only; storlek and rum are ranges.
+ */
+export const SLIDERS = {
+  min: { min: 0, max: 30, step: 1 },
+  rent: { min: 0, max: 30000, step: 500 },
+  m2: { min: 0, max: 100, step: 5 },
+  rooms: { min: 1, max: 4, step: 0.5 },
+} as const;
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 
 export const PRICE_BANDS = [
@@ -40,12 +50,21 @@ export const fmt = {
     const days = Math.round((Date.parse(today) - Date.parse(firstSeen)) / 864e5);
     return days <= 0 ? 'idag' : `${days}${NB}d`;
   },
-  /** The three sliders of DESIGN.md §4 as their labels, and the header summary of the active filters. */
-  sliderMin: (v: number) => `≤${NB}${v}${NB}min`,
-  sliderRent: (v: number) => `≤${NB}${k(v)}${NB}kr`,
-  sliderM2: (v: number) => `≥${NB}${v}${NB}m²`,
-  filterSummary: (f: { min: number; rent: number; m2: number }) =>
-    [`≤${NB}${k(f.rent)}${NB}kr`, `≥${NB}${f.m2}${NB}m²`, `≥${NB}6${NB}mån`, `≤${NB}${f.min}${NB}min`].join(SEP),
+  /** A slider range as text, `10–25 min`; a `+` marks the top end as no limit. */
+  range: (lo: number, hi: number, top: number, unit: string, num: (n: number) => string = String) =>
+    `${num(lo)}–${num(hi)}${hi >= top ? '+' : ''}${NB}${unit}`,
+  /** A single upper limit as text, `≤ 25 min`; the top end is `30+ min`. */
+  upTo: (hi: number, top: number, unit: string, num: (n: number) => string = String) =>
+    hi >= top ? `${num(top)}+${NB}${unit}` : `≤${NB}${num(hi)}${NB}${unit}`,
+  kilo: k,
+  rooms: (n: number) => String(n).replace('.', ','),
+  /** The header summary: only the limits that are set. */
+  filterSummary: (f: { min: number; rent: number; m2: number; m2Max: number; rooms: number; roomsMax: number }) => [
+    ...(f.rent < SLIDERS.rent.max ? [`≤${NB}${k(f.rent)}${NB}kr`] : []),
+    ...(f.m2 > SLIDERS.m2.min || f.m2Max < SLIDERS.m2.max ? [fmt.range(f.m2, f.m2Max, SLIDERS.m2.max, 'm²')] : []),
+    ...(f.rooms > SLIDERS.rooms.min || f.roomsMax < SLIDERS.rooms.max ? [fmt.range(f.rooms, f.roomsMax, SLIDERS.rooms.max, 'rum', fmt.rooms)] : []),
+    ...(f.min < SLIDERS.min.max ? [`≤${NB}${f.min}${NB}min`] : []),
+  ].join(SEP),
   traffar: (n: number) => `${n}${NB}träffar`,
   nya: (n: number) => `${n}${NB}nya`,
   gang: (minutes: number) => `gång${NB}${minutes}${NB}min`,

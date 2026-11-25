@@ -16,10 +16,58 @@
 .item:has([data-new]) {
   background: var(--new);
 }
+.item {
+  position: relative;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+/* hover (pointer devices only): a light tint says the card is tappable */
+@media (hover: hover) {
+  .item:hover {
+    background: color-mix(in srgb, var(--selected) 4%, transparent);
+  }
+  .item:has([data-new]):hover {
+    background: color-mix(in srgb, var(--selected) 4%, var(--new));
+  }
+}
+/* the card's pin is under the pointer on the map (or the reverse): a little stronger than a plain hover */
+.item[data-hot] {
+  background: color-mix(in srgb, var(--selected) 6%, transparent);
+}
+.item[data-hot]:has([data-new]) {
+  background: color-mix(in srgb, var(--selected) 6%, var(--new));
+}
+/* new today: the card arrives with a blue wash that settles into new.bg */
+.item:has([data-new]) {
+  animation: new-in 1600ms ease-out;
+}
+@keyframes new-in {
+  from { background-color: color-mix(in srgb, var(--accent) 22%, var(--new)); }
+  to { background-color: var(--new); }
+}
 /* selected, and keyboard focus: the same dark outline round the whole card (no blue focus line inside it) */
 .item:has([aria-pressed='true']),
 .item:has(.card:focus-visible) {
   box-shadow: inset 0 0 0 2px var(--selected);
+}
+/* selected adds a tint and a solid accent bar on the left edge, so it reads at a glance in a long list */
+.item:has([aria-pressed='true']) {
+  background: color-mix(in srgb, var(--selected) 7%, transparent);
+}
+.item:has([aria-pressed='true'])::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--selected);
+  animation: accent-in 180ms ease-out;
+  transform-origin: top;
+}
+@keyframes accent-in {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .item, .item::before, .item:has([data-new]) { transition: none; animation: none; }
 }
 /* the button covers the whole card: its negative margin reaches the item's padding, its padding brings the
    cells back to the grid, so the net offset is zero. It takes the card's rows and columns (subgrid). */

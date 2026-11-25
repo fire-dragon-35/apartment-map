@@ -3,7 +3,7 @@
  * that draws listings. Pure, zod free.
  */
 import { SOURCE_NAMES, type Source } from '../domain/source.ts';
-import { PRICE_BANDS, PRICE_UNKNOWN, priceBand } from './index.ts';
+import { PRICE_BANDS, PRICE_UNKNOWN, priceBand, SLIDERS } from './index.ts';
 
 export const TOKENS = {
   text1: '#1C1C1E', text2: '#3A3A3C', text3: '#6C6C70', line: '#E5E5EA', accent: '#007AFF',
@@ -25,18 +25,22 @@ export const SOURCE_COLORS: Record<string, string> = {
 };
 export const SOURCE_OTHER = '#6C6C70';
 
-/** DESIGN.md §4: the three sliders. The listings view (migration listings_karlaplan) is limited to these ranges. */
-export const SLIDERS = {
-  min: { min: 10, max: 30, step: 1 },
-  rent: { min: 8000, max: 17000, step: 500 },
-  m2: { min: 20, max: 60, step: 5 },
-} as const;
-export interface PageFilters { min: number; rent: number; m2: number; onlyNew: boolean }
-export const DEFAULT_FILTERS: PageFilters = { min: SLIDERS.min.max, rent: SLIDERS.rent.max, m2: SLIDERS.m2.min, onlyNew: false };
+export interface PageFilters { min: number; rent: number; m2: number; m2Max: number; rooms: number; roomsMax: number; onlyNew: boolean }
+export const DEFAULT_FILTERS: PageFilters = {
+  min: SLIDERS.min.max, rent: SLIDERS.rent.max, m2: SLIDERS.m2.min, m2Max: SLIDERS.m2.max,
+  rooms: SLIDERS.rooms.min, roomsMax: SLIDERS.rooms.max, onlyNew: false,
+};
 
-/** DESIGN.md §10 page filters, without "Bara nya" (R8 counts the new ones within these): restid, hyra, storlek, contract. */
-export const passesFilters = (l: { t: number; rent: number | null; m2: number | null; contractOk: boolean }, f: Pick<PageFilters, 'min' | 'rent' | 'm2'>) =>
-  l.t <= f.min && (!l.rent || l.rent <= f.rent) && (!l.m2 || l.m2 >= f.m2) && l.contractOk;
+/** DESIGN.md §10 page filters, without "Bara nya" (R8 counts the new ones within these): restid, hyra, storlek, rum, contract. An end of a slider is no limit. */
+export const passesFilters = (
+  l: { t: number; rent: number | null; m2: number | null; rooms: number | null; contractOk: boolean },
+  f: Pick<PageFilters, 'min' | 'rent' | 'm2' | 'm2Max' | 'rooms' | 'roomsMax'>,
+) =>
+  (f.min >= SLIDERS.min.max || l.t <= f.min)
+  && (f.rent >= SLIDERS.rent.max || !l.rent || l.rent <= f.rent)
+  && (!l.m2 || ((f.m2 <= SLIDERS.m2.min || l.m2 >= f.m2) && (f.m2Max >= SLIDERS.m2.max || l.m2 <= f.m2Max)))
+  && (!l.rooms || ((f.rooms <= SLIDERS.rooms.min || l.rooms >= f.rooms) && (f.roomsMax >= SLIDERS.rooms.max || l.rooms <= f.roomsMax)))
+  && l.contractOk;
 
 export const WALK_COLOR = '#3A3A3C';
 const METRO: Record<string, string> = { 10: '#0072BC', 11: '#0072BC', 13: '#E3242B', 14: '#E3242B', 17: '#2EA84A', 18: '#2EA84A', 19: '#2EA84A' };

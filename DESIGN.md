@@ -25,7 +25,7 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | --- | --- |
 | R1 ✓ | The page MUST be one normal scrolling document: header, map, legend, list. No element is `position: fixed` or `sticky`, and nothing uses `backdrop-filter`. |
 | R2 ✓ | Tapping a pin MUST open its popup, draw its route and outline its card, and MUST NOT scroll the page or the list. |
-| R3 ✓ | Tapping a card MUST scroll the page to the top, centre the map on the pin (zoom at least 14) and open its popup. Tapping the selected card again closes it. |
+| R3 ✓ | Tapping a card MUST select it: outline the card, draw its route and open its popup. It MUST NOT scroll the page or move the map (no pan, no zoom). Tapping the selected card again closes it. |
 | R4 ✓ | The popup's close button, a tap on empty map, and Esc MUST close the popup and clear the selection. |
 | R5 ✓ | A pin MUST show only price per m² (fill) and size (radius). Selected adds a dark ring. Nothing else. |
 | R6 ✓ | Every datum MUST use the format in section 5, in cards and popups. |
@@ -57,10 +57,10 @@ SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18,
 
 ## 4. Layout (top to bottom, one column, max width 720 px)
 
-1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 17k kr · ≥ 20 m² · ≥ 6 mån · ≤ 30 min`; a `<details>` labelled `Filter` and, beside it, a checkbox `Visa resväg` (on by default, remembered). The details hold three sliders (Restid 10 to 30 min step 1, Hyra 8k to 17k kr step 500, Storlek 20 to 60 m² step 5; remembered in the browser) and a checkbox `Bara nya`.
+1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; a `<details>` labelled `Filter`; its summary row also holds the checkbox `Visa resväg` at the right edge (on by default, remembered). The details open a bordered panel that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 30+ min step 1 (one thumb), Max hyra 0 to 30k+ kr step 500 (one thumb), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkbox `Bara nya` and `Återställ`.
 2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
 3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 349`, `350 till 449`, `450 till 549`, `550+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
-4. **List** of cards in a flush panel, divider between cards, sorted by restid then hyra.
+4. **List** of cards in a flush panel, divider between cards. A sort row on top (`Sortera` select: Restid, Hyra, Storlek, Pris per m²; a button flips `Stigande` / `Fallande`). Default: restid ascending, then hyra. Missing values go last. The list shows 10 cards and scrolls inside itself for the rest.
 
 ## 5. Data formats
 
@@ -127,7 +127,7 @@ New today: `new.bg` background. Selected and keyboard focus: 2 px `selected` out
 | --- | --- |
 | Tap pin | select: popup, route, card outlined. No scrolling (R2). Leaflet auto pans the popup into the map. |
 | `Visa resväg` | draw or remove the open listing's route at once |
-| Tap card | page scrolls to top; map `setView` on the pin at zoom max(current, 14); popup (R3). Tap again: close. |
+| Tap card | select: card outlined, route, popup; page and map do not move (R3). The popup opens without auto pan. Tap again: close. |
 | Tap empty map, popup ×, Esc | close, clear (R4) |
 | Filter change | refilter, close popup, keep the map where it is |
 | Load | fit Karlaplan and all pins once, max zoom 14 |
@@ -158,7 +158,7 @@ Motion: only Leaflet's own pan and zoom animations and smooth page scroll. With 
 | fb/listings.json | url, area, rent, m2, rooms, start, end, furnished, first_seen, lat, lon, t |
 | routes.json | key `lat,lon` at 4 decimals → legs `[mode, line, coordinates, minutes, stops]` |
 
-Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ slider, contract ≥ 180 days (open ended passes). New = first seen today.
+Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ minst and ≤ högst (unless ingen gräns), rum ≥ slider, contract ≥ 180 days (open ended passes). New = first seen today.
 
 ## 11. Automated check
 
@@ -166,7 +166,7 @@ Page filters: restid ≤ slider, hyra ≤ slider, storlek ≥ slider, contract �
 
 * R1: no element has computed position fixed or sticky, none uses backdrop-filter; the document is taller than the viewport and scrolls.
 * R2: tapping each pin centre in view selects the pin on top there, opens a popup and outlines its card; page and list scroll positions are unchanged.
-* R3: after scrolling down and tapping a card: page is at the top, the pin is inside the map, zoom ≥ 14, popup open. Tapping again closes.
+* R3: after scrolling down and tapping a card: page scroll and map view are unchanged, the card is outlined, popup open. Tapping again closes.
 * R4: popup × closes; empty map tap closes; Esc closes.
 * R5: every pin's fill equals its price colour, its edge its `price.edge` colour, its radius follows section 7; only the selected pin has the dark ring.
 * R6: every card and popup atom matches section 5, and card line 1 and 2 hold the atoms of section 7 in that order.

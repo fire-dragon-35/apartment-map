@@ -17,3 +17,39 @@
   font: inherit;
 }
 
+/* rings: below the pins, never clickable */
+.pulses {
+  z-index: 445;
+  pointer-events: none;
+}
+.ring {
+  position: absolute;
+  left: calc(var(--d) / -2);
+  top: calc(var(--d) / -2);
+  width: var(--d);
+  height: var(--d);
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 2px solid var(--ring);
+  opacity: 0;
+  animation: ripple var(--dur) ease-out var(--delay) var(--count) forwards;
+}
+/* selecting: one quick dark ring */
+.select {
+  --ring: var(--selected);
+  --dur: 650ms;
+  --count: 1;
+}
+/* arrival of the listings new today: a slower blue ring, three times */
+.fresh {
+  --ring: var(--accent);
+  --dur: 1400ms;
+  --count: 3;
+}
+@keyframes ripple {
+  from { transform: scale(0.9); opacity: 0.8; }
+  to { transform: scale(2.8); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ring { animation: none; }
+}
