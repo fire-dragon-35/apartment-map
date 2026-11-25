@@ -1,5 +1,5 @@
 /**
- * Test 3 of 5 (ARCHITECTURE.md §13): the page rules of DESIGN.md, R1 to R12, checked on the BUILT app in a phone sized
+ * Test 3 of 5 (ARCHITECTURE.md §13): the page rules of DESIGN.md, R1 to R13, checked on the BUILT app in a phone sized
  * headless Chromium. The legacy legacy/tests/design_check.py ported rule by rule. Supabase is mocked (a fixture of about
  * 30 listings in the shape of the view), map tiles are refused: no network. Needs Chromium: npx playwright install chromium
  *
@@ -63,7 +63,7 @@ after(async () => {
   await new Promise(r => server?.close(r));
 });
 
-test('page rules R1 to R12 (DESIGN.md v3)', async () => {
+test('page rules R1 to R13 (DESIGN.md v4)', async () => {
   const failures: string[] = [];
   const check = (rule: string, ok: unknown, detail = '') => {
     console.log(`${ok ? 'PASS' : 'FAIL'} ${rule}${!ok && detail ? `  ${detail}` : ''}`);
@@ -191,6 +191,11 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   const one = await js(`document.querySelectorAll('[data-card][aria-pressed="true"]').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&[...__lgh.markers.values()].filter(m=>m.options.weight===2).length===1`);
   check('R11 one popup, one outlined card, one ringed pin', one);
   await close();
+
+  // R13: the first and last card take the list's rounded corners, so a selected or new card is never clipped
+  const r13 = await js(`(()=>{const l=document.getElementById('list'),c=[...l.querySelectorAll('[data-card]')].map(b=>b.parentElement),r=(e,k)=>getComputedStyle(e)['border'+k+'Radius'],f=c[0],e=c.at(-1);
+    return r(l,'TopLeft')!=='0px'&&['TopLeft','TopRight'].every(k=>r(f,k)===r(l,k))&&['BottomLeft','BottomRight'].every(k=>r(e,k)===r(l,k))})()`);
+  check('R13 first and last card follow the list corners', r13);
 
   // R7
   const txt = await js<string>('document.body.innerText');

@@ -37,7 +37,7 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | R10 ✓ | With `Visa resväg` on, the selected listing's route MUST be drawn on the map while its popup is open and removed when it closes. With it off, no route is drawn. |
 | R11 ✓ | Only one listing can be selected: one popup, one outlined card, one ringed pin. |
 | R12 ✓ | The accent (indigo) MUST NOT appear on the map except Karlaplan and the selected pin's ring. |
-| R13 | A selected or highlighted card's outline and background MUST follow the list's rounded corners (first and last card inherit the radius); no clipped corners. |
+| R13 ✓ | A selected or highlighted card's outline and background MUST follow the list's rounded corners (first and last card inherit the radius); no clipped corners. |
 
 ## 3. Tokens
 
