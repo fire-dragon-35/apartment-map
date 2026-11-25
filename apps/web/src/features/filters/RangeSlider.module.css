@@ -76,8 +76,8 @@
   height: var(--thumb);
   border-radius: 50%;
   border: 0;
-  background: #fff;
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 8%), 0 1px 4px rgb(0 0 0 / 28%);
+  background: var(--color-background);
+  box-shadow: var(--shadow-thumb);
   cursor: grab;
 }
 .track input::-moz-range-thumb {
@@ -87,11 +87,11 @@
   height: var(--thumb);
   border-radius: 50%;
   border: 0;
-  background: #fff;
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 8%), 0 1px 4px rgb(0 0 0 / 28%);
+  background: var(--color-background);
+  box-shadow: var(--shadow-thumb);
   cursor: grab;
 }
 .track input:active::-webkit-slider-thumb { cursor: grabbing; }
 .track input:focus-visible { outline: none; }
-.track input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgb(0 122 255 / 40%), 0 1px 4px rgb(0 0 0 / 28%); }
-.track input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgb(0 122 255 / 40%), 0 1px 4px rgb(0 0 0 / 28%); }
+.track input:focus-visible::-webkit-slider-thumb { box-shadow: var(--focus-ring), var(--shadow-thumb); }
+.track input:focus-visible::-moz-range-thumb { box-shadow: var(--focus-ring), var(--shadow-thumb); }

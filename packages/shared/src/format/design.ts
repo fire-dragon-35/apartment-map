@@ -9,6 +9,8 @@ import { PRICE_BANDS, PRICE_UNKNOWN, priceBand, SLIDERS } from './index.ts';
 export const TOKENS = {
   text1: '#0A0A0A', text2: '#3A3A3A', text3: '#6E6E6E', line: '#EAEAEA', accent: '#5B4BFF', accentText: '#3A2DC2',
   newBg: '#EEEBFF', selected: '#5B4BFF', tagBg: '#F0F0F2', mapBg: '#F1F1EE', warnBg: '#16161C', warnText: '#FFFFFF',
+  white: '#FFFFFF', guide: '#8E8E93',
+  shadowPop: '0 8px 24px rgb(0 0 0 / 14%)', shadowThumb: '0 0 0 1px rgb(0 0 0 / 8%), 0 1px 4px rgb(0 0 0 / 28%)',
 } as const;
 
 /** CSS custom properties for :root, so the style sheet never repeats a token. */
@@ -17,6 +19,7 @@ export function cssVariables(): Record<string, string> {
     '--t1': TOKENS.text1, '--t2': TOKENS.text2, '--t3': TOKENS.text3, '--line': TOKENS.line, '--accent': TOKENS.accent,
     '--new': TOKENS.newBg, '--selected': TOKENS.selected, '--tag': TOKENS.tagBg, '--map-bg': TOKENS.mapBg,
     '--accent-text': TOKENS.accentText, '--warn-bg': TOKENS.warnBg, '--warn-text': TOKENS.warnText,
+    '--shadow-pop': TOKENS.shadowPop, '--shadow-thumb': TOKENS.shadowThumb,
     ...Object.fromEntries(PRICE_BANDS.flatMap((b, i) => [[`--price-${i + 1}`, b.color], [`--price-text-${i + 1}`, b.text]])),
     '--price-unknown': PRICE_UNKNOWN.color,
   };
