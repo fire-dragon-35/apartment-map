@@ -119,7 +119,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620845/",
-"new": "yes",
+"new": "",
 "flag": "student flat – requires student status",
 "note": "first-hand; similar flats went to 3–9 yrs queue",
 "first_seen": "2026-11-24",
@@ -218,7 +218,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620642/",
-"new": "yes",
+"new": "",
 "flag": "",
 "note": "first-hand; similar flats went to 15–21 yrs queue",
 "first_seen": "2026-11-24",
@@ -284,7 +284,7 @@
 "move in": "now → indefinite",
 "source": "Qasa",
 "link": "https://qasa.com/se/sv/home/1495844",
-"new": "yes",
+"new": "",
 "flag": "",
 "note": "",
 "first_seen": "2026-11-24",
@@ -351,7 +351,7 @@
 "source": "Qasa",
 "link": "https://qasa.com/se/sv/home/1508108",
 "new": "",
-"flag": "",
+"flag": "also listed on Samtrygg for 16560 kr",
 "note": "",
 "first_seen": null,
 "t": 14,
@@ -395,6 +395,39 @@
 "end": null,
 "area": "Stockholm",
 "street": "Älvkarleövägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0962,
+59.3564
+]
+},
+"properties": {
+"id": "Qasa:1505572",
+"address": "Artemisgatan, Stockholm",
+"travel (weekday 8:00, SL)": "15 min",
+"rent": "16952 kr",
+"size": "2 rok, 41 m²",
+"kr/m²": 413,
+"move in": "2027-01-01 → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1505572",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-25",
+"t": 15,
+"rent_kr": 16952,
+"m2": 41,
+"rooms": 2,
+"start": "2027-01-01",
+"end": null,
+"area": "Stockholm",
+"street": "Artemisgatan"
 }
 },
 {
@@ -515,7 +548,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620760/",
-"new": "yes",
+"new": "",
 "flag": "short-term contract – check length in ad",
 "note": "first-hand; similar flats went to 19–30 yrs queue",
 "first_seen": "2026-11-24",
@@ -548,7 +581,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620615/",
-"new": "yes",
+"new": "",
 "flag": "short-term contract – check length in ad",
 "note": "first-hand; similar flats went to 19–30 yrs queue",
 "first_seen": "2026-11-24",
@@ -779,7 +812,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620719/",
-"new": "yes",
+"new": "",
 "flag": "short-term contract – check length in ad",
 "note": "first-hand; similar flats went to 19–26 yrs queue",
 "first_seen": "2026-11-24",
@@ -977,7 +1010,7 @@
 "move in": "2027-01-01 → 2028-01-01",
 "source": "Qasa",
 "link": "https://qasa.com/se/sv/home/1513690",
-"new": "yes",
+"new": "",
 "flag": "",
 "note": "",
 "first_seen": "2026-11-24",
@@ -1373,7 +1406,7 @@
 "move in": "now → indefinite",
 "source": "Qasa",
 "link": "https://qasa.com/se/sv/home/1513265",
-"new": "yes",
+"new": "",
 "flag": "",
 "note": "",
 "first_seen": "2026-11-24",
@@ -1385,6 +1418,39 @@
 "end": null,
 "area": "Lidingö",
 "street": "Bodalsvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0219,
+59.3353
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:309324",
+"address": "Sankt Göransgatan 112, Stadshagen",
+"travel (weekday 8:00, SL)": "25 min",
+"rent": "5721 kr",
+"size": "1 rok, 26 m²",
+"kr/m²": 220,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620720/",
+"new": "yes",
+"flag": "",
+"note": "first-hand; similar flats went to 15–21 yrs queue",
+"first_seen": "2026-11-25",
+"t": 25,
+"rent_kr": 5721,
+"m2": 26,
+"rooms": 1,
+"start": null,
+"end": null,
+"area": "Stadshagen",
+"street": "Sankt Göransgatan 112"
 }
 },
 {
@@ -1406,7 +1472,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620840/",
-"new": "yes",
+"new": "",
 "flag": "student flat – requires student status",
 "note": "first-hand; similar flats went to 3–9 yrs queue",
 "first_seen": "2026-11-24",
@@ -1418,6 +1484,39 @@
 "end": null,
 "area": "Södermalm",
 "street": "Kristinehovsgatan 12"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0807,
+59.3104
+]
+},
+"properties": {
+"id": "Qasa:1508156",
+"address": "Gotlandsgatan, Stockholm",
+"travel (weekday 8:00, SL)": "25 min",
+"rent": "15500 kr",
+"size": "2 rok, 46 m²",
+"kr/m²": 337,
+"move in": "now → indefinite",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1508156",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-25",
+"t": 25,
+"rent_kr": 15500,
+"m2": 46,
+"rooms": 2,
+"start": "now",
+"end": null,
+"area": "Stockholm",
+"street": "Gotlandsgatan"
 }
 },
 {
@@ -1604,7 +1703,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620718/",
-"new": "yes",
+"new": "",
 "flag": "short-term contract – check length in ad",
 "note": "first-hand; similar flats went to 19–26 yrs queue",
 "first_seen": "2026-11-24",
@@ -1722,6 +1821,39 @@
 "geometry": {
 "type": "Point",
 "coordinates": [
+18.0203,
+59.3373
+]
+},
+"properties": {
+"id": "Qasa:1514122",
+"address": "Stadshagsvägen, Stockholm",
+"travel (weekday 8:00, SL)": "27 min",
+"rent": "15000 kr",
+"size": "2 rok, 56 m²",
+"kr/m²": 268,
+"move in": "2026-12-19 → 2027-12-01",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1514122",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-25",
+"t": 27,
+"rent_kr": 15000,
+"m2": 56,
+"rooms": 2,
+"start": "2026-12-19",
+"end": "2027-12-01",
+"area": "Stockholm",
+"street": "Stadshagsvägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
 18.0907,
 59.295
 ]
@@ -1736,7 +1868,7 @@
 "move in": "now → indefinite",
 "source": "Qasa",
 "link": "https://qasa.com/se/sv/home/1512756",
-"new": "yes",
+"new": "",
 "flag": "",
 "note": "",
 "first_seen": "2026-11-24",
@@ -1901,7 +2033,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620842/",
-"new": "yes",
+"new": "",
 "flag": "student flat – requires student status",
 "note": "first-hand; similar flats went to 3–9 yrs queue",
 "first_seen": "2026-11-24",
@@ -1934,7 +2066,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620832/",
-"new": "yes",
+"new": "",
 "flag": "student flat – requires student status",
 "note": "first-hand; similar flats went to 3–9 yrs queue",
 "first_seen": "2026-11-24",
@@ -1946,6 +2078,39 @@
 "end": null,
 "area": "Liljeholmen",
 "street": "Golvläggargränd 8"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0388,
+59.3484
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:309323",
+"address": "Dalagatan 67, Vasastaden",
+"travel (weekday 8:00, SL)": "28 min",
+"rent": "10339 kr",
+"size": "1 rok, 31 m²",
+"kr/m²": 334,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202618947/",
+"new": "yes",
+"flag": "",
+"note": "first-hand; similar flats went to 15–21 yrs queue",
+"first_seen": "2026-11-25",
+"t": 28,
+"rent_kr": 10339,
+"m2": 31,
+"rooms": 1,
+"start": null,
+"end": null,
+"area": "Vasastaden",
+"street": "Dalagatan 67"
 }
 },
 {
@@ -2217,39 +2382,6 @@
 "geometry": {
 "type": "Point",
 "coordinates": [
-18.0698,
-59.2843
-]
-},
-"properties": {
-"id": "Bostadsförmedlingen:309155",
-"address": "Sockenvägen 345, Enskede Gård",
-"travel (weekday 8:00, SL)": "29 min",
-"rent": "5682 kr",
-"size": "1 rok, 33 m²",
-"kr/m²": 172,
-"move in": "see ad → indefinite",
-"source": "Bostadsförmedlingen",
-"link": "https://bostad.stockholm.se/bostad/202620667/",
-"new": "",
-"flag": "",
-"note": "first-hand; similar flats went to 11–15 yrs queue",
-"first_seen": "2026-11-23",
-"t": 29,
-"rent_kr": 5682,
-"m2": 33,
-"rooms": 1,
-"start": null,
-"end": null,
-"area": "Enskede Gård",
-"street": "Sockenvägen 345"
-}
-},
-{
-"type": "Feature",
-"geometry": {
-"type": "Point",
-"coordinates": [
 18.0594,
 59.3552
 ]
@@ -2264,7 +2396,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620825/",
-"new": "yes",
+"new": "",
 "flag": "student flat – requires student status; also listed on Bostadsförmedlingen for 7775 kr",
 "note": "first-hand; similar flats went to 3–9 yrs queue",
 "first_seen": "2026-11-24",
@@ -2316,6 +2448,39 @@
 "geometry": {
 "type": "Point",
 "coordinates": [
+17.9986,
+59.381
+]
+},
+"properties": {
+"id": "Bostadsförmedlingen:309355",
+"address": "Gunnarbovägen 2A, Ulriksdal",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "9849 kr",
+"size": "2 rok, 60 m²",
+"kr/m²": 164,
+"move in": "see ad → indefinite",
+"source": "Bostadsförmedlingen",
+"link": "https://bostad.stockholm.se/bostad/202620755/",
+"new": "yes",
+"flag": "",
+"note": "first-hand; similar flats went to 11–16 yrs queue",
+"first_seen": "2026-11-25",
+"t": 29,
+"rent_kr": 9849,
+"m2": 60,
+"rooms": 2,
+"start": null,
+"end": null,
+"area": "Ulriksdal",
+"street": "Gunnarbovägen 2A"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
 18.1474,
 59.3485
 ]
@@ -2342,6 +2507,39 @@
 "end": "2027-06-30",
 "area": "Lidingö",
 "street": "Agavägen"
+}
+},
+{
+"type": "Feature",
+"geometry": {
+"type": "Point",
+"coordinates": [
+18.0339,
+59.2981
+]
+},
+"properties": {
+"id": "Qasa:1506122",
+"address": "Järnlundsvägen, Årsta",
+"travel (weekday 8:00, SL)": "29 min",
+"rent": "12714 kr",
+"size": "1 rok, 26 m²",
+"kr/m²": 489,
+"move in": "2027-02-01 → 2028-01-31",
+"source": "Qasa",
+"link": "https://qasa.com/se/sv/home/1506122",
+"new": "yes",
+"flag": "",
+"note": "",
+"first_seen": "2026-11-25",
+"t": 29,
+"rent_kr": 12714,
+"m2": 26,
+"rooms": 1,
+"start": "2027-02-01",
+"end": "2028-01-31",
+"area": "Årsta",
+"street": "Järnlundsvägen"
 }
 },
 {
@@ -2561,7 +2759,7 @@
 "move in": "see ad → indefinite",
 "source": "Bostadsförmedlingen",
 "link": "https://bostad.stockholm.se/bostad/202620712/",
-"new": "yes",
+"new": "",
 "flag": "short-term contract – check length in ad",
 "note": "first-hand; similar flats went to 13–22 yrs queue",
 "first_seen": "2026-11-24",
@@ -2594,7 +2792,7 @@
 "move in": "2027-01-01 → indefinite",
 "source": "HomeQ",
 "link": "https://www.homeq.se/lagenhet/295303-2rum-stockholm-stockholms-län-blekingegatan-8",
-"new": "yes",
+"new": "",
 "flag": "short lease – check length in ad",
 "note": "first-hand",
 "first_seen": "2026-11-24",
@@ -2627,7 +2825,7 @@
 "move in": "2026-12-01 → 2027-05-31",
 "source": "Qasa",
 "link": "https://qasa.com/se/sv/home/1513475",
-"new": "yes",
+"new": "",
 "flag": "",
 "note": "",
 "first_seen": "2026-11-24",
@@ -2660,7 +2858,7 @@
 "move in": "2027-01-01 → 2027-06-30",
 "source": "Qasa",
 "link": "https://qasa.com/se/sv/home/1513456",
-"new": "yes",
+"new": "",
 "flag": "",
 "note": "",
 "first_seen": "2026-11-24",
@@ -2759,7 +2957,7 @@
 "move in": "2027-01-01 → 2027-08-31",
 "source": "Samtrygg",
 "link": "https://www.samtrygg.se/object/valh4tldsmdpe9ztuyp3/stockholm/solna/olof-af-acrels-vag-3/1-rok",
-"new": "yes",
+"new": "",
 "flag": "",
 "note": "",
 "first_seen": "2026-11-24",
