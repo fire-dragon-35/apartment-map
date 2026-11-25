@@ -8,7 +8,8 @@ import styles from './ListView.module.css';
 const ROWS = 5;
 
 /** DESIGN.md §4.4: the cards, already filtered and sorted by the page. */
-export function ListView({ items, today, selectedId, hoveredId, onPick, onHover, error }: {
+export function ListView({ items, today, selectedId, hoveredId, onPick, onHover, error, loaded }: {
+  loaded: boolean;
   items: Listing[]; today: string; selectedId: number | null; hoveredId: number | null;
   onPick: (l: Listing) => void; onHover: (id: number | null) => void; error: Error | null;
 }) {
@@ -37,7 +38,9 @@ export function ListView({ items, today, selectedId, hoveredId, onPick, onHover,
     <div id="list" ref={list} className={styles.list} style={height ? { maxHeight: height } : undefined}>
       {error
         ? <Text as="p" size="xs" tone="muted" className={styles.empty}>{error.message}</Text>
-        : items.length
+        : !loaded
+          ? <Text as="p" size="xs" tone="muted" className={styles.empty} role="status">Laddar annonser…</Text>
+          : items.length
           ? items.map(l => <Card key={l.id} l={l} today={today} selected={l.id === selectedId} hot={l.id === hoveredId} onPick={onPick} onHover={onHover} />)
           : <Text as="p" tone="secondary" className={styles.empty}>Inga träffar med de här filtren</Text>}
     </div>

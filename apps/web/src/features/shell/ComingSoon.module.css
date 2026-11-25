@@ -1,0 +1,10 @@
+.box {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding-block: var(--space-8);
+}
+.back {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}

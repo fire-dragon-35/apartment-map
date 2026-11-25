@@ -86,7 +86,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
     return route.abort();   // map tiles are irrelevant to the rules, and nothing else may leave the machine
   });
   await page.addInitScript('try{localStorage.clear()}catch(e){}');
-  await page.goto(base);
+  await page.goto(base + '#/karta');
   await page.waitForFunction('window.__lgh && window.__lgh.visible && window.__lgh.visible.length>0', undefined, { timeout: 15000 });
   await page.waitForTimeout(500);
 
@@ -200,7 +200,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
     return __lgh.all.filter(l=>(v('f-min')>=60||l.t<=v('f-min'))&&(v('f-rent')>=30000||!l.rent||l.rent<=v('f-rent'))&&(!l.m2||l.m2>=v('f-m2'))&&(!l.end||days(l.end,(l.start&&l.start>today)?l.start:today)>=180)&&l.firstSeen===today).length})()`);
   const shown = () => js<string>("document.getElementById('nya').textContent");
   const n1 = await expectedNya(), s1 = await shown();
-  await page.click('summary'); await wait(100);   // the filters are in a <details>
+  await page.click('main summary'); await wait(100);   // the filters are in a <details>
   await page.locator('#f-min').fill('12'); await wait(200);
   const n2 = await expectedNya(), s2 = await shown();
   check('R8 nya counts within filters', s1 === `${n1}${NB}nya` && s2 === `${n2}${NB}nya` && n1 !== n2, `${s1}/${n1} ${s2}/${n2}`);

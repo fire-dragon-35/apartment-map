@@ -27,7 +27,7 @@ export const SOURCE_OTHER = '#6C6C70';
 
 export interface PageFilters { min: number; rent: number; m2: number; m2Max: number; rooms: number; roomsMax: number; onlyNew: boolean }
 export const DEFAULT_FILTERS: PageFilters = {
-  min: SLIDERS.min.max, rent: SLIDERS.rent.max, m2: SLIDERS.m2.min, m2Max: SLIDERS.m2.max,
+  min: 30, rent: SLIDERS.rent.max, m2: SLIDERS.m2.min, m2Max: SLIDERS.m2.max,
   rooms: SLIDERS.rooms.min, roomsMax: SLIDERS.rooms.max, onlyNew: false,
 };
 

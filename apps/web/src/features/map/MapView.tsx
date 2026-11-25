@@ -135,6 +135,7 @@ function MapHooks() {
 }
 
 interface Props {
+  loaded: boolean;
   items: Listing[];
   today: string;
   selected: Listing | null;
@@ -148,7 +149,7 @@ interface Props {
 }
 
 /** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the rings, the pins, the popup and the route. */
-export function MapView({ items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose }: Props) {
+export function MapView({ loaded, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose }: Props) {
   const markers = useRef(new Map<number, L.CircleMarker>());
   const register = useRef((id: number, m: L.CircleMarker | null) => { if (m) markers.current.set(id, m); else markers.current.delete(id); }).current;
   const canvas = useMemo(() => L.canvas({ pane: 'pins', tolerance: 8 }), []);
@@ -157,6 +158,7 @@ export function MapView({ items, today, selected, autoPan, showRoutes, hoveredId
   hooks.markers = markers.current;
 
   return (
+    <div className={styles.wrap}>
     <MapContainer id="map" className={styles.map} center={CENTRE} zoom={13} zoomControl={false}>
       <TileLayer url={esri('Base')} maxZoom={17} attribution="Esri, HERE, OpenStreetMap" />
       <TileLayer url={esri('Reference')} maxZoom={17} opacity={0.55} />
@@ -178,5 +180,7 @@ export function MapView({ items, today, selected, autoPan, showRoutes, hoveredId
       <FitOnce items={items} />
       <MapHooks />
     </MapContainer>
+    {!loaded && <div className={styles.loading} role="status"><span className={styles.spinner} />Laddar annonser…</div>}
+    </div>
   );
 }

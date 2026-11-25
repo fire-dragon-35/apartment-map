@@ -1,0 +1,111 @@
+.bar {
+  border-bottom: 1px solid var(--line);
+  background: var(--color-background);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  min-height: 3.5rem;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--t1);
+  margin-right: auto;
+}
+.nav,
+.account {
+  display: none;
+  align-items: center;
+  gap: var(--space-1);
+}
+.link {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  color: var(--t2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.link:hover {
+  background: var(--color-surface-secondary, var(--line));
+  color: var(--t1);
+}
+.link[aria-current='page'] {
+  color: var(--t1);
+  font-weight: 600;
+}
+.cta {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--accent);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.cta:hover {
+  filter: brightness(0.92);
+}
+.link:focus-visible,
+.cta:focus-visible,
+.brand:focus-visible,
+.burger:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+/* mobile menu */
+.menu {
+  position: relative;
+}
+.burger {
+  display: grid;
+  gap: 4px;
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  list-style: none;
+}
+.burger::-webkit-details-marker {
+  display: none;
+}
+.burger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--t1);
+}
+.sheet {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  display: grid;
+  gap: var(--space-1);
+  min-width: 13rem;
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--color-background);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
+}
+.sheet .cta {
+  text-align: center;
+  margin-top: var(--space-1);
+}
+@media (min-width: 768px) {
+  .nav,
+  .account {
+    display: flex;
+  }
+  .brand {
+    margin-right: 0;
+  }
+  .nav {
+    margin-right: auto;
+  }
+  .menu {
+    display: none;
+  }
+}
