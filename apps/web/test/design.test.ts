@@ -4,7 +4,7 @@
  * 30 listings in the shape of the view), map tiles are refused: no network. Needs Chromium: npx playwright install chromium
  *
  * The app is built with `--mode test` (npm test does it), which publishes `window.__lgh`: the listings, the selection,
- * the Leaflet map, the pin layers and the route layer. The production build has no such object.
+ * the Leaflet map and the pin layers. The production build has no such object.
  */
 import assert from 'node:assert/strict';
 import { createReadStream, existsSync, statSync } from 'node:fs';
@@ -81,7 +81,7 @@ test('page rules R1 to R13 (DESIGN.md v4)', async () => {
     if (url.includes('supabase.test')) {
       const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*', 'access-control-expose-headers': '*' };
       if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
-      return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify(url.includes('/source_status') ? STATUS : url.includes('id=eq.') ? rows.filter(r => url.endsWith(`id=eq.${r.id}`)) : rows) });
+      return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify(url.includes('/source_status') ? STATUS : rows) });
     }
     return route.abort();   // map tiles are irrelevant to the rules, and nothing else may leave the machine
   });
@@ -177,15 +177,6 @@ test('page rules R1 to R13 (DESIGN.md v4)', async () => {
   const unknowns = await js<string>(`document.body.innerText`);
   check('R6 unknown values show as ? (rent, size, kr/m²)', unknowns.includes(`?${NB}kr`) && unknowns.includes(`?${NB}m²`) && unknowns.includes(`?${NB}kr/m²`));
 
-  // R10: route only while open and Visa resväg on
-  const count = () => js<number>('__lgh.route.getLayers().length');
-  const drawn = await count();
-  await js<void>("document.querySelector('main details').open = true"); await wait(100);   // the filters (and Visa resväg) are in a <details>
-  await page.click('#f-route'); await wait(100); const off = await count();
-  await page.click('#f-route'); await wait(100); const back = await count();
-  await close();
-  check('R10 route only while open and Visa resväg on', drawn > 0 && off === 0 && back > 0 && (await count()) === 0, `drawn=${drawn} off=${off} back=${back}`);
-
   // R11: one selection at a time
   await openOne(); await scrollTo(0); await page.locator(`#c${ids[1]}`).scrollIntoViewIfNeeded(); await page.click(`#c${ids[1]}`, { position: { x: 24, y: 8 } }); await wait(1500);
   const one = await js(`document.querySelectorAll('[data-card][aria-pressed="true"]').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&[...__lgh.markers.values()].filter(m=>m.options.weight===2).length===1`);
@@ -214,16 +205,14 @@ test('page rules R1 to R13 (DESIGN.md v4)', async () => {
   check('R8 Bara nya keeps the nya count and shows only new cards', (await shown()) === `${n2}${NB}nya` && (await js<number>("document.querySelectorAll('[data-card]:not([data-new])').length")) === 0);
   await page.uncheck('#f-new');
 
-  // R9: restid = min(walk, SL), walk = haversine × 1.3 / 80 (written out here, not taken from the page)
-  const r9 = await js(`__lgh.all.every(l=>{const R=6371000,r=Math.PI/180,k=[59.3389,18.0907],dp=(k[0]-l.lat)*r,dl=(k[1]-l.lon)*r;
-    const h=Math.sin(dp/2)**2+Math.cos(l.lat*r)*Math.cos(k[0]*r)*Math.sin(dl/2)**2,w=Math.max(1,Math.round(2*R*Math.asin(Math.sqrt(h))*1.3/80));
-    return l.t===((l.sl==null||w<=l.sl)?w:l.sl)})`);
-  check('R9 restid = min(walk, SL)', r9);
+  // R9: restid is the matrix minutes of the view, unchanged
+  const r9 = await js(`__lgh.all.every(l=>l.t===(${JSON.stringify(Object.fromEntries(rows.map(r => [r.id, r.minutes])))})[l.id])`);
+  check('R9 restid = the travel matrix minutes', r9);
 
   // R12: the accent is only Karlaplan and the selected pin's ring on the map: no other pin, ring or route in it
   await openOne();
-  const blue = await js<boolean>(`[...__lgh.markers.entries()].filter(([id])=>id!==__lgh.selectedId).map(([,m])=>m).some(m=>[m.options.color,m.options.fillColor].some(c=>String(c).toUpperCase()==='${ACCENT}'))||__lgh.route.getLayers().some(p=>String(p.options.color).toUpperCase()==='${ACCENT}')`);
-  check('R12 accent on the map only for Karlaplan and the selected ring', !blue && (await count()) > 0);
+  const blue = await js<boolean>(`[...__lgh.markers.entries()].filter(([id])=>id!==__lgh.selectedId).map(([,m])=>m).some(m=>[m.options.color,m.options.fillColor].some(c=>String(c).toUpperCase()==='${ACCENT}'))`);
+  check('R12 accent on the map only for Karlaplan and the selected ring', !blue);
   await close();
 
   // Datakällor (on Om tjänsten): the scrape's state is on the page, and an incomplete source is not hidden behind a green line

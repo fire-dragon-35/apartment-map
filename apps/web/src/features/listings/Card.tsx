@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { CAN_HOVER } from '../../app/hover.ts';
-import { Details, Meta, RouteLine } from './Details.tsx';
+import { Details, Meta } from './Details.tsx';
 import type { Listing } from './Listing.ts';
 import details from './Details.module.css';
 import styles from './Card.module.css';
@@ -19,7 +19,6 @@ export const Card = memo(function Card({ l, today, selected, hot, onPick, onHove
       <button type="button" className={styles.card} id={`c${l.id}`} data-card={l.id} data-new={l.isNew || undefined}
         aria-pressed={selected} onClick={() => onPick(l)}>
         <Details l={l} />
-        <RouteLine l={l} />
       </button>
       <Meta l={l} today={today} />
     </div>

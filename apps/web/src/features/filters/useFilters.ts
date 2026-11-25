@@ -39,11 +39,3 @@ export function useFilters(): [PageFilters, (change: Partial<PageFilters>) => vo
   }, [filters]);
   return [filters, useCallback((change: Partial<PageFilters>) => setFilters(old => ({ ...old, ...change })), [])];
 }
-
-const ROUTES_KEY = 'lgh-routes';
-
-/** `Visa resväg`: on by default, remembered. */
-export function useRouteToggle(): [boolean, (on: boolean) => void] {
-  const [on, setOn] = useState(() => { try { return localStorage.getItem(ROUTES_KEY) !== '0'; } catch { return true; } });
-  return [on, useCallback((v: boolean) => { setOn(v); try { localStorage.setItem(ROUTES_KEY, v ? '1' : '0'); } catch { /* private mode */ } }, [])];
-}

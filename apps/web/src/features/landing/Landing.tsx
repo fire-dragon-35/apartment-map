@@ -19,7 +19,7 @@ const FEATURES = [
   { title: 'Pris per kvadratmeter', text: 'Se direkt vad som är dyrt och vad som är en bra affär.' },
   { title: 'Nya annonser först', text: 'Det som kom in sedan sist är markerat.' },
   { title: 'Utan dubbletter', text: 'Samma lägenhet på flera sajter visas en gång.' },
-  { title: 'Resvägen på kartan', text: 'Rita linjen från lägenheten till Karlaplan med ett tryck.' },
+  { title: 'Din egen plats', text: 'Med Plus mäter du restiden till jobbet eller skolan i stället för Karlaplan.' },
   { title: 'Öppen om sina källor', text: 'Vi visar när varje sajt hämtades senast och om något saknas.' },
 ];
 const SOURCES = ['Bostadsförmedlingen', 'HomeQ', 'Qasa', 'Samtrygg'];

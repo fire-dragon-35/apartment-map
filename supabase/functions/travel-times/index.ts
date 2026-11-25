@@ -8,7 +8,6 @@ const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const options = { auth: { persistSession: false, autoRefreshToken: false } };
 
 Deno.serve(req => handleTravelTimes(req, {
-  fetch,
   clients: authorization => ({
     // acts as the caller, so row level security applies to every read
     user: createClient(url, anonKey, { ...options, global: { headers: authorization ? { Authorization: authorization } : {} } }),

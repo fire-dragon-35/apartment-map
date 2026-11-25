@@ -2,7 +2,7 @@ import { Page, Panel } from '@frame/core';
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { isKarlaplan, passesFilters, type PageFilters } from '@lk/shared';
 import { Header } from '../features/filters/Header.tsx';
-import { useFilters, useRouteToggle } from '../features/filters/useFilters.ts';
+import { useFilters } from '../features/filters/useFilters.ts';
 import type { Listing } from '../features/listings/Listing.ts';
 import { ListView } from '../features/listings/ListView.tsx';
 import { SortBar } from '../features/listings/SortBar.tsx';
@@ -29,9 +29,7 @@ export function MapPage() {
   const { minutes, ready, loading: timesLoading, error: timesError } = usePinTimes(isDefault(pins) ? null : pin, placeIds);
   const { saved, save, error: saveError } = useSavedSearch();
   // until the own pin's times are in (or if they fail), the page keeps Karlaplan's
-  const listings = useMemo(() => ready && !isKarlaplan(pin)
-    ? base0.map(l => l.forPins([{ label: pin.label, minutes: minutes(l.placeId), approx: true }]))
-    : base0, [base0, pin, ready, minutes]);
+  const listings = useMemo(() => ready && !isKarlaplan(pin) ? base0.map(l => l.toOwnPin(minutes(l.placeId))) : base0, [base0, pin, ready, minutes]);
   // a saved search fills the filters once, when the page opens without filters of its own
   const applied = useRef(false);
   useEffect(() => {
@@ -40,7 +38,6 @@ export function MapPage() {
     if (!location.search) setFilters(saved.filters);
   }, [saved, setFilters]);
 
-  const [routes, setRoutes] = useRouteToggle();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   /** the listing under the pointer, in the list or on the map: the other side lights up too */
   const [hoveredId, setHoveredId] = useState<number | null>(null);
@@ -86,14 +83,14 @@ export function MapPage() {
   return (
     <Page>
       <Page.Header>
-        <Header filters={filters} onFilters={changeFilters} routes={routes} onRoutes={setRoutes}
+        <Header filters={filters} onFilters={changeFilters}
           shown={visible.length} newCount={newCount} loaded={loaded} error={error} />
       </Page.Header>
       <Page.Content>
         <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} onReset={() => void reset()} placing={placing} onPlacing={on => { setSelectedId(null); setPlacing(on); }}
           alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} error={pinError ?? timesError ?? saveError} />
         <Panel flush aria-label="Karta">
-          <MapView pins={pins} editablePins={canEdit} placing={placing} onPlace={place} busy={!loaded ? 'Laddar annonser…' : timesLoading ? 'Räknar restider…' : null} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
+          <MapView pins={pins} editablePins={canEdit} placing={placing} onPlace={place} busy={!loaded ? 'Laddar annonser…' : timesLoading ? 'Räknar restider…' : null} items={visible} today={today} selected={selected} autoPan={autoPan} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
         </Panel>
         <Legend />
         <Panel flush aria-label="Annonser">

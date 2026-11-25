@@ -29,11 +29,12 @@ Karlaplan. Paid (one plan): your own pinned places. Links always go to the origi
 
 ## UX rules that must always hold
 
-1. Tapping a pin selects its listing: popup, card outlined, route if `Visa resväg` is on. The page does not scroll.
+1. Tapping a pin selects its listing: popup and card outlined. The page does not scroll.
 2. Tapping a card selects the same listing; the map does not move. Tapping it again deselects.
 3. One selection at a time. Close button, tap on empty map and Esc deselect.
 4. A pin shows only price (fill) and size (radius); the selected pin gets an indigo ring.
-5. Restid is the faster of walking and SL. The "nya" count respects the other filters.
+5. Every restid comes from the nightly travel matrix (one method for every pin; nothing calls SL at runtime; no
+   route lines). The "nya" count respects the other filters.
 6. Every number has one format everywhere (from `@lk/shared` `fmt`). No en or em dashes in UI text.
 7. Rounded corners are never clipped (selected and new cards follow the list's radius).
 

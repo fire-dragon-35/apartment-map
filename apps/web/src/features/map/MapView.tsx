@@ -2,10 +2,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useSupabase } from '@frame/supabase';
 import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet';
-import { fmt, KARLAPLAN, lineStyle, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR, type Leg } from '@lk/shared';
-import { rest } from '../../app/api.ts';
+import { fmt, KARLAPLAN, priceBand, PRICE_UNKNOWN, SEP, TOKENS } from '@lk/shared';
 import { CAN_HOVER as HOVER } from '../../app/hover.ts';
 import { hooks } from '../../app/test-hooks.ts';
 import type { Listing } from '../listings/Listing.ts';
@@ -53,57 +51,6 @@ function FitOnce({ items }: { items: Listing[] }) {
     done.current = true;
     map.fitBounds(L.latLngBounds([CENTRE, ...items.map(l => l.latlng)]), { padding: [24, 24], maxZoom: 14, animate: false });
   }, [items, map]);
-  return null;
-}
-
-/** Routes with coordinates, fetched once each: the page loads only the steps, so the map fetches the one it draws. */
-const routes = new Map<string, Promise<Leg[] | null>>();
-function route(key: string, load: () => Promise<Leg[] | null>): Promise<Leg[] | null> {
-  let r = routes.get(key);
-  if (!r) {
-    r = load().catch(() => { routes.delete(key); return null; });
-    routes.set(key, r);
-  }
-  return r;
-}
-
-/**
- * The selected listing's route while its popup is open and `Visa resväg` is on (R10). Not interactive, below the pins.
- * To Karlaplan: the listing's legs. To an own pin: the exact SL trip from `travel-times` (paid; slow the first time, then cached).
- */
-function RouteLayer({ selected, show, pin }: { selected: Listing | null; show: boolean; pin: Place }) {
-  const map = useMap();
-  const client = useSupabase();
-  const group = useMemo(() => L.layerGroup(), []);
-  useEffect(() => { group.addTo(map); hooks.route = group; return () => { group.remove(); }; }, [map, group]);
-  useEffect(() => {
-    group.clearLayers();
-    if (!selected || !show) return;
-    const walk = { color: WALK_COLOR, weight: 3, dashArray: '0 8', lineCap: 'round', interactive: false } as const;
-    const own = selected.pinTimes !== null;
-    if (!own && !selected.legs) {
-      if (selected.byFoot) L.polyline([selected.latlng, CENTRE], walk).addTo(group);
-      return;
-    }
-    const legs = own
-      ? route(`${pin.lat},${pin.lon}:${selected.placeId}`, async () => {
-          const { data, error } = await client.functions.invoke<{ results: { legs: Leg[] | null }[] }>('travel-times', { body: { lat: pin.lat, lon: pin.lon, placeId: selected.placeId } });
-          if (error) throw error;   // not cached: the next selection tries again
-          return data?.results[0]?.legs ?? null;
-        })
-      : route(String(selected.id), async () => (await rest<{ legs: Leg[] | null }[]>(`listings_karlaplan?select=legs&id=eq.${selected.id}`))[0]?.legs ?? null);
-    let alive = true;
-    void legs.then(legs => {
-      if (!alive) return;
-      for (const [mode, line, coords] of legs ?? []) {
-        if (!coords || coords.length < 2) continue;
-        if (mode === 'walk') { L.polyline(coords, walk).addTo(group); continue; }
-        L.polyline(coords, { color: TOKENS.white, weight: 7, opacity: 0.9, interactive: false }).addTo(group);
-        L.polyline(coords, { color: lineStyle(mode, line).color, weight: 4, interactive: false }).addTo(group);
-      }
-    });
-    return () => { alive = false; };
-  }, [selected, show, group, pin, client]);
   return null;
 }
 
@@ -172,7 +119,6 @@ interface Props {
   selected: Listing | null;
   /** false after a list tap: the popup opens without moving the map (R3) */
   autoPan: boolean;
-  showRoutes: boolean;
   hoveredId: number | null;
   onHover: (id: number | null) => void;
   onSelect: (id: number) => void;
@@ -184,8 +130,8 @@ interface Props {
   onPlace: (lat: number, lon: number) => void;
 }
 
-/** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the pins, the popup and the route. */
-export function MapView({ busy, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose, pins, editablePins, placing, onPlace }: Props) {
+/** DESIGN.md §4.2 and §7: the Leaflet map with the pin, the rings, the listing dots and the popup. */
+export function MapView({ busy, items, today, selected, autoPan, hoveredId, onHover, onSelect, onClose, pins, editablePins, placing, onPlace }: Props) {
   const first: [number, number] = [pins[0]!.lat, pins[0]!.lon];
   const markers = useRef(new Map<number, L.CircleMarker>());
   const register = useRef((id: number, m: L.CircleMarker | null) => { if (m) markers.current.set(id, m); else markers.current.delete(id); }).current;
@@ -203,11 +149,10 @@ export function MapView({ busy, items, today, selected, autoPan, showRoutes, hov
       {[2, 4, 6].map(km => <Circle key={km} center={first} radius={km * 1000} pathOptions={{ color: TOKENS.guide, weight: 1, dashArray: '4 4', fill: false }} interactive={false} />)}
       <PlaceOnTap placing={placing} onPlace={onPlace} />
       {pins.map(p => <PlaceMarker key={p.id ?? 'karlaplan'} place={p} editable={editablePins} placing={placing} onMove={onPlace} />)}
-      {/* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */}
+      {/* pins: one canvas in their own pane above the rings (SVG, not clickable), so nothing covers them */}
       <Pane name="pins" className={styles.pins}>
         {ordered.map(l => <Pin key={l.id} l={l} on={l.id === selected?.id} hot={l.id === hoveredId} renderer={canvas} onSelect={onSelect} onHover={onHover} register={register} />)}
       </Pane>
-      <RouteLayer selected={selected} show={showRoutes} pin={pins[0]!} />
       <SelectionPopup selected={selected} today={today} autoPan={autoPan} onClose={onClose} />
       <FitOnce items={items} />
       <MapHooks />

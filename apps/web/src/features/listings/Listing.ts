@@ -1,13 +1,7 @@
 /** One listing as the page needs it: the database row plus the rules of DESIGN.md that depend only on the row. */
-import {
-  contractOk, isBelowMarket, KARLAPLAN, omrade, pinRadius, SOURCE_NAMES, tags, travelMinutes, walkMinutes,
-  type Database, type Leg, type Source,
-} from '@lk/shared';
+import { contractOk, isBelowMarket, omrade, pinRadius, SOURCE_NAMES, tags, type Database, type Source } from '@lk/shared';
 
 export type ListingRow = Database['public']['Views']['listings_karlaplan']['Row'];
-
-/** restid to one of the user's pins (paid); null while unknown or unreachable. */
-export interface PinTime { label: string; minutes: number | null; approx: boolean }
 
 export class Listing {
   readonly id: number;
@@ -29,19 +23,13 @@ export class Listing {
   readonly latlng: [number, number];
   readonly tags: string[];
   readonly warn: boolean;
-  /** DESIGN.md §6 */
-  readonly walk: number;
-  readonly sl: number | null;
-  readonly byFoot: boolean;
-  /** restid */
+  /** restid in minutes, from the travel matrix (DESIGN.md §6); Infinity when unknown or unreachable */
   readonly t: number;
-  /** the route's steps (coordinates null: the map fetches them for the selected listing); null when walking is faster or there is no route */
-  readonly legs: Leg[] | null;
+  /** true for restid to an own pin: its cell's time, shown as ~N min */
+  readonly approx: boolean = false;
   readonly radius: number;
   readonly isNew: boolean;
   readonly contractOk: boolean;
-  /** set by forPins when the user has own pins: one entry per pin, and `t` is the longest of them */
-  readonly pinTimes: PinTime[] | null = null;
 
   constructor(row: ListingRow, today: string) {
     this.id = row.id!;
@@ -63,24 +51,16 @@ export class Listing {
     this.tags = tags({ firstHand: row.first_hand, student: row.student, furnished: row.furnished, flags: row.flags ?? [], notes: row.notes ?? [], alsoOn: row.also_on ?? [] });
     this.warn = isBelowMarket(row.flags ?? []);
 
-    this.walk = walkMinutes(this, KARLAPLAN);
-    this.sl = row.transit_min;
-    this.t = travelMinutes(this.walk, this.sl);
-    this.byFoot = this.t === this.walk;
-    this.legs = this.byFoot ? null : (row.steps as unknown as Leg[] | null);
+    this.t = row.minutes ?? Number.POSITIVE_INFINITY;
 
     this.radius = pinRadius(this.m2);
     this.isNew = row.first_seen === today;
     this.contractOk = contractOk(this.start, this.end, today);
   }
 
-  /**
-   * The same listing measured against the user's pins (CORE.md, paid): `t` becomes the longest restid, so the restid
-   * filter means "within the limit of every pin"; unknown counts as unreachable. Karlaplan's route is not drawn then.
-   */
-  forPins(times: PinTime[]): Listing {
-    const known = times.every(p => p.minutes !== null);
-    const t = known ? Math.max(...times.map(p => p.minutes!)) : Number.POSITIVE_INFINITY;
-    return Object.assign(Object.create(Listing.prototype) as Listing, this, { t, pinTimes: times, legs: null, byFoot: false });
+  /** The same listing measured to the user's own pin (CORE.md, paid): restid from the pin's matrix cell. */
+  toOwnPin(minutes: number | null): Listing {
+    return Object.assign(Object.create(Listing.prototype) as Listing, this, { t: minutes ?? Number.POSITIVE_INFINITY, approx: true });
   }
+
 }

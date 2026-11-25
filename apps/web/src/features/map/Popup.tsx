@@ -1,4 +1,4 @@
-import { Details, Meta, RouteLine } from '../listings/Details.tsx';
+import { Details, Meta } from '../listings/Details.tsx';
 import type { Listing } from '../listings/Listing.ts';
 import styles from '../listings/Details.module.css';
 
@@ -8,7 +8,6 @@ export function Popup({ l, today }: { l: Listing; today: string }) {
     <div className={styles.grid}>
       <Details l={l} />
       <Meta l={l} today={today} />
-      <RouteLine l={l} />
     </div>
   );
 }

@@ -69,6 +69,4 @@ export const fmt = {
   ].join(SEP),
   traffar: (n: number) => `${n}${NB}träffar`,
   nya: (n: number) => `${n}${NB}nya`,
-  gang: (minutes: number) => `gång${NB}${minutes}${NB}min`,
-  linje: (mode: string, line: string) => (mode === 'metro' ? `T${line}` : line),
 };

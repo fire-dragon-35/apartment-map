@@ -1,7 +1,7 @@
 /** One worker run (ARCHITECTURE.md §6). HTTP client, clock and database are passed in, so it runs on fixtures. */
 import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
-import type { LatLon, Source, TravelTimeService } from '@lk/shared';
+import type { Source } from '@lk/shared';
 import type { HttpClient } from '../http.ts';
 import type { SourceResult } from '../sources/base.ts';
 import type { Store } from '../store/types.ts';
@@ -22,12 +22,9 @@ export interface SourceSummary extends SyncCounts {
   /** the raw response was identical to the latest stored one and not uploaded again */
   rawReused: boolean;
 }
-export interface TravelSummary { computed: number; reused: number; failed: number }
 export interface RunSummary {
   runId: number; ok: boolean; problems: string[]; sources: SourceSummary[]; linked: number; rawPruned: number;
-  /** null when travel times are not configured or the step failed */
-  travel: TravelSummary | null;
-  /** the travel time matrix for custom pins (§8, phase 1.5); null when not configured or the step failed */
+  /** the travel time matrix, every restid (§8); null when not configured or the step failed */
   matrix: MatrixSummary | null;
 }
 
@@ -41,8 +38,6 @@ export class Pipeline {
   constructor(
     private readonly deps: {
       fetchers: Fetcher[]; http: HttpClient; store: Store; clock: Clock; log?: (msg: string) => void;
-      /** Travel times from every active place to this destination (Karlaplan, the free default) */
-      travel?: { service: TravelTimeService; destination: LatLon };
       matrix?: MatrixService;
     },
   ) {}
@@ -58,12 +53,11 @@ export class Pipeline {
 
     const problems = sources.flatMap(s => this.#problems(s));
     const linked = await this.#linkDuplicates();
-    const travel = await this.#travelTimes(log);
     const matrix = await this.#matrix(log);
     const ok = problems.length === 0;
     await store.runs.finish(runId, ok);
     const rawPruned = await this.#pruneRaw(log);
-    return { runId, ok, problems, sources: sources.map(s => s.summary), linked, rawPruned, travel, matrix };
+    return { runId, ok, problems, sources: sources.map(s => s.summary), linked, rawPruned, matrix };
   }
 
   async #source(f: Fetcher, http: HttpClient, sync: SourceSync, runId: number, log: (m: string) => void) {
@@ -110,21 +104,7 @@ export class Pipeline {
     return earlier.length >= 3 && s.kept < m / 2 ? [`${s.source}: ${s.kept} ads, under half of the usual ${m}`] : [];
   }
 
-  /** Travel times for every active place without a fresh row (§6 step 5). A failure here never fails the run. */
-  async #travelTimes(log: (m: string) => void): Promise<TravelSummary | null> {
-    const { travel, store } = this.deps;
-    if (!travel) return null;
-    try {
-      const { reused, computed, failed } = await travel.service.compute(await store.places.active(), travel.destination);
-      log(`travel times: computed ${computed} reused ${reused} failed ${failed.length}`);
-      return { computed, reused, failed: failed.length };
-    } catch (e) {
-      log(`travel times failed (ignored): ${e instanceof Error ? e.message : String(e)}`);
-      return null;
-    }
-  }
-
-  /** The matrix for custom pins (§6 step 5b). A failure here never fails the run. */
+  /** The travel time matrix (§6 step 5). A failure here never fails the run. */
   async #matrix(log: (m: string) => void): Promise<MatrixSummary | null> {
     const { matrix, store } = this.deps;
     if (!matrix) return null;

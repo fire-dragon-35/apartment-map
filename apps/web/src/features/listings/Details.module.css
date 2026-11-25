@@ -1,9 +1,9 @@
-/* DESIGN.md §7 card and popup grid: two columns, five rows (r1 name | restid, r2 size · rum | hyra kr/m², r3 meta full width,
-   r4 route, r5 tags and warning). Cells are placed by class, not by DOM order. Card and popup use the same grid. */
+/* DESIGN.md §7 card and popup grid: two columns, four rows (r1 name | restid, r2 size · rum | hyra kr/m², r3 meta full width,
+   r4 tags and warning). Cells are placed by class, not by DOM order. Card and popup use the same grid. */
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: repeat(5, auto);
+  grid-template-rows: repeat(4, auto);
   column-gap: 14px;
   align-items: baseline;
 }
@@ -23,12 +23,10 @@
 .size { grid-area: 2 / 1; }
 .price { grid-area: 2 / 2; }
 .meta { grid-area: 3 / 1 / auto / -1; position: relative; z-index: 1; pointer-events: none; }
-.route { grid-area: 4 / 1 / auto / -1; }
-.tags { grid-area: 5 / 1 / auto / -1; }
+.tags { grid-area: 4 / 1 / auto / -1; }
 .size,
 .price,
 .meta,
-.route,
 .tags {
   margin-top: 2px;
 }

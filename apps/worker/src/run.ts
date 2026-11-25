@@ -9,7 +9,6 @@
  */
 import { fileURLToPath } from 'node:url';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { KARLAPLAN, SupabaseTravelCache, TravelTimeService } from '@lk/shared';
 import { HttpClient } from './http.ts';
 import { MatrixService } from './services/matrix.ts';
 import { R5Router } from './services/r5-router.ts';
@@ -45,13 +44,11 @@ const routerDir = fileURLToPath(new URL('../router', import.meta.url));
 const router = new R5Router(new RouterInputs({ cacheDir, gtfsKey: process.env.TRAFIKLAB_GTFS_KEY, log }), { routerDir, cacheDir, log });
 const summary = await new Pipeline({
   fetchers, http: new HttpClient(), store, clock: systemClock,
-  travel: { service: new TravelTimeService({ fetch, cache: new SupabaseTravelCache(store.client), now: () => new Date() }), destination: KARLAPLAN },
   matrix: new MatrixService({ router, repo: new SupabaseMatrixRepository(store.client), now: () => new Date() }),
   log,
 }).run();
 
 console.table(summary.sources);
-if (summary.travel) console.log(`travel times to Karlaplan: computed ${summary.travel.computed}, reused ${summary.travel.reused}, failed ${summary.travel.failed}`);
 if (summary.matrix) console.log(`travel matrix: ${summary.matrix.full ? 'full rebuild' : 'incremental'}, ${summary.matrix.cells} cells, ${summary.matrix.computed} places computed, ${summary.matrix.seconds} s`);
 console.log(`run ${summary.runId}: ${summary.ok ? 'ok' : 'NOT OK'}, ${summary.linked} duplicate links changed`);
 for (const p of summary.problems) console.error(`problem: ${p}`);

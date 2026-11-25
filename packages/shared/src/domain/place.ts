@@ -1,4 +1,5 @@
 export interface LatLon { lat: number; lon: number }
+export interface PlaceCoord extends LatLon { id: number }
 
 export const KARLAPLAN: LatLon = { lat: 59.3389, lon: 18.0907 };
 

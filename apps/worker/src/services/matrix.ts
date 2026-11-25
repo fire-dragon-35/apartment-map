@@ -1,12 +1,12 @@
 /**
- * The travel time matrix (ARCHITECTURE.md §8, phase 1.5): restid from every active place to every cell of the grid,
- * so a custom pin is one database read. The router (R5 on this laptop) and the database are passed in.
+ * The travel time matrix (ARCHITECTURE.md §8), the one source of every restid: from every active place to every cell
+ * of the grid and to Karlaplan's exact point, so any pin is one database read. The router (R5 on this laptop) and the database are passed in.
  *
  * Full rebuild only when the timetable or the grid changed; otherwise only places without a row are computed and
  * appended to every cell row. Deterministic: the same inputs give the same rows.
  */
 import {
-  cellCentre, gridCells, MATRIX_MAX_WALK_ONLY_MIN, MATRIX_PERCENTILE, MATRIX_PROFILE, MATRIX_RULES, nextWeekday, travelMinutes, walkMinutes,
+  destPoint, matrixDestinations, MATRIX_MAX_WALK_ONLY_MIN, MATRIX_PERCENTILE, MATRIX_PROFILE, MATRIX_RULES, nextWeekday, travelMinutes, walkMinutes,
   type LatLon, type PlaceCoord,
 } from '@lk/shared';
 import type { MatrixRepository, MatrixRow } from '../store/types.ts';
@@ -36,7 +36,7 @@ export class MatrixService {
   async update(places: PlaceCoord[]): Promise<MatrixSummary> {
     const { router, repo, now } = this.deps;
     const started = Date.now();
-    const cells = gridCells();
+    const cells = matrixDestinations();
     const reference = cells.at(-1)!;
 
     // the stored stamp is the timetable hash plus the rules version, so a change of either rebuilds every row
@@ -47,7 +47,7 @@ export class MatrixService {
     const summary = (): MatrixSummary => ({ cells: cells.length, computed: todo.length, full, seconds: Math.round((Date.now() - started) / 1000) });
     if (!todo.length) return summary();
 
-    const centres = cells.map(cellCentre);
+    const centres = cells.map(destPoint);
     const date = nextWeekday(now()).replace(/(\d{4})(\d\d)(\d\d)/, '$1-$2-$3');
     const transit = await router.transit(todo, centres, date, MATRIX_PERCENTILE);
 

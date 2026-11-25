@@ -47,16 +47,6 @@ export const passesFilters = (
   && (!l.rooms || ((f.rooms <= SLIDERS.rooms.min || l.rooms >= f.rooms) && (f.roomsMax >= SLIDERS.rooms.max || l.rooms <= f.roomsMax)))
   && l.contractOk;
 
-export const WALK_COLOR = '#3A3A3C';
-const METRO: Record<string, string> = { 10: '#0072BC', 11: '#0072BC', 13: '#E3242B', 14: '#E3242B', 17: '#2EA84A', 18: '#2EA84A', 19: '#2EA84A' };
-const LINES: Record<string, string> = { train: '#EC619F', tram: '#F28C00', bus: '#E3242B', boat: '#00A3AD' };
-
-/** Name and colour of a transit leg: metro lines are `T` + number. */
-export const lineStyle = (mode: string, line: string) => ({
-  name: mode === 'metro' ? `T${line}` : line,
-  color: (mode === 'metro' ? METRO[line] : LINES[mode]) ?? WALK_COLOR,
-});
-
 /** The kr/m² chip: the price colour at 20 % behind its darker text colour; grey when unknown. */
 export function priceChip(kpm: number | null): { background: string; color: string } {
   const band = priceBand(kpm);

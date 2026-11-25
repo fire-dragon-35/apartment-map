@@ -8,8 +8,6 @@ import styles from './Header.module.css';
 interface Props {
   filters: PageFilters;
   onFilters: (change: Partial<PageFilters>) => void;
-  routes: boolean;
-  onRoutes: (on: boolean) => void;
   shown: number;
   newCount: number;
   loaded: boolean;
@@ -19,7 +17,7 @@ interface Props {
 const isDefault = (f: PageFilters) => (Object.keys(DEFAULT_FILTERS) as (keyof PageFilters)[]).every(k => f[k] === DEFAULT_FILTERS[k]);
 
 /** DESIGN.md §4.1: title, meta line, the Filter popover and `Visa resväg`. */
-export function Header({ filters, onFilters, routes, onRoutes, shown, newCount, loaded, error }: Props) {
+export function Header({ filters, onFilters, shown, newCount, loaded, error }: Props) {
   const details = useRef<HTMLDetailsElement>(null);
   // the panel floats over the page: close it on a click outside or Escape
   useEffect(() => {
@@ -60,7 +58,6 @@ export function Header({ filters, onFilters, routes, onRoutes, shown, newCount, 
           <div className={styles.footer}>
             <div className={styles.checks}>
               <Checkbox id="f-new" label="Bara nya" checked={filters.onlyNew} onChange={e => onFilters({ onlyNew: e.target.checked })} />
-              <Checkbox id="f-route" label="Visa resväg" checked={routes} onChange={e => onRoutes(e.target.checked)} />
             </div>
             <Button type="button" variant="secondary" disabled={isDefault(filters)} onClick={() => onFilters(DEFAULT_FILTERS)}>Återställ</Button>
           </div>

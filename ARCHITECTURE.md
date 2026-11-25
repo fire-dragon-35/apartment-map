@@ -222,6 +222,8 @@ Fetching is polite: one request at a time per site, a short pause between pages,
 
 ## 8. Travel times to any pin
 
+> **Since 26 nov: the matrix is the only source.** It has a row for Karlaplan's exact point (`karlaplan`) next to the grid cells; the page reads Karlaplan's minutes through `karlaplan_minutes()` in `listings_karlaplan`, an own pin through `travel-times` (matrix only). The SL client, `travel_times`, legs and routes are removed. The text below describes the earlier phases.
+
 `travel-times` takes a destination and a list of place ids, returns minutes and legs, and fills the cache.
 
 * **Phase 1 (launch):** one `TravelTimeService` in `packages/shared/src/travel/`, imported by the worker (Node) and by the `travel-times` edge function (Deno); no copies (the function's `deno.json` maps `@supabase/supabase-js`, the only bare import). Per place: the SL journey planner (`journeyplanner.integration.sl.se/v2/trips`, keyless), coordinate to coordinate, `calc_number_of_trips=3`, arriving at the profile's time (`weekday_0800` = 08:00) on the next weekday in Stockholm, fastest trip taken. Requests have a 15 s timeout, 2 retries with backoff and jitter, at most 6 in flight; a place whose request fails is skipped, counted in `failed` and not cached, so the next call retries it. An answer with no trip is asked once more, then `transit_min` is null.

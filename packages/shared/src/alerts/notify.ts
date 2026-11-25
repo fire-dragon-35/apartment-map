@@ -1,15 +1,14 @@
 /**
  * The daily email (CORE.md: paid). For every saved search with alerts on, of a paying user: today's new listings that
  * pass its filters with restid to all its pins, sent once a day. Plain function, so the edge function stays a thin
- * wrapper. Karlaplan uses the exact SL time of the view; a custom pin the travel matrix (as the page does).
+ * wrapper. restid comes from the travel matrix, as on the page.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../database.types.ts';
 import { KARLAPLAN } from '../domain/place.ts';
-import { isKarlaplan, travelMinutes, walkMinutes } from '../domain/travel.ts';
 import { contractOk, DEFAULT_FILTERS, passesFilters, type PageFilters } from '../format/design.ts';
 import { fmt } from '../format/index.ts';
-import { cellOf, MATRIX_PROFILE } from '../travel/grid.ts';
+import { destKey, MATRIX_PROFILE } from '../travel/grid.ts';
 import { MatrixReader } from '../travel/matrix.ts';
 
 type Row = Database['public']['Views']['listings_karlaplan']['Row'];
@@ -50,11 +49,11 @@ export async function notifyMatches({ db, send, today, siteUrl }: NotifyDeps): P
 
     const { data: pins } = await db.from('destinations').select('lat, lon').eq('user_id', s.user_id).order('id');
     const dests = (pins?.length ? pins : [KARLAPLAN]).map(p => ({ lat: Number(p.lat), lon: Number(p.lon) }));
-    const perPin = await Promise.all(dests.map(d => isKarlaplan(d) ? null : matrix.minutes(cellOf(d), MATRIX_PROFILE, placeIds)));
+    const perPin = await Promise.all(dests.map(d => matrix.minutes(destKey(d), MATRIX_PROFILE, placeIds)));
     const f: PageFilters = { ...DEFAULT_FILTERS, ...(s.filters as Partial<PageFilters>) };
 
     const hits = rows.filter(r => {
-      const times = perPin.map(m => (m ? m.get(r.place_id) ?? null : travelMinutes(walkMinutes(r, KARLAPLAN), r.transit_min)));
+      const times = perPin.map(m => m.get(r.place_id) ?? null);
       if (times.some(t => t === null)) return false;
       const l = { t: Math.max(...(times as number[])), rent: r.rent, kpm: r.kpm, m2: r.m2 === null ? null : Number(r.m2), rooms: r.rooms === null ? null : Number(r.rooms), contractOk: contractOk(r.start_date, r.end_date, today) };
       return passesFilters(l, f);

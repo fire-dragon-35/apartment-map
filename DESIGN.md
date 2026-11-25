@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 4.0, 25 nov 2026 (4.0: brand EnkelLGH; black and white with one indigo accent; original traffic light price colours in steps of 100; sources and tags neutral grey; warning black; Inter Tight; selected pin ring and card outline in indigo; R13. 3.9: the app gets a navbar, a footer and a landing page, section 13; the map page moves to `#/karta`, every rule in sections 1 to 11 applies to that page. 3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 4.1, 26 nov 2026 (4.1: one source for every restid, the travel matrix; no SL at runtime and no routes: `Visa resväg`, route text and route lines are gone, R10 dropped. 4.0: brand EnkelLGH; black and white with one indigo accent; original traffic light price colours in steps of 100; sources and tags neutral grey; warning black; Inter Tight; selected pin ring and card outline in indigo; R13. 3.9: the app gets a navbar, a footer and a landing page, section 13; the map page moves to `#/karta`, every rule in sections 1 to 11 applies to that page. 3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 > `CORE.md` is the fixed part and wins over this file. This file is the detailed current spec: keep it true when you change the page.
 
@@ -26,15 +26,15 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | Id | Rule |
 | --- | --- |
 | R1 ✓ | The page MUST be one normal scrolling document: header, map, legend, list. No element is `position: fixed` or `sticky`, and nothing uses `backdrop-filter`. |
-| R2 ✓ | Tapping a pin MUST open its popup, draw its route and outline its card, and MUST NOT scroll the page or the list. |
-| R3 ✓ | Tapping a card MUST select it: outline the card, draw its route and open its popup. It MUST NOT scroll the page or move the map (no pan, no zoom). Tapping the selected card again closes it. |
+| R2 ✓ | Tapping a pin MUST open its popup and outline its card, and MUST NOT scroll the page or the list. |
+| R3 ✓ | Tapping a card MUST select it: outline the card and open its popup. It MUST NOT scroll the page or move the map (no pan, no zoom). Tapping the selected card again closes it. |
 | R4 ✓ | The popup's close button, a tap on empty map, and Esc MUST close the popup and clear the selection. |
 | R5 ✓ | A pin MUST show only price per m² (fill) and size (radius). Selected adds an indigo (`selected`) ring. Nothing else. |
 | R6 ✓ | Every datum MUST use the format in section 5, in cards and popups. |
 | R7 ✓ | UI text MUST NOT contain en dashes or em dashes. |
 | R8 ✓ | The "nya" count MUST count only new listings that match the other filters. |
-| R9 ✓ | Restid MUST be the faster of walking and SL (section 6). |
-| R10 ✓ | With `Visa resväg` on, the selected listing's route MUST be drawn on the map while its popup is open and removed when it closes. With it off, no route is drawn. |
+| R9 ✓ | Restid MUST be the travel matrix minutes to the pin (section 6), unchanged. |
+| R10 | (dropped in 4.1: no routes) |
 | R11 ✓ | Only one listing can be selected: one popup, one outlined card, one ringed pin. |
 | R12 ✓ | The accent (indigo) MUST NOT appear on the map except Karlaplan and the selected pin's ring. |
 | R13 ✓ | A selected or highlighted card's outline and background MUST follow the list's rounded corners (first and last card inherit the radius); no clipped corners. |
@@ -61,13 +61,12 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 
 **Brand:** name `EnkelLGH`; wordmark `Enkel` regular + `LGH` 800 in `accent`, letter spacing −0.02 em. No icon yet.
 
-Type: Inter Tight (self hosted, `@fontsource-variable/inter-tight`), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid). Hyra on the card is 15 / 400 `text.1`, without `kr`. T2 13 / 400 `text.2` (size, rooms, kr/m², contract, route). T3 12 / 400 `text.3` (area, source, age, legend).
+Type: Inter Tight (self hosted, `@fontsource-variable/inter-tight`), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid). Hyra on the card is 15 / 400 `text.1`, without `kr`. T2 13 / 400 `text.2` (size, rooms, kr/m², contract). T3 12 / 400 `text.3` (area, source, age, legend).
 
-SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18, 19 #2EA84A; pendeltåg #EC619F; spårväg #F28C00; buss #E3242B; båt #00A3AD; gång #3A3A3C.
 
 ## 4. Layout (top to bottom, one column, max width 720 px)
 
-1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; a `<details>` whose summary is a bordered button with a sliders icon, the word `Filter` and a chevron. The details open a bordered panel that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 60+ min step 1 (one thumb, 30 by default), Max hyra 0 to 30k+ kr step 500 (one thumb), Max kr/m² 0 to 700+ step 25 (one thumb; listings without a known kr/m² always pass), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkboxes `Bara nya` and `Visa resväg` (on by default, remembered) and `Återställ`.
+1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; a `<details>` whose summary is a bordered button with a sliders icon, the word `Filter` and a chevron. The details open a bordered panel that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 60+ min step 1 (one thumb, 30 by default), Max hyra 0 to 30k+ kr step 500 (one thumb), Max kr/m² 0 to 700+ step 25 (one thumb; listings without a known kr/m² always pass), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkbox `Bara nya` and `Återställ`.
 2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
 3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 349`, `350 till 449`, `450 till 549`, `550+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
 4. **List** of cards in a flush panel, divider between cards. A sort row on top: one chip per key (`Restid`, `Hyra`, `Storlek`, `kr/m²`); a tap picks the key in its natural direction (storlek largest first, the rest lowest first), a tap on the chosen chip flips it; the chosen chip shows ` ↑` or ` ↓`. Default: restid ascending, then hyra. Missing values go last. The list shows 5 cards and scrolls inside itself for the rest.
@@ -99,16 +98,17 @@ Notes from data: `first-hand` → förstahand, `student` → studentlägenhet, `
 ## 6. Travel time
 
 ```
-walk   = round( haversine(listing, Karlaplan) × 1.3 / 80 )  minutes, at least 1
-sl     = SL door to door, arriving 08:00 next weekday (from data)
-restid = walk if sl is missing or walk ≤ sl, else sl
+restid = the travel matrix minutes from the listing to the pin, computed every night on the laptop:
+         R5 on SL's timetable (GTFS) and OpenStreetMap, departures 07:30 to 08:00 next weekday (25th percentile),
+         or walking (haversine × 1.3 / 80 m/min) when that is not slower; none over an hour of walking.
+         Karlaplan is an exact destination; an own pin reads its ~460 m cell and is shown as ~N min.
 ```
 
 `restid` is used for display, sorting and the time filter.
 
 ## 7. Components
 
-**Pin** (Leaflet `circleMarker` on one canvas renderer in its own pane above rings and routes, tap tolerance 8 px; rings, route and Karlaplan are non interactive SVG): radius 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1); fill price colour, opacity 0.9; 1.5 px edge in its `price.edge` colour. Selected: `selected` 2 px edge, brought to front. Smaller pins drawn above larger.
+**Pin** (Leaflet `circleMarker` on one canvas renderer in its own pane above the rings, tap tolerance 8 px; rings and the pin are non interactive SVG): radius 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1); fill price colour, opacity 0.9; 1.5 px edge in its `price.edge` colour. Selected: `selected` 2 px edge, brought to front. Smaller pins drawn above larger.
 
 **Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
 
@@ -126,9 +126,7 @@ Grid: two columns (text left, numbers right aligned with tabular figures), five 
 
 New today: `new.bg` background. Selected and keyboard focus: 2 px `selected` outline inside, round the whole card; the first and last card take the panel's corner radius so the outline is never clipped. No blue focus ring.
 
-**Popup** (Leaflet popup, content 270 to 290 wide, room on the right for the close button): exactly the card (grid, link and route text). The route is drawn on the map, not here.
-
-**Route on the map** (while the popup is open and `Visa resväg` is on): each leg on its own geometry. Walk: 3 px `#3A3A3C` dots. Transit: 4 px line colour on 7 px white. Walking only: one dotted line pin → Karlaplan.
+**Popup** (Leaflet popup, content 270 to 290 wide, room on the right for the close button): exactly the card (grid and link).
 
 **Hover tooltip** (mouse only): `Hornsgatan · 23 min · 15.2k kr`.
 
@@ -136,9 +134,8 @@ New today: `new.bg` background. Selected and keyboard focus: 2 px `selected` out
 
 | Input | Result |
 | --- | --- |
-| Tap pin | select: popup, route, card outlined. No scrolling (R2). Leaflet auto pans the popup into the map. |
-| `Visa resväg` | draw or remove the open listing's route at once |
-| Tap card | select: card outlined, route, popup; page and map do not move (R3). The popup opens without auto pan. Tap again: close. |
+| Tap pin | select: popup, card outlined. No scrolling (R2). Leaflet auto pans the popup into the map. |
+| Tap card | select: card outlined, popup; page and map do not move (R3). The popup opens without auto pan. Tap again: close. |
 | Tap empty map, popup ×, Esc | close, clear (R4) |
 | Filter change | refilter, close popup, keep the map where it is |
 | Load | fit Karlaplan and all pins once, max zoom 14 |
@@ -185,13 +182,12 @@ Page filters: restid ≤ slider, hyra ≤ slider, kr/m² ≤ slider, storlek ≥
 * R6: every card and popup atom matches section 5, and card line 1 and 2 hold the atoms of section 7 in that order.
 * R7: no en dash or em dash in page text.
 * R8: the `nya` number equals new listings under the current filters, after changing a filter.
-* R9: restid = min(walk, sl) for every listing.
-* R10: with `Visa resväg` on, route layer non empty while a popup is open and empty after close; with it off, empty while open.
+* R9: restid = the matrix minutes of the view for every listing.
 * R11: never more than one popup, outlined card or ringed pin.
 
 Run: `pip install playwright && playwright install chromium && python legacy/tests/design_check.py`
 
-The same checks run on `apps/web` with `npm test -w @lk/web`. That test finds elements by ids and data attributes, never by CSS class names (CSS Modules hash them): `#map`, `#list`, `#nya`, `#f-min`, `#f-rent`, `#f-m2`, `#f-new`, `#f-route`, `#c{id}` and `[data-card]` for cards, `aria-pressed="true"` for the selected card, `[data-new]` for a card new today, `[data-line="1"]` / `[data-line="2"]` for card lines, `[data-a]` for atoms.
+The same checks run on `apps/web` with `npm test -w @lk/web`. That test finds elements by ids and data attributes, never by CSS class names (CSS Modules hash them): `#map`, `#list`, `#nya`, `#f-min`, `#f-rent`, `#f-m2`, `#f-new`, `#c{id}` and `[data-card]` for cards, `aria-pressed="true"` for the selected card, `[data-new]` for a card new today, `[data-line="1"]` / `[data-line="2"]` for card lines, `[data-a]` for atoms.
 
 ## 12. Structure (Frame)
 
@@ -204,7 +200,7 @@ ThemeProvider (theme from section 3)
 └ AppShell
   └ Container              max width 720 px (token --container-max), gutters from Frame
     └ Page
-      ├ Page.Header        Header: title, meta line, Filter <details>, Visa resväg
+      ├ Page.Header        Header: title, meta line, Filter <details>
       └ Page.Content
         ├ Panel flush      Map
         ├ Legend           Stack, row, wrap
