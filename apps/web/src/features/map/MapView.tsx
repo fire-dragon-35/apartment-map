@@ -14,22 +14,20 @@ const CENTRE: [number, number] = [KARLAPLAN.lat, KARLAPLAN.lon];
 const esri = (layer: 'Base' | 'Reference') => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_${layer}/MapServer/tile/{z}/{y}/{x}`;
 
 /**
- * One pin: price colour and size; the dark ring when selected or hovered (R5). A listing new today gets a white dot in
- * the middle (price owns the fill, so the dot is the free channel). The dot is its own non-interactive marker on the same canvas.
+ * One pin: price colour and size; the dark ring when selected or hovered (R5). New-today listings are marked by the arrival ripple only.
  */
 const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, register }: {
   l: Listing; on: boolean; hot: boolean; renderer: L.Canvas; onSelect: (id: number) => void; onHover: (id: number | null) => void;
   register: (id: number, m: L.CircleMarker | null) => void;
 }) {
   const marker = useRef<L.CircleMarker | null>(null);
-  const dot = useRef<L.CircleMarker | null>(null);
   const lit = on || hot;
   const options = useMemo(() => ({
     fillColor: (priceBand(l.kpm) ?? PRICE_UNKNOWN).color, fillOpacity: lit ? 1 : 0.9,
-    color: lit ? TOKENS.selected : (priceBand(l.kpm) ?? PRICE_UNKNOWN).edge, weight: lit ? 3 : 1.5, bubblingMouseEvents: false,
+    color: lit ? TOKENS.selected : (priceBand(l.kpm) ?? PRICE_UNKNOWN).edge, weight: lit ? 2 : 1.5, bubblingMouseEvents: false,
   }), [l.kpm, lit]);
-  // the lit pin is drawn on top of its neighbours, and its dot on top of it
-  useEffect(() => { if (lit) { marker.current?.bringToFront(); dot.current?.bringToFront(); } }, [lit]);
+  // the lit pin is drawn on top of its neighbours
+  useEffect(() => { if (lit) marker.current?.bringToFront(); }, [lit]);
   const events = useMemo(() => HOVER
     ? { click: () => onSelect(l.id), mouseover: () => onHover(l.id), mouseout: () => onHover(null) }
     : { click: () => onSelect(l.id) }, [l.id, onSelect, onHover]);
@@ -39,10 +37,6 @@ const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, registe
         eventHandlers={events}>
         {HOVER && <Tooltip direction="top">{`${l.street}${SEP}${fmt.restid(l.t)}${SEP}${fmt.hyra(l.rent)}`}</Tooltip>}
       </CircleMarker>
-      {l.isNew && (
-        <CircleMarker ref={dot} center={l.latlng} radius={Math.max(2.5, l.radius * 0.32)} renderer={renderer} interactive={false}
-          pathOptions={{ stroke: false, fillColor: '#fff', fillOpacity: 1 }} />
-      )}
     </>
   );
 });

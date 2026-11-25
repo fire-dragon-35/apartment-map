@@ -179,7 +179,7 @@ class Runs implements RunRepository {
 
   async saveSource(r: SourceRunRow) {
     check(await this.db.from('source_runs').upsert({
-      run_id: r.runId, source: r.source, complete: r.complete, fetched: r.fetched, kept: r.kept, skipped: r.skipped,
+      run_id: r.runId, source: r.source, complete: r.complete, pages: r.pages, fetched: r.fetched, kept: r.kept, skipped: r.skipped,
       invalid: r.invalid, error: r.error, duration_ms: r.durationMs, raw_path: r.rawPath, raw_sha256: r.rawSha256,
     }), 'save source run');
   }

@@ -1,26 +1,29 @@
-import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { stockholmToday } from '@lk/shared';
+import { rest } from '../../app/api.ts';
 import { Listing, type ListingRow } from './Listing.ts';
-import { supabase } from '../../app/supabase.ts';
 
 const PAGE = 1000;   // PostgREST returns at most this many rows per request
 
 /** The whole view, page by page; normally one request. */
 async function fetchRows(): Promise<ListingRow[]> {
   const rows: ListingRow[] = [];
-  for (let from = 0; ; from += PAGE) {
-    const { data, error } = await supabase.from('listings_karlaplan').select('*').order('id').range(from, from + PAGE - 1);
-    if (error) throw new Error(error.message);
+  for (let offset = 0; ; offset += PAGE) {
+    const data = await rest<ListingRow[]>(`listings_karlaplan?select=*&order=id&limit=${PAGE}&offset=${offset}`);
     rows.push(...data);
     if (data.length < PAGE) return rows;
   }
 }
 
-/** Every listing the page can show, loaded once and kept for an hour (ARCHITECTURE.md §9). */
+/** Started when the module loads, so the request runs while React and Leaflet start up. One retry. */
+const request = fetchRows().catch(fetchRows);
+
+/** Every listing the page can show, loaded once per page load (ARCHITECTURE.md §9). */
 export function useListings() {
-  const query = useQuery({ queryKey: ['listings', 'karlaplan'], queryFn: fetchRows, staleTime: 60 * 60 * 1000 });
-  const today = stockholmToday();
-  const listings = useMemo(() => (query.data ?? []).filter(r => r.id !== null && r.lat !== null && r.lon !== null).map(r => new Listing(r, today)), [query.data, today]);
-  return { listings, today, loaded: query.isSuccess, error: query.error as Error | null };
+  const [rows, setRows] = useState<ListingRow[] | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [today] = useState(stockholmToday);
+  useEffect(() => { request.then(setRows, (e: unknown) => setError(e instanceof Error ? e : new Error(String(e)))); }, []);
+  const listings = useMemo(() => (rows ?? []).filter(r => r.id !== null && r.lat !== null && r.lon !== null).map(r => new Listing(r, today)), [rows, today]);
+  return { listings, today, loaded: rows !== null, error };
 }

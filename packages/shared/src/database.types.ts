@@ -203,14 +203,14 @@ isOneToOne: false
                   ]
                 },"source_runs": {
                   Row: {
-                    "complete": boolean,"duration_ms": number | null,"error": string | null,"fetched": number,"invalid": number,"kept": number,"raw_path": string | null,"raw_sha256": string | null,"run_id": number,"skipped": number,"source": string
+                    "complete": boolean,"duration_ms": number | null,"error": string | null,"fetched": number,"invalid": number,"kept": number,"pages": number | null,"raw_path": string | null,"raw_sha256": string | null,"run_id": number,"skipped": number,"source": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "complete": boolean,"duration_ms"?: number | null,"error"?: string | null,"fetched": number,"invalid"?: number,"kept": number,"raw_path"?: string | null,"raw_sha256"?: string | null,"run_id": number,"skipped"?: number,"source": string
+                    "complete": boolean,"duration_ms"?: number | null,"error"?: string | null,"fetched": number,"invalid"?: number,"kept": number,"pages"?: number | null,"raw_path"?: string | null,"raw_sha256"?: string | null,"run_id": number,"skipped"?: number,"source": string
                   }
                   Update: {
-                    "complete"?: boolean,"duration_ms"?: number | null,"error"?: string | null,"fetched"?: number,"invalid"?: number,"kept"?: number,"raw_path"?: string | null,"raw_sha256"?: string | null,"run_id"?: number,"skipped"?: number,"source"?: string
+                    "complete"?: boolean,"duration_ms"?: number | null,"error"?: string | null,"fetched"?: number,"invalid"?: number,"kept"?: number,"pages"?: number | null,"raw_path"?: string | null,"raw_sha256"?: string | null,"run_id"?: number,"skipped"?: number,"source"?: string
                   }
                   Relationships: [
                     {

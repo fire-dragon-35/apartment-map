@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_FILTERS, SLIDERS, type PageFilters } from '@lk/shared';
 
 const KEY = 'lgh-filters';
@@ -26,18 +26,18 @@ function read(): PageFilters {
  */
 export function useFilters(): [PageFilters, (change: Partial<PageFilters>) => void] {
   const [filters, setFilters] = useState(read);
-  const update = useCallback((change: Partial<PageFilters>) => {
-    setFilters(old => {
-      const next = { ...old, ...change };
+  // written once the sliders rest: a drag fires dozens of changes, and Safari throws after 100 replaceState calls in 30 s
+  useEffect(() => {
+    const t = setTimeout(() => {
       const q = new URLSearchParams();
-      for (const k of NUM) if (next[k] !== DEFAULT_FILTERS[k]) q.set(k, String(next[k]));
-      if (next.onlyNew) q.set('new', '1');
+      for (const k of NUM) if (filters[k] !== DEFAULT_FILTERS[k]) q.set(k, String(filters[k]));
+      if (filters.onlyNew) q.set('new', '1');
       history.replaceState(null, '', q.size ? `?${q}` : location.pathname);
-      try { localStorage.setItem(KEY, JSON.stringify({ min: next.min, rent: next.rent, m2: next.m2, m2Max: next.m2Max, rooms: next.rooms, roomsMax: next.roomsMax })); } catch { /* private mode */ }
-      return next;
-    });
-  }, []);
-  return [filters, update];
+      try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(NUM.map(k => [k, filters[k]])))); } catch { /* private mode */ }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [filters]);
+  return [filters, useCallback((change: Partial<PageFilters>) => setFilters(old => ({ ...old, ...change })), [])];
 }
 
 const ROUTES_KEY = 'lgh-routes';

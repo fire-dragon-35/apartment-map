@@ -77,6 +77,8 @@ export interface SourceRunRow {
   runId: number;
   source: Source;
   complete: boolean;
+  /** raw pages fetched */
+  pages: number;
   fetched: number;
   kept: number;
   skipped: number;

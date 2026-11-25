@@ -1,16 +1,12 @@
-/* The sort row sits on top of the list, inside its panel: select and direction button, one line. */
+/* The sort row sits on top of the list, inside its panel: one chip per key, one line. */
 .bar {
   display: flex;
-  align-items: flex-end;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--line);
 }
-.bar > :first-child {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.dir {
-  flex: 0 0 auto;
+.key {
+  flex: 1 1 0;
+  padding-inline: var(--space-2);
   white-space: nowrap;
 }

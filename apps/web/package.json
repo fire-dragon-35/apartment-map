@@ -14,8 +14,6 @@
     "@frame/themes": "*",
     "@frame/ui": "*",
     "@lk/shared": "*",
-    "@supabase/supabase-js": "^2.46.1",
-    "@tanstack/react-query": "^5.62.0",
     "leaflet": "^1.9.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

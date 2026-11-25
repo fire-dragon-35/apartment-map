@@ -1,6 +1,7 @@
 import { AppShell, Container, Page, Panel } from '@frame/core';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { passesFilters, type PageFilters } from '@lk/shared';
+import { DataSources } from '../features/data/DataSources.tsx';
 import { Header } from '../features/filters/Header.tsx';
 import { useFilters, useRouteToggle } from '../features/filters/useFilters.ts';
 import type { Listing } from '../features/listings/Listing.ts';
@@ -26,14 +27,17 @@ export function App() {
   const selectedRef = useRef<number | null>(null);
   selectedRef.current = selectedId;
 
+  // the sliders move at once; the list and the map follow when React has time (a drag never stutters)
+  const shownFilters = useDeferredValue(filters);
+  const shownSort = useDeferredValue(sort);
   // R8: the "nya" count is within the other filters; "Bara nya" only narrows the list
   const { visible, newCount } = useMemo(() => {
-    const base = listings.filter(l => passesFilters(l, filters));
+    const base = listings.filter(l => passesFilters(l, shownFilters));
     return {
       newCount: base.filter(l => l.isNew).length,
-      visible: sortListings(base.filter(l => !filters.onlyNew || l.isNew), sort),
+      visible: sortListings(base.filter(l => !shownFilters.onlyNew || l.isNew), shownSort),
     };
-  }, [listings, filters, sort]);
+  }, [listings, shownFilters, shownSort]);
   const selected = useMemo(() => visible.find(l => l.id === selectedId) ?? null, [visible, selectedId]);
 
   /** A filter change refilters, closes the popup and keeps the map where it is. */
@@ -73,6 +77,7 @@ export function App() {
               <SortBar sort={sort} onSort={setSort} />
               <ListView items={visible} today={today} selectedId={selected?.id ?? null} hoveredId={hoveredId} onPick={pick} onHover={setHoveredId} error={error} />
             </Panel>
+            <DataSources />
           </Page.Content>
         </Page>
       </Container>

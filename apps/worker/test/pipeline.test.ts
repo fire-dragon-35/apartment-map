@@ -64,6 +64,7 @@ test('day 1: everything is new and first_seen is set', () => {
   assert.equal(sourceSummary(day1, 'qasa').new, qasa.length);
   assert.equal(store.sourceRunRows.filter(r => r.runId === day1.runId).length, 4);
   assert.equal(filesOf(DAY1).length, 4);
+  for (const r of store.sourceRunRows.filter(r => r.runId === day1.runId)) assert.equal(r.pages, 1, `${r.source} stores its page count`);
   assert.equal(store.listingRows.filter(l => l.firstSeen === DAY1).length, total);
 });
 

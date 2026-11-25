@@ -2,11 +2,11 @@
 export const NB = ' ';
 export const SEP = ' · ';
 /**
- * DESIGN.md §4: the filter sliders. The ends of every slider mean no limit (`30+ min`, `100+ m²`, `4+ rum`), so the default
+ * DESIGN.md §4: the filter sliders. The ends of every slider mean no limit (`60+ min`, `100+ m²`, `4+ rum`), so the default
  * shows everything. restid and hyra are upper limits only; storlek and rum are ranges.
  */
 export const SLIDERS = {
-  min: { min: 0, max: 30, step: 1 },
+  min: { min: 0, max: 60, step: 1 },
   rent: { min: 0, max: 30000, step: 500 },
   m2: { min: 0, max: 100, step: 5 },
   rooms: { min: 1, max: 4, step: 0.5 },
@@ -53,7 +53,7 @@ export const fmt = {
   /** A slider range as text, `10–25 min`; a `+` marks the top end as no limit. */
   range: (lo: number, hi: number, top: number, unit: string, num: (n: number) => string = String) =>
     `${num(lo)}–${num(hi)}${hi >= top ? '+' : ''}${NB}${unit}`,
-  /** A single upper limit as text, `≤ 25 min`; the top end is `30+ min`. */
+  /** A single upper limit as text, `≤ 25 min`; the top end is `60+ min`. */
   upTo: (hi: number, top: number, unit: string, num: (n: number) => string = String) =>
     hi >= top ? `${num(top)}+${NB}${unit}` : `≤${NB}${num(hi)}${NB}${unit}`,
   kilo: k,

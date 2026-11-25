@@ -1,0 +1,32 @@
+/* One T3 line, like the legend; the detail opens below it and pushes the page down. */
+.summary {
+  cursor: pointer;
+  list-style: none;
+}
+.summary::-webkit-details-marker {
+  display: none;
+}
+.list {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.source {
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+}
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-foreground-secondary);
+}
+.facts dd {
+  margin: 0;
+}

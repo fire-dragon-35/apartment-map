@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 3.5, 25 nov 2026 (3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 3.8, 25 nov 2026 (3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
@@ -57,10 +57,11 @@ SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18,
 
 ## 4. Layout (top to bottom, one column, max width 720 px)
 
-1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; a `<details>` labelled `Filter`; its summary row also holds the checkbox `Visa resväg` at the right edge (on by default, remembered). The details open a bordered panel that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 30+ min step 1 (one thumb), Max hyra 0 to 30k+ kr step 500 (one thumb), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkbox `Bara nya` and `Återställ`.
+1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; a `<details>` labelled `Filter`; its summary row also holds the checkbox `Visa resväg` at the right edge (on by default, remembered). The details open a bordered panel that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 60+ min step 1 (one thumb), Max hyra 0 to 30k+ kr step 500 (one thumb), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkbox `Bara nya` and `Återställ`.
 2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
 3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 349`, `350 till 449`, `450 till 549`, `550+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
-4. **List** of cards in a flush panel, divider between cards. A sort row on top (`Sortera` select: Restid, Hyra, Storlek, Pris per m²; a button flips `Stigande` / `Fallande`). Default: restid ascending, then hyra. Missing values go last. The list shows 10 cards and scrolls inside itself for the rest.
+4. **List** of cards in a flush panel, divider between cards. A sort row on top: one chip per key (`Restid`, `Hyra`, `Storlek`, `kr/m²`); a tap picks the key in its natural direction (storlek largest first, the rest lowest first), a tap on the chosen chip flips it; the chosen chip shows ` ↑` or ` ↓`. Default: restid ascending, then hyra. Missing values go last. The list shows 5 cards and scrolls inside itself for the rest.
+5. **Datakällor**, one T3 line under the list with a status dot, inside a `<details>` (id `sources`). The line is `Alla {N} källor kompletta · senast hämtat {idag|igår|datum} {HH:MM}`, or names every site that is `ofullständig`, `gammal` (last complete fetch over 36 hours ago) or has `få annonser` (none, or under half of its usual count). Open, it shows one block per site: state, what the site covers, `Hämtat`, `Senast komplett`, `Sidor` (pages fetched), `Annonser` (`{N} hämtade → {N} behållna`, with the usual count), `Bortvalda` (skipped on purpose, invalid), `På sidan nu`, and the error text when the fetch failed. Facebook-grupper is listed as `ingår inte ännu` until it is scraped. A note says complete only means every page was fetched without error. If the status cannot be read the line says `Kunde inte läsa datakällornas status`, never a green dot. Times are Stockholm time. The data is the view `source_status` (ARCHITECTURE.md §5).
 
 ## 5. Data formats
 
@@ -97,7 +98,7 @@ restid = walk if sl is missing or walk ≤ sl, else sl
 
 ## 7. Components
 
-**Pin** (Leaflet `circleMarker` on one canvas renderer in its own pane above rings and routes, tap tolerance 8 px; rings, route and Karlaplan are non interactive SVG): radius 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1); fill price colour, opacity 0.9; 1.5 px edge in its `price.edge` colour. Selected: `selected` 3 px edge, brought to front. Smaller pins drawn above larger.
+**Pin** (Leaflet `circleMarker` on one canvas renderer in its own pane above rings and routes, tap tolerance 8 px; rings, route and Karlaplan are non interactive SVG): radius 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1); fill price colour, opacity 0.9; 1.5 px edge in its `price.edge` colour. Selected: `selected` 2 px edge, brought to front. Smaller pins drawn above larger.
 
 **Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
 
@@ -149,6 +150,8 @@ Motion: only Leaflet's own pan and zoom animations and smooth page scroll. With 
 | warning | långt under marknadspris |
 | empty | Inga träffar med de här filtren |
 | error | Kunde inte ladda |
+| sources error | Kunde inte läsa datakällornas status |
+| sources all ok | Alla {N} källor kompletta · senast hämtat {tid} |
 
 ## 10. Data
 
@@ -195,7 +198,8 @@ ThemeProvider (theme from section 3)
       └ Page.Content
         ├ Panel flush      Map
         ├ Legend           Stack, row, wrap
-        └ Panel flush      List (cards with dividers)
+        ├ Panel flush      List (cards with dividers)
+        └ DataSources      <details> with a T3 summary line; one block per site
 ```
 
 * **Spacing** comes from Frame's tokens (`--space-*`, `--space-gutter`); no pixel values in app CSS except the ones this file names (card padding 12 16, map height, pin and ring sizes).

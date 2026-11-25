@@ -5,7 +5,7 @@ import type { Listing } from './Listing.ts';
 import styles from './ListView.module.css';
 
 /** The list shows this many cards; the rest scroll inside the list. */
-const ROWS = 10;
+const ROWS = 5;
 
 /** DESIGN.md §4.4: the cards, already filtered and sorted by the page. */
 export function ListView({ items, today, selectedId, hoveredId, onPick, onHover, error }: {

@@ -34,6 +34,12 @@ const FORMATS: Record<string, string> = {   // DESIGN.md §5
 // DESIGN.md §3, written out here on purpose: the test must not trust the code it checks
 const BANDS: [number, string, string][] = [[250, '#4F8A6B', '#3B6D53'], [350, '#8AAE86', '#6D9069'], [450, '#C9A989', '#AA8B6C'], [550, '#C98068', '#A8644E'], [Infinity, '#A8524A', '#873E37']];
 const ACCENT = '#007AFF';
+const statusRow = (source: string, over: Record<string, unknown> = {}) => ({
+  source, started_at: new Date().toISOString(), finished_at: new Date().toISOString(), complete: true, pages: 3, fetched: 210,
+  skipped: 5, invalid: 1, kept: 204, error: null, duration_ms: 4000, usual_kept: 200, usual_runs: 7,
+  last_complete_at: new Date().toISOString(), active: 190, ...over,
+});
+const STATUS = [statusRow('qasa'), statusRow('homeq'), statusRow('bostadsformedlingen'), statusRow('samtrygg', { complete: false, error: 'page 2: 503', kept: 40 })];
 
 const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png' };
 let server: Server, base: string, browser: Browser;
@@ -75,7 +81,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
     if (url.includes('supabase.test')) {
       const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*', 'access-control-expose-headers': '*' };
       if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
-      return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify(rows) });
+      return route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body: JSON.stringify(url.includes('/source_status') ? STATUS : rows) });
     }
     return route.abort();   // map tiles are irrelevant to the rules, and nothing else may leave the machine
   });
@@ -157,7 +163,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
       return {id,fill:o.fillColor,kpm:l.kpm,radius:o.radius,expected:6+6*Math.min(1,Math.max(0,(Math.sqrt(l.m2||20)-a)/(b-a))),weight:o.weight,color:o.color,on:id===__lgh.selectedId}})`);
   const priceOf = (kpm: number | null) => (kpm === null ? '#AEAEB2' : BANDS.find(([max]) => kpm < max)![1]);
   const edgeOf = (kpm: number | null) => (kpm === null ? '#8E8E93' : BANDS.find(([max]) => kpm < max)![2]);
-  const r5 = pins.length > 0 && pins.every(p => p.fill === priceOf(p.kpm) && Math.abs(p.radius - p.expected) < 1e-9 && (p.on ? p.weight === 3 && p.color === '#1C1C1E' : p.weight === 1.5 && p.color === edgeOf(p.kpm)));
+  const r5 = pins.length > 0 && pins.every(p => p.fill === priceOf(p.kpm) && Math.abs(p.radius - p.expected) < 1e-9 && (p.on ? p.weight === 2 && p.color === '#1C1C1E' : p.weight === 1.5 && p.color === edgeOf(p.kpm)));
   check('R5 pins: fill = price, radius = size, ring only when selected', r5 && pins.filter(p => p.on).length === 1);
 
   // R6: every atom in cards and the open popup
@@ -181,7 +187,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
 
   // R11: one selection at a time
   await openOne(); await scrollTo(0); await page.locator(`#c${ids[1]}`).scrollIntoViewIfNeeded(); await page.click(`#c${ids[1]}`, { position: { x: 24, y: 8 } }); await wait(1500);
-  const one = await js(`document.querySelectorAll('[data-card][aria-pressed="true"]').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&[...__lgh.markers.values()].filter(m=>m.options.weight===3).length===1`);
+  const one = await js(`document.querySelectorAll('[data-card][aria-pressed="true"]').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&[...__lgh.markers.values()].filter(m=>m.options.weight===2).length===1`);
   check('R11 one popup, one outlined card, one ringed pin', one);
   await close();
 
@@ -191,7 +197,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
 
   // R8: nya count follows filters (computed here from the raw fields, not with the page's own code)
   const expectedNya = () => js<number>(`(()=>{const v=id=>+document.getElementById(id).value,today=__lgh.today,days=(a,b)=>(Date.parse(a)-Date.parse(b))/864e5;
-    return __lgh.all.filter(l=>(v('f-min')>=30||l.t<=v('f-min'))&&(v('f-rent')>=30000||!l.rent||l.rent<=v('f-rent'))&&(!l.m2||l.m2>=v('f-m2'))&&(!l.end||days(l.end,(l.start&&l.start>today)?l.start:today)>=180)&&l.firstSeen===today).length})()`);
+    return __lgh.all.filter(l=>(v('f-min')>=60||l.t<=v('f-min'))&&(v('f-rent')>=30000||!l.rent||l.rent<=v('f-rent'))&&(!l.m2||l.m2>=v('f-m2'))&&(!l.end||days(l.end,(l.start&&l.start>today)?l.start:today)>=180)&&l.firstSeen===today).length})()`);
   const shown = () => js<string>("document.getElementById('nya').textContent");
   const n1 = await expectedNya(), s1 = await shown();
   await page.click('summary'); await wait(100);   // the filters are in a <details>
@@ -213,6 +219,14 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   const blue = await js<boolean>(`[...__lgh.markers.values()].some(m=>[m.options.color,m.options.fillColor].some(c=>String(c).toUpperCase()==='${ACCENT}'))||__lgh.route.getLayers().some(p=>String(p.options.color).toUpperCase()==='${ACCENT}')`);
   check('R12 no accent blue on the map except Karlaplan', !blue && (await count()) > 0);
   await close();
+
+  // Datakällor: the scrape's state is on the page, and an incomplete source is not hidden behind a green line
+  const summary = await js<string>("document.querySelector('#sources summary').textContent");
+  check('Datakällor summary names the incomplete source', summary.includes('Samtrygg ofullständig'), summary);
+  await page.click('#sources summary'); await wait(100);
+  const states = await js<string>("[...document.querySelectorAll('#sources [data-source][data-state]')].map(e=>e.dataset.source+':'+e.dataset.state).join()");
+  check('Datakällor one row per source with its state', states === 'qasa:ok,homeq:ok,bostadsformedlingen:ok,samtrygg:incomplete', states);
+  check('Datakällor shows pages, error and that Facebook is not included', await js<boolean>("(t=>t.includes('page 2: 503')&&t.includes('Sidor')&&t.includes('ingår inte ännu'))(document.getElementById('sources').textContent)"));
 
   await page.close();
   console.log('\n' + (failures.length ? `${failures.length} FAILED: ${failures.join(', ')}` : 'ALL PASS'));

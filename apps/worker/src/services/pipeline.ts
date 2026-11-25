@@ -95,7 +95,7 @@ export class Pipeline {
       skipped: r.skipped, invalid: r.invalid.length, error, rawReused,
     };
     await store.runs.saveSource({
-      runId, source: f.source, complete, fetched: r.fetched, kept: r.listings.length, skipped: r.skipped,
+      runId, source: f.source, complete, pages: r.raw.length, fetched: r.fetched, kept: r.listings.length, skipped: r.skipped,
       invalid: r.invalid.length, error, durationMs: r.ms, rawPath, rawSha256,
     });
     log(`${f.source}: ${complete ? 'complete' : `INCOMPLETE ${error}`} fetched ${r.fetched} kept ${r.listings.length} new ${counts.new} changed ${counts.changed} removed ${counts.removed}`);

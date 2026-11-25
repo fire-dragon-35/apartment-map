@@ -9,7 +9,7 @@ export const SORT_OPTIONS: { key: SortKey; label: string; dir: SortDir }[] = [
   { key: 'restid', label: 'Restid', dir: 'asc' },
   { key: 'hyra', label: 'Hyra', dir: 'asc' },
   { key: 'storlek', label: 'Storlek', dir: 'desc' },
-  { key: 'kpm', label: 'Pris per m²', dir: 'asc' },
+  { key: 'kpm', label: 'kr/m²', dir: 'asc' },
 ];
 
 export const DEFAULT_SORT: SortState = { key: 'restid', dir: 'asc' };
