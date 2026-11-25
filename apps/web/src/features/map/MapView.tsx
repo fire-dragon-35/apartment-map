@@ -2,7 +2,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap } from 'react-leaflet';
+import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import { fmt, KARLAPLAN, lineStyle, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR } from '@lk/shared';
 import { CAN_HOVER as HOVER } from '../../app/hover.ts';
 import { hooks } from '../../app/test-hooks.ts';
@@ -114,7 +114,7 @@ function SelectionPopup({ selected, today, autoPan, onClose }: { selected: Listi
 
 /** A pin restid is measured to. Subscribers drag it to move it; everyone else sees a fixed dot (CORE.md: paid). */
 function PlaceMarker({ place, editable, onMove }: { place: Place; editable: boolean; onMove: (p: Place, lat: number, lon: number) => void }) {
-  const icon = useMemo(() => L.divIcon({ className: styles.place, iconSize: [16, 16], html: '' }), []);
+  const icon = useMemo(() => L.divIcon({ className: styles.place, iconSize: [22, 22], html: '' }), []);
   const events = useMemo(() => ({ dragend: (e: L.DragEndEvent) => { const { lat, lng } = (e.target as L.Marker).getLatLng(); onMove(place, lat, lng); } }), [place, onMove]);
   if (!editable) {
     return (
@@ -128,6 +128,12 @@ function PlaceMarker({ place, editable, onMove }: { place: Place; editable: bool
       <Tooltip permanent direction="right" offset={[10, 0]}>{place.label}</Tooltip>
     </Marker>
   );
+}
+
+/** While placing the pin, the next tap anywhere on the map puts it there (the listing dots ignore taps meanwhile). */
+function PlaceOnTap({ placing, onPlace }: { placing: boolean; onPlace: (lat: number, lon: number) => void }) {
+  useMapEvents({ click: e => { if (placing) onPlace(e.latlng.lat, e.latlng.lng); } });
+  return null;
 }
 
 /** Publishes the Leaflet map to the test hooks. */
@@ -151,11 +157,14 @@ interface Props {
   onClose: () => void;
   pins: Place[];
   editablePins: boolean;
+  /** "Flytta pinnen" is on: listing dots fade and the next map tap places the pin */
+  placing: boolean;
+  onPlace: (lat: number, lon: number) => void;
   onMovePin: (p: Place, lat: number, lon: number) => void;
 }
 
 /** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the rings, the pins, the popup and the route. */
-export function MapView({ loaded, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose, pins, editablePins, onMovePin }: Props) {
+export function MapView({ loaded, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose, pins, editablePins, placing, onPlace, onMovePin }: Props) {
   const first: [number, number] = [pins[0]!.lat, pins[0]!.lon];
   const markers = useRef(new Map<number, L.CircleMarker>());
   const register = useRef((id: number, m: L.CircleMarker | null) => { if (m) markers.current.set(id, m); else markers.current.delete(id); }).current;
@@ -166,10 +175,11 @@ export function MapView({ loaded, items, today, selected, autoPan, showRoutes, h
 
   return (
     <div className={styles.wrap}>
-    <MapContainer id="map" className={styles.map} center={CENTRE} zoom={13} zoomControl={false}>
+    <MapContainer id="map" className={`${styles.map} ${placing ? styles.placing : ''}`} center={CENTRE} zoom={13} zoomControl={false}>
       <TileLayer url={esri('Base')} maxZoom={17} attribution="Esri, HERE, OpenStreetMap" />
       <TileLayer url={esri('Reference')} maxZoom={17} opacity={0.55} />
       {[2, 4, 6].map(km => <Circle key={km} center={first} radius={km * 1000} pathOptions={{ color: '#8E8E93', weight: 1, dashArray: '4 4', fill: false }} interactive={false} />)}
+      <PlaceOnTap placing={placing} onPlace={onPlace} />
       {pins.map(p => <PlaceMarker key={p.id ?? 'karlaplan'} place={p} editable={editablePins} onMove={onMovePin} />)}
       {/* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */}
       <Pane name="pins" className={styles.pins}>

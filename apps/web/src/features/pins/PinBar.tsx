@@ -11,6 +11,8 @@ interface Props {
   canEdit: boolean;
   signedIn: boolean;
   onReset: () => void;
+  placing: boolean;
+  onPlacing: (on: boolean) => void;
   alerts: boolean;
   onSave: (alerts: boolean) => void;
   saved: boolean;
@@ -19,7 +21,7 @@ interface Props {
 }
 
 /** Above the map: the pins restid is measured to, and the saved search. Everything but Karlaplan is paid (CORE.md). */
-export function PinBar({ pins, canEdit, signedIn, onReset, alerts, onSave, saved, loading, error }: Props) {
+export function PinBar({ pins, canEdit, signedIn, onReset, placing, onPlacing, alerts, onSave, saved, loading, error }: Props) {
   const [upsell, setUpsell] = useState(false);
 
   if (!canEdit) {
@@ -48,8 +50,10 @@ export function PinBar({ pins, canEdit, signedIn, onReset, alerts, onSave, saved
     <Stack gap={2}>
       <Stack direction="row" gap={2} wrap align="center">
         <span className={styles.pin}><span className={styles.dot} aria-hidden="true" />{pin.label}</span>
-        <Text size="xs" tone="muted">Dra pinnen på kartan för att mäta restid dit.</Text>
-        {!isDefault(pins) && <Button variant="ghost" onClick={onReset}>Tillbaka till Karlaplan</Button>}
+        {placing
+          ? <><Text size="xs" role="status">Tryck på kartan där pinnen ska stå.</Text><Button variant="ghost" onClick={() => onPlacing(false)}>Avbryt</Button></>
+          : <><Button variant="secondary" onClick={() => onPlacing(true)}>Flytta pinnen</Button>
+            {!isDefault(pins) && <Button variant="ghost" onClick={onReset}>Tillbaka till Karlaplan</Button>}</>}
         {loading && <Text size="xs" tone="muted" role="status">Räknar restider…</Text>}
       </Stack>
       <Stack direction="row" gap={3} wrap align="center">

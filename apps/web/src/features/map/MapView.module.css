@@ -82,9 +82,18 @@
 }
 /* a pin restid is measured to, draggable for subscribers */
 .place {
-  border: 2px solid var(--color-background);
+  /* 22 px dot, easy to grab */
+  border: 3px solid var(--color-background);
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 0 1px var(--accent);
   cursor: grab;
+}
+/* "Flytta pinnen": the listing dots step back and let every tap through to the map */
+.placing {
+  cursor: crosshair;
+}
+.placing .pins {
+  opacity: 0.35;
+  pointer-events: none;
 }

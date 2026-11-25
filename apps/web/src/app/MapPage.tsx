@@ -22,6 +22,8 @@ export function MapPage() {
   const [filters, setFilters] = useFilters();
   // paid (CORE.md): own pins, a saved search with a daily email; free: Karlaplan
   const { pins, canEdit, signedIn, error: pinError, move, reset } = usePins();
+  const [placing, setPlacing] = useState(false);
+  const place = useCallback((lat: number, lon: number) => { setPlacing(false); void move(pins[0]!, lat, lon); }, [move, pins]);
   const placeIds = useMemo(() => [...new Set(base0.map(l => l.placeId))], [base0]);
   const { minutes, loading: timesLoading } = usePinTimes(isDefault(pins) ? [] : pins, placeIds);
   const { saved, save, error: saveError } = useSavedSearch();
@@ -87,10 +89,10 @@ export function MapPage() {
           shown={visible.length} newCount={newCount} loaded={loaded} error={error} />
       </Page.Header>
       <Page.Content>
-        <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} onReset={() => void reset()}
+        <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} onReset={() => void reset()} placing={placing} onPlacing={on => { setSelectedId(null); setPlacing(on); }}
           alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} loading={timesLoading} error={pinError ?? saveError} />
         <Panel flush aria-label="Karta">
-          <MapView pins={pins} editablePins={canEdit} onMovePin={(p, la, lo) => void move(p, la, lo)} loaded={loaded} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
+          <MapView pins={pins} editablePins={canEdit} placing={placing} onPlace={place} onMovePin={(p, la, lo) => void move(p, la, lo)} loaded={loaded} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
         </Panel>
         <Legend />
         <Panel flush aria-label="Annonser">
