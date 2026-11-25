@@ -23,14 +23,15 @@ export function MapPage() {
   // paid (CORE.md): own pins, a saved search with a daily email; free: Karlaplan
   const { pins, canEdit, signedIn, error: pinError, move, reset } = usePins();
   const [placing, setPlacing] = useState(false);
-  const place = useCallback((lat: number, lon: number) => { setPlacing(false); void move(pins[0]!, lat, lon); }, [move, pins]);
   const placeIds = useMemo(() => [...new Set(base0.map(l => l.placeId))], [base0]);
-  const { minutes, loading: timesLoading } = usePinTimes(isDefault(pins) ? [] : pins, placeIds);
+  const pin = pins[0]!;
+  const place = useCallback((lat: number, lon: number) => { setPlacing(false); void move(pin, lat, lon); }, [move, pin]);
+  const { minutes, ready, loading: timesLoading, error: timesError } = usePinTimes(isDefault(pins) ? null : pin, placeIds);
   const { saved, save, error: saveError } = useSavedSearch();
-  const listings = useMemo(() => isDefault(pins) ? base0 : base0.map(l => l.forPins(pins.map(p => isKarlaplan(p)
-    ? { label: p.label, minutes: l.t, approx: false }
-    : { label: p.label, minutes: minutes(p, l.placeId), approx: true }))),
-    [base0, pins, minutes]);
+  // until the own pin's times are in (or if they fail), the page keeps Karlaplan's
+  const listings = useMemo(() => ready && !isKarlaplan(pin)
+    ? base0.map(l => l.forPins([{ label: pin.label, minutes: minutes(l.placeId), approx: true }]))
+    : base0, [base0, pin, ready, minutes]);
   // a saved search fills the filters once, when the page opens without filters of its own
   const applied = useRef(false);
   useEffect(() => {
@@ -90,7 +91,7 @@ export function MapPage() {
       </Page.Header>
       <Page.Content>
         <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} onReset={() => void reset()} placing={placing} onPlacing={on => { setSelectedId(null); setPlacing(on); }}
-          alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} error={pinError ?? saveError} />
+          alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} error={pinError ?? timesError ?? saveError} />
         <Panel flush aria-label="Karta">
           <MapView pins={pins} editablePins={canEdit} placing={placing} onPlace={place} busy={!loaded ? 'Laddar annonser…' : timesLoading ? 'Räknar restider…' : null} items={visible} today={today} selected={selected} autoPan={autoPan} showRoutes={routes} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
         </Panel>

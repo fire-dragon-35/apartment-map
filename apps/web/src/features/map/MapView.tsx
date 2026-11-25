@@ -98,7 +98,7 @@ function RouteLayer({ selected, show, pin }: { selected: Listing | null; show: b
       for (const [mode, line, coords] of legs ?? []) {
         if (!coords || coords.length < 2) continue;
         if (mode === 'walk') { L.polyline(coords, walk).addTo(group); continue; }
-        L.polyline(coords, { color: '#fff', weight: 7, opacity: 0.9, interactive: false }).addTo(group);
+        L.polyline(coords, { color: TOKENS.white, weight: 7, opacity: 0.9, interactive: false }).addTo(group);
         L.polyline(coords, { color: lineStyle(mode, line).color, weight: 4, interactive: false }).addTo(group);
       }
     });
@@ -139,7 +139,7 @@ function PlaceMarker({ place, editable, placing, onMove }: { place: Place; edita
   const events = useMemo(() => ({ dragend: (e: L.DragEndEvent) => { const { lat, lng } = (e.target as L.Marker).getLatLng(); onMove(lat, lng); } }), [onMove]);
   if (!editable) {
     return (
-      <CircleMarker center={[place.lat, place.lon]} radius={7} pathOptions={{ color: '#fff', weight: 2, fillColor: TOKENS.accent, fillOpacity: 1 }} interactive={false}>
+      <CircleMarker center={[place.lat, place.lon]} radius={7} pathOptions={{ color: TOKENS.white, weight: 2, fillColor: TOKENS.accent, fillOpacity: 1 }} interactive={false}>
         <Tooltip permanent direction="right" offset={[8, 0]}>{place.label}</Tooltip>
       </CircleMarker>
     );
@@ -200,7 +200,7 @@ export function MapView({ busy, items, today, selected, autoPan, showRoutes, hov
     <MapContainer id="map" className={styles.map} center={CENTRE} zoom={11} zoomControl={false}>
       <TileLayer url={esri('Base')} maxZoom={17} attribution="Esri, HERE, OpenStreetMap" />
       <TileLayer url={esri('Reference')} maxZoom={17} opacity={0.55} />
-      {[2, 4, 6].map(km => <Circle key={km} center={first} radius={km * 1000} pathOptions={{ color: '#8E8E93', weight: 1, dashArray: '4 4', fill: false }} interactive={false} />)}
+      {[2, 4, 6].map(km => <Circle key={km} center={first} radius={km * 1000} pathOptions={{ color: TOKENS.guide, weight: 1, dashArray: '4 4', fill: false }} interactive={false} />)}
       <PlaceOnTap placing={placing} onPlace={onPlace} />
       {pins.map(p => <PlaceMarker key={p.id ?? 'karlaplan'} place={p} editable={editablePins} placing={placing} onMove={onPlace} />)}
       {/* pins: one canvas in their own pane above rings and routes (SVG, not clickable), so nothing covers them */}
