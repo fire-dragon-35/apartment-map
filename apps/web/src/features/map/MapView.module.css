@@ -32,19 +32,12 @@
   border-radius: 50%;
   border: 2px solid var(--ring);
   opacity: 0;
-  animation: ripple var(--dur) ease-out var(--delay) var(--count) forwards;
-}
-/* selecting: one quick dark ring */
-.select {
+  /* selecting: one quick dark ring */
   --ring: var(--selected);
   --dur: 650ms;
+  --delay: 0ms;
   --count: 1;
-}
-/* arrival of the listings new today: a slower blue ring, three times */
-.fresh {
-  --ring: var(--accent);
-  --dur: 1400ms;
-  --count: 3;
+  animation: ripple var(--dur) ease-out var(--delay) var(--count) forwards;
 }
 @keyframes ripple {
   from { transform: scale(0.9); opacity: 0.8; }

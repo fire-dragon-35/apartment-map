@@ -39,20 +39,29 @@ export function Header({ filters, onFilters, routes, onRoutes, shown, newCount, 
       </Text>
       <details className={styles.details} ref={details}>
         <summary className={styles.summary}>
-          <span className={styles.toggle}>Filter</span>
-          <Checkbox id="f-route" label="Visa resväg" checked={routes} onChange={e => onRoutes(e.target.checked)} />
+          <span className={styles.toggle}>
+            <svg className={styles.icon} viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
+              <path d="M3 5.5h8M15 5.5h2M3 14.5h2M9 14.5h8" /><circle cx="13" cy="5.5" r="2" /><circle cx="7" cy="14.5" r="2" />
+            </svg>
+            Filter
+          </span>
         </summary>
         <div className={styles.filters}>
           <RangeSlider single idLow="f-min-lo" idHigh="f-min" label="Max restid" {...SLIDERS.min} low={SLIDERS.min.min} high={filters.min}
             format={(_, hi) => fmt.upTo(hi, SLIDERS.min.max, 'min')} onChange={(_, min) => onFilters({ min })} />
           <RangeSlider single idLow="f-rent-lo" idHigh="f-rent" label="Max hyra" {...SLIDERS.rent} low={SLIDERS.rent.min} high={filters.rent}
             format={(_, hi) => fmt.upTo(hi, SLIDERS.rent.max, 'kr', fmt.kilo)} onChange={(_, rent) => onFilters({ rent })} />
+          <RangeSlider single idLow="f-kpm-lo" idHigh="f-kpm" label="Max kr/m²" {...SLIDERS.kpm} low={SLIDERS.kpm.min} high={filters.kpm}
+            format={(_, hi) => fmt.upTo(hi, SLIDERS.kpm.max, 'kr/m²')} onChange={(_, kpm) => onFilters({ kpm })} />
           <RangeSlider idLow="f-m2" idHigh="f-m2max" label="Storlek" {...SLIDERS.m2} low={filters.m2} high={filters.m2Max}
             format={(lo, hi) => fmt.range(lo, hi, SLIDERS.m2.max, 'm²')} onChange={(m2, m2Max) => onFilters({ m2, m2Max })} />
           <RangeSlider idLow="f-rooms" idHigh="f-roomsmax" label="Antal rum" {...SLIDERS.rooms} low={filters.rooms} high={filters.roomsMax}
             format={(lo, hi) => fmt.range(lo, hi, SLIDERS.rooms.max, 'rum', fmt.rooms)} onChange={(rooms, roomsMax) => onFilters({ rooms, roomsMax })} />
           <div className={styles.footer}>
-            <Checkbox id="f-new" label="Bara nya" checked={filters.onlyNew} onChange={e => onFilters({ onlyNew: e.target.checked })} />
+            <div className={styles.checks}>
+              <Checkbox id="f-new" label="Bara nya" checked={filters.onlyNew} onChange={e => onFilters({ onlyNew: e.target.checked })} />
+              <Checkbox id="f-route" label="Visa resväg" checked={routes} onChange={e => onRoutes(e.target.checked)} />
+            </div>
             <Button type="button" variant="secondary" disabled={isDefault(filters)} onClick={() => onFilters(DEFAULT_FILTERS)}>Återställ</Button>
           </div>
         </div>

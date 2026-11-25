@@ -4,7 +4,6 @@ import { ROUTES, type RouteId } from '../../app/useRoute.ts';
 import styles from './ComingSoon.module.css';
 
 const TITLES: Partial<Record<RouteId, string>> = {
-  om: 'Om tjänsten',
   'logga-in': 'Logga in',
   'skapa-konto': 'Skapa konto',
 };

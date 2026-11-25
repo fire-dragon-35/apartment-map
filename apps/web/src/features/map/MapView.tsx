@@ -1,6 +1,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import { fmt, KARLAPLAN, lineStyle, priceBand, PRICE_UNKNOWN, SEP, TOKENS, WALK_COLOR } from '@lk/shared';
@@ -14,7 +14,7 @@ const CENTRE: [number, number] = [KARLAPLAN.lat, KARLAPLAN.lon];
 const esri = (layer: 'Base' | 'Reference') => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_${layer}/MapServer/tile/{z}/{y}/{x}`;
 
 /**
- * One pin: price colour and size; the dark ring when selected or hovered (R5). New-today listings are marked by the arrival ripple only.
+ * One pin: price colour and size; the dark ring when selected or hovered (R5).
  */
 const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, register }: {
   l: Listing; on: boolean; hot: boolean; renderer: L.Canvas; onSelect: (id: number) => void; onHover: (id: number | null) => void;
@@ -42,28 +42,12 @@ const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, registe
 });
 
 /** A ring that grows from a pin and fades (CSS, in the `pulses` pane below the pins). Remount it to play it again. */
-function Pulse({ l, kind, delay = 0 }: { l: Listing; kind: 'select' | 'fresh'; delay?: number }) {
+function Pulse({ l }: { l: Listing }) {
   const icon = useMemo(() => L.divIcon({
     className: '', iconSize: [0, 0],
-    html: `<span class="${styles.ring} ${styles[kind]}" style="--d:${l.radius * 2}px;--delay:${delay}ms"></span>`,
-  }), [l.radius, kind, delay]);
+    html: `<span class="${styles.ring}" style="--d:${l.radius * 2}px"></span>`,
+  }), [l.radius]);
   return <Marker position={l.latlng} icon={icon} pane="pulses" interactive={false} keyboard={false} />;
-}
-
-/** On arrival, the listings new today ripple three times, one after another, then rest. Once per page load. */
-function FreshPulses({ items }: { items: Listing[] }) {
-  const first = useRef<Listing[] | null>(null);
-  const [over, setOver] = useState(false);
-  if (!first.current && items.length) first.current = items.filter(l => l.isNew);
-  const started = first.current !== null;
-  useEffect(() => {
-    if (!started) return;
-    const t = setTimeout(() => setOver(true), 5000);
-    return () => clearTimeout(t);
-  }, [started]);
-  if (over || !first.current) return null;
-  const shown = new Set(items.map(l => l.id));
-  return <>{first.current.filter(l => shown.has(l.id)).map((l, i) => <Pulse key={l.id} l={l} kind="fresh" delay={Math.min(i * 80, 400)} />)}</>;
 }
 
 /** Fit Karlaplan and all pins once, max zoom 14 (DESIGN.md §8). */
@@ -172,8 +156,7 @@ export function MapView({ loaded, items, today, selected, autoPan, showRoutes, h
       </Pane>
       {/* rings sit below the pins and never take a click */}
       <Pane name="pulses" className={styles.pulses}>
-        {selected && <Pulse key={selected.id} l={selected} kind="select" />}
-        <FreshPulses items={items} />
+        {selected && <Pulse key={selected.id} l={selected} />}
       </Pane>
       <RouteLayer selected={selected} show={showRoutes} />
       <SelectionPopup selected={selected} today={today} autoPan={autoPan} onClose={onClose} />

@@ -26,19 +26,20 @@ export function cssVariables(): Record<string, string> {
 export const SOURCE_COLORS: Record<string, string> = {};
 export const SOURCE_OTHER = TOKENS.text2;
 
-export interface PageFilters { min: number; rent: number; m2: number; m2Max: number; rooms: number; roomsMax: number; onlyNew: boolean }
+export interface PageFilters { min: number; rent: number; kpm: number; m2: number; m2Max: number; rooms: number; roomsMax: number; onlyNew: boolean }
 export const DEFAULT_FILTERS: PageFilters = {
-  min: 30, rent: SLIDERS.rent.max, m2: SLIDERS.m2.min, m2Max: SLIDERS.m2.max,
+  min: 30, rent: SLIDERS.rent.max, kpm: SLIDERS.kpm.max, m2: SLIDERS.m2.min, m2Max: SLIDERS.m2.max,
   rooms: SLIDERS.rooms.min, roomsMax: SLIDERS.rooms.max, onlyNew: false,
 };
 
-/** DESIGN.md §10 page filters, without "Bara nya" (R8 counts the new ones within these): restid, hyra, storlek, rum, contract. An end of a slider is no limit. */
+/** DESIGN.md §10 page filters, without "Bara nya" (R8 counts the new ones within these): restid, hyra, kr/m², storlek, rum, contract. An end of a slider is no limit. */
 export const passesFilters = (
-  l: { t: number; rent: number | null; m2: number | null; rooms: number | null; contractOk: boolean },
-  f: Pick<PageFilters, 'min' | 'rent' | 'm2' | 'm2Max' | 'rooms' | 'roomsMax'>,
+  l: { t: number; rent: number | null; kpm: number | null; m2: number | null; rooms: number | null; contractOk: boolean },
+  f: Pick<PageFilters, 'min' | 'rent' | 'kpm' | 'm2' | 'm2Max' | 'rooms' | 'roomsMax'>,
 ) =>
   (f.min >= SLIDERS.min.max || l.t <= f.min)
   && (f.rent >= SLIDERS.rent.max || !l.rent || l.rent <= f.rent)
+  && (f.kpm >= SLIDERS.kpm.max || l.kpm === null || l.kpm <= f.kpm)
   && (!l.m2 || ((f.m2 <= SLIDERS.m2.min || l.m2 >= f.m2) && (f.m2Max >= SLIDERS.m2.max || l.m2 <= f.m2Max)))
   && (!l.rooms || ((f.rooms <= SLIDERS.rooms.min || l.rooms >= f.rooms) && (f.roomsMax >= SLIDERS.rooms.max || l.rooms <= f.roomsMax)))
   && l.contractOk;

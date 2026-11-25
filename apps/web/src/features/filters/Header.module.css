@@ -1,4 +1,4 @@
-/* One row: the Filter toggle on the left, Visa resväg on the right. The panel floats over the page below it (no reflow). */
+/* The Filter toggle, a bordered button with an icon and a chevron. The panel floats over the page below it (no reflow). */
 .details {
   position: relative;
 }
@@ -14,17 +14,42 @@
   display: none;
 }
 .toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 8px);
   color: var(--accent);
   font-weight: 600;
 }
-.toggle::before {
-  content: '▸';
-  display: inline-block;
-  width: 1em;
+.toggle:hover {
+  border-color: var(--accent);
+}
+.details[open] .toggle {
+  border-color: var(--accent);
+}
+.icon {
+  flex: none;
+}
+.toggle::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin: 0 var(--space-1) 2px;
+  border-right: 1.75px solid currentColor;
+  border-bottom: 1.75px solid currentColor;
+  transform: rotate(45deg);
   transition: transform 150ms ease;
 }
-.details[open] .toggle::before {
-  transform: rotate(90deg);
+.details[open] .toggle::after {
+  transform: rotate(-135deg) translate(-1px, -1px);
+}
+.summary:focus-visible {
+  outline: none;
+}
+.summary:focus-visible .toggle {
+  box-shadow: var(--focus-ring);
 }
 /* the label column is the same on every slider, so the tracks line up */
 .filters {
@@ -44,6 +69,11 @@
 .filters label {
   min-width: 0;
 }
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
 .footer {
   display: flex;
   align-items: center;
@@ -52,5 +82,5 @@
   border-top: 1px solid var(--line);
 }
 @media (prefers-reduced-motion: reduce) {
-  .toggle::before { transition: none; }
+  .toggle::after { transition: none; }
 }

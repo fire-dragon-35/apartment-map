@@ -3,11 +3,12 @@ export const NB = ' ';
 export const SEP = ' · ';
 /**
  * DESIGN.md §4: the filter sliders. The ends of every slider mean no limit (`60+ min`, `100+ m²`, `4+ rum`), so the default
- * shows everything. restid and hyra are upper limits only; storlek and rum are ranges.
+ * shows everything. restid, hyra and kr/m² are upper limits only; storlek and rum are ranges.
  */
 export const SLIDERS = {
   min: { min: 0, max: 60, step: 1 },
   rent: { min: 0, max: 30000, step: 500 },
+  kpm: { min: 0, max: 700, step: 25 },
   m2: { min: 0, max: 100, step: 5 },
   rooms: { min: 1, max: 4, step: 0.5 },
 } as const;
@@ -59,8 +60,9 @@ export const fmt = {
   kilo: k,
   rooms: (n: number) => String(n).replace('.', ','),
   /** The header summary: only the limits that are set. */
-  filterSummary: (f: { min: number; rent: number; m2: number; m2Max: number; rooms: number; roomsMax: number }) => [
+  filterSummary: (f: { min: number; rent: number; kpm: number; m2: number; m2Max: number; rooms: number; roomsMax: number }) => [
     ...(f.rent < SLIDERS.rent.max ? [`≤${NB}${k(f.rent)}${NB}kr`] : []),
+    ...(f.kpm < SLIDERS.kpm.max ? [`≤${NB}${f.kpm}${NB}kr/m²`] : []),
     ...(f.m2 > SLIDERS.m2.min || f.m2Max < SLIDERS.m2.max ? [fmt.range(f.m2, f.m2Max, SLIDERS.m2.max, 'm²')] : []),
     ...(f.rooms > SLIDERS.rooms.min || f.roomsMax < SLIDERS.rooms.max ? [fmt.range(f.rooms, f.roomsMax, SLIDERS.rooms.max, 'rum', fmt.rooms)] : []),
     ...(f.min < SLIDERS.min.max ? [`≤${NB}${f.min}${NB}min`] : []),

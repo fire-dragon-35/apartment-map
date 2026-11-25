@@ -1,7 +1,6 @@
 import { Page, Panel } from '@frame/core';
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { passesFilters, type PageFilters } from '@lk/shared';
-import { DataSources } from '../features/data/DataSources.tsx';
 import { Header } from '../features/filters/Header.tsx';
 import { useFilters, useRouteToggle } from '../features/filters/useFilters.ts';
 import type { Listing } from '../features/listings/Listing.ts';
@@ -75,7 +74,6 @@ export function MapPage() {
           <SortBar sort={sort} onSort={setSort} />
           <ListView items={visible} today={today} selectedId={selected?.id ?? null} hoveredId={hoveredId} onPick={pick} onHover={setHoveredId} error={error} loaded={loaded} />
         </Panel>
-        <DataSources />
       </Page.Content>
     </Page>
   );

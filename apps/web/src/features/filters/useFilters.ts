@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_FILTERS, SLIDERS, type PageFilters } from '@lk/shared';
 
 const KEY = 'lgh-filters';
-const NUM = ['min', 'rent', 'm2', 'm2Max', 'rooms', 'roomsMax'] as const;
+const NUM = ['min', 'rent', 'kpm', 'm2', 'm2Max', 'rooms', 'roomsMax'] as const;
 const RANGE: Record<(typeof NUM)[number], { min: number; max: number }> = {
-  min: SLIDERS.min, rent: SLIDERS.rent, m2: SLIDERS.m2, m2Max: SLIDERS.m2, rooms: SLIDERS.rooms, roomsMax: SLIDERS.rooms,
+  min: SLIDERS.min, rent: SLIDERS.rent, kpm: SLIDERS.kpm, m2: SLIDERS.m2, m2Max: SLIDERS.m2, rooms: SLIDERS.rooms, roomsMax: SLIDERS.rooms,
 };
 type NumKey = (typeof NUM)[number];
 const clamp = (v: number, { min, max }: { min: number; max: number }) => Math.min(max, Math.max(min, v));
@@ -17,11 +17,11 @@ function read(): PageFilters {
     const v = Number(q.get(name) ?? remembered[name]);
     return Number.isFinite(v) && (q.has(name) || remembered[name] !== undefined) ? clamp(v, RANGE[name]) : DEFAULT_FILTERS[name];
   };
-  return { min: pick('min'), rent: pick('rent'), m2: pick('m2'), m2Max: pick('m2Max'), rooms: pick('rooms'), roomsMax: pick('roomsMax'), onlyNew: q.get('new') === '1' };
+  return { min: pick('min'), rent: pick('rent'), kpm: pick('kpm'), m2: pick('m2'), m2Max: pick('m2Max'), rooms: pick('rooms'), roomsMax: pick('roomsMax'), onlyNew: q.get('new') === '1' };
 }
 
 /**
- * The filter state. The URL query is the shareable truth (?min=25&rent=15000&m2=30&m2Max=50&rooms=2&roomsMax=3&new=1, only what differs from the
+ * The filter state. The URL query is the shareable truth (?min=25&rent=15000&kpm=400&m2=30&m2Max=50&rooms=2&roomsMax=3&new=1, only what differs from the
  * defaults); the sliders are also remembered in the browser as before. "Bara nya" is never remembered.
  */
 export function useFilters(): [PageFilters, (change: Partial<PageFilters>) => void] {

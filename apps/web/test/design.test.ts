@@ -180,6 +180,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   // R10: route only while open and Visa resväg on
   const count = () => js<number>('__lgh.route.getLayers().length');
   const drawn = await count();
+  await js<void>("document.querySelector('main details').open = true"); await wait(100);   // the filters (and Visa resväg) are in a <details>
   await page.click('#f-route'); await wait(100); const off = await count();
   await page.click('#f-route'); await wait(100); const back = await count();
   await close();
@@ -200,7 +201,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
     return __lgh.all.filter(l=>(v('f-min')>=60||l.t<=v('f-min'))&&(v('f-rent')>=30000||!l.rent||l.rent<=v('f-rent'))&&(!l.m2||l.m2>=v('f-m2'))&&(!l.end||days(l.end,(l.start&&l.start>today)?l.start:today)>=180)&&l.firstSeen===today).length})()`);
   const shown = () => js<string>("document.getElementById('nya').textContent");
   const n1 = await expectedNya(), s1 = await shown();
-  await page.click('main summary'); await wait(100);   // the filters are in a <details>
+  await js<void>("document.querySelector('main details').open = true"); await wait(100);
   await page.locator('#f-min').fill('12'); await wait(200);
   const n2 = await expectedNya(), s2 = await shown();
   check('R8 nya counts within filters', s1 === `${n1}${NB}nya` && s2 === `${n2}${NB}nya` && n1 !== n2, `${s1}/${n1} ${s2}/${n2}`);
@@ -220,13 +221,11 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   check('R12 accent on the map only for Karlaplan and the selected ring', !blue && (await count()) > 0);
   await close();
 
-  // Datakällor: the scrape's state is on the page, and an incomplete source is not hidden behind a green line
-  const summary = await js<string>("document.querySelector('#sources summary').textContent");
-  check('Datakällor summary names the incomplete source', summary.includes('Samtrygg ofullständig'), summary);
-  await page.click('#sources summary'); await wait(100);
+  // Datakällor (on Om tjänsten): the scrape's state is on the page, and an incomplete source is not hidden behind a green line
+  await page.goto(base + '#/om'); await page.waitForSelector('#sources'); await wait(300);
   const states = await js<string>("[...document.querySelectorAll('#sources [data-source][data-state]')].map(e=>e.dataset.source+':'+e.dataset.state).join()");
   check('Datakällor one row per source with its state', states === 'qasa:ok,homeq:ok,bostadsformedlingen:ok,samtrygg:incomplete', states);
-  check('Datakällor shows pages, error and that Facebook is not included', await js<boolean>("(t=>t.includes('page 2: 503')&&t.includes('Sidor')&&t.includes('ingår inte ännu'))(document.getElementById('sources').textContent)"));
+  check('Datakällor shows the error, a check for complete sources and that Facebook is not included', await js<boolean>("(t=>t.includes('page 2: 503')&&t.includes('✓')&&t.includes('ingår inte ännu'))(document.getElementById('sources').textContent)"));
 
   await page.close();
   console.log('\n' + (failures.length ? `${failures.length} FAILED: ${failures.join(', ')}` : 'ALL PASS'));

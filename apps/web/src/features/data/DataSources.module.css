@@ -1,32 +1,30 @@
-/* One T3 line, like the legend; the detail opens below it and pushes the page down. */
-.summary {
-  cursor: pointer;
-  list-style: none;
-}
-.summary::-webkit-details-marker {
-  display: none;
-}
-.list {
+.root {
   display: grid;
   gap: var(--space-3);
-  margin: var(--space-2) 0 0;
-  padding: 0;
-  list-style: none;
+  width: 100%;
 }
-.source {
-  display: grid;
-  gap: var(--space-1);
-  padding-top: var(--space-2);
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  text-align: left;
+}
+.table th,
+.table td {
+  padding: var(--space-2);
   border-top: 1px solid var(--line);
+  vertical-align: top;
+  font-weight: 400;
 }
-.facts {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: var(--space-1) var(--space-3);
-  margin: 0;
+.table thead th {
+  border-top: 0;
   font-size: var(--text-xs);
   color: var(--color-foreground-secondary);
 }
-.facts dd {
-  margin: 0;
+.table th[scope='row'] {
+  display: grid;
+}
+.check {
+  color: var(--color-success);
+  font-weight: 700;
 }

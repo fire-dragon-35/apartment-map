@@ -7,10 +7,10 @@ import { BRAND, Wordmark } from './Wordmark.tsx';
 const LINKS = [['hem', 'Hem'], ['karta', 'Karta'], ['om', 'Om tjänsten']] as const;
 
 /** The site bar (Frame `Navbar`): wordmark, pages, log in and sign up. */
-export function Navbar({ route, size }: { route: RouteId; size: 'default' | 'wide' }) {
+export function Navbar({ route }: { route: RouteId }) {
   const { user } = useAuth();
   return (
-    <FrameNavbar size={size} brand={<Wordmark />} brandLabel={`${BRAND}, startsidan`} brandHref={ROUTES.hem}
+    <FrameNavbar size="wide" brand={<Wordmark />} brandLabel={`${BRAND}, startsidan`} brandHref={ROUTES.hem}
       navLabel="Huvudmeny" menuLabel="Meny"
       links={LINKS.map(([id, label]) => ({ label, href: ROUTES[id], current: route === id }))}
       actions={user

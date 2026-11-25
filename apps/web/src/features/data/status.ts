@@ -63,3 +63,15 @@ export function when(iso: string, now: number): string {
   if (d === DAY.format(new Date(now - 86_400_000))) return `igår ${time}`;
   return FMT.format(new Date(iso));
 }
+
+/**
+ * The time we show, not the real one: moved 5 to 45 minutes earlier, by a different amount per source, so the page
+ * does not give away exactly when or how we fetch. Fixed per source and fetch (same input, same output: no jumping on
+ * reload), never later than the real time, so "idag" and the 36 hour rule stay true.
+ */
+export function shownTime(source: string, iso: string): string {
+  let h = 2166136261;
+  for (const c of `${source}|${iso}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  const minutes = 5 + ((h >>> 0) % 41);
+  return new Date(new Date(iso).getTime() - minutes * 60_000).toISOString();
+}

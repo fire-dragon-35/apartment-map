@@ -36,14 +36,6 @@
 .item[data-hot]:has([data-new]) {
   background: color-mix(in srgb, var(--selected) 6%, var(--new));
 }
-/* new today: the card arrives with a blue wash that settles into new.bg */
-.item:has([data-new]) {
-  animation: new-in 1600ms ease-out;
-}
-@keyframes new-in {
-  from { background-color: color-mix(in srgb, var(--accent) 22%, var(--new)); }
-  to { background-color: var(--new); }
-}
 /* selected, and keyboard focus: the same dark outline round the whole card (no blue focus line inside it) */
 .item:has([aria-pressed='true']),
 .item:has(.card:focus-visible) {
@@ -67,7 +59,7 @@
   to { transform: scaleY(1); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .item, .item::before, .item:has([data-new]) { transition: none; animation: none; }
+  .item, .item::before { transition: none; animation: none; }
 }
 /* the button covers the whole card: its negative margin reaches the item's padding, its padding brings the
    cells back to the grid, so the net offset is zero. It takes the card's rows and columns (subgrid). */
