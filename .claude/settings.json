@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(/CORE.md)", "Write(/CORE.md)",
+      "Edit(/ROADMAP.md)", "Write(/ROADMAP.md)",
+      "Edit(/CLAUDE.md)", "Write(/CLAUDE.md)",
+      "Edit(/.claude/**)", "Write(/.claude/**)",
+      "Edit(/.githooks/**)", "Write(/.githooks/**)",
+      "Edit(/vendor/frame/**)", "Write(/vendor/frame/**)",
+      "Bash(git push --force:*)", "Bash(git commit --no-verify:*)", "Bash(git push --no-verify:*)"
+    ]
+  }
+}

@@ -54,6 +54,8 @@
   white-space: nowrap;
   text-decoration: none;
   pointer-events: auto;
+  color: var(--t2);
+  background: var(--tag);
 }
 a.source:hover {
   text-decoration: underline;

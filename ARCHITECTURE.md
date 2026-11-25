@@ -1,5 +1,7 @@
 # ARCHITECTURE.md · Lägenhetskartan
 
+> `CORE.md` is the fixed part and wins over this file. This file describes the current system: keep it true when you change it.
+
 Status: draft 2, 23 nov 2026. Replaces the current mix (laptop browser + GitHub Actions + scheduled Claude task + JSON files in the repo).
 
 `DESIGN.md` stays the spec for how the page looks and behaves. This file is the spec for everything behind it.

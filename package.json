@@ -15,7 +15,9 @@
     "fetch": "npm run fetch -w @lk/worker",
     "test": "npm test --workspaces --if-present",
     "worker": "npm run worker -w @lk/worker --",
-    "db:types": "supabase gen types typescript --local > packages/shared/src/database.types.ts"
+    "db:types": "supabase gen types typescript --local > packages/shared/src/database.types.ts",
+    "check": "npm run typecheck && npm run lint && npm test -w @lk/web",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

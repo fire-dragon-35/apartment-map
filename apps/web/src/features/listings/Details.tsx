@@ -1,6 +1,6 @@
 import { Stack } from '@frame/core';
 import { Fragment, type ReactNode } from 'react';
-import { fmt, lineStyle, priceChip, SEP, sourceChip, TOKENS } from '@lk/shared';
+import { fmt, lineStyle, priceChip, SEP, TOKENS } from '@lk/shared';
 import { Badge, Text, type TextProps } from '@frame/ui';
 import type { Listing } from './Listing.ts';
 import styles from './Details.module.css';
@@ -59,15 +59,13 @@ export function Details({ l }: { l: Listing }) {
  */
 export function Meta({ l, today }: { l: Listing; today: string }) {
   const alder = fmt.alder(l.firstSeen, today);
-  const { color, background } = sourceChip(l.sourceName);
-  const chip = { color, background };
   return (
     <Text data-meta data-line="3" {...T3} className={styles.meta}>
       <Joined parts={[
         <Atom key="a" name="avtal" {...T3} nowrap>{fmt.avtal(l.start, l.end, today)}</Atom>,
         l.url
-          ? <a key="c" data-a="kalla" className={styles.source} style={chip} href={l.url} target="_blank" rel="noopener noreferrer">{l.sourceName}</a>
-          : <span key="c" data-a="kalla" className={styles.source} style={chip}>{l.sourceName}</span>,
+          ? <a key="c" data-a="kalla" className={styles.source} href={l.url} target="_blank" rel="noopener noreferrer">{l.sourceName}</a>
+          : <span key="c" data-a="kalla" className={styles.source}>{l.sourceName}</span>,
         alder ? <Atom key="d" name="alder" {...T3}>{alder}</Atom> : null,
       ]} />
     </Text>

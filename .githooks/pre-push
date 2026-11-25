@@ -1,0 +1,3 @@
+#!/bin/sh
+# Typecheck, lint and page tests before anything leaves the laptop.
+npm run check

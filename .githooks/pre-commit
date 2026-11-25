@@ -1,0 +1,9 @@
+#!/bin/sh
+# Refuses commits that touch the protected files listed in CORE.md, unless the owner sets ALLOW_PROTECTED=1.
+[ "$ALLOW_PROTECTED" = "1" ] && exit 0
+hit=$(git diff --cached --name-only | grep -E '^(CORE\.md|ROADMAP\.md|CLAUDE\.md|\.claude/|\.githooks/)')
+sub=$(git diff --cached --name-only | grep -E '^vendor/frame$')
+if [ -n "$hit$sub" ]; then
+  echo "Protected files (CORE.md) cannot be committed here:"; echo "$hit$sub" | sed 's/^/  /'
+  echo "Owner only: ALLOW_PROTECTED=1 git commit ..."; exit 1
+fi
