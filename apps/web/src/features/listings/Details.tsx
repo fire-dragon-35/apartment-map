@@ -18,71 +18,69 @@ const Joined = ({ parts }: { parts: (ReactNode | null)[] }) =>
   <>{parts.filter(Boolean).map((p, i) => <Fragment key={i}>{i > 0 && SEP}{p}</Fragment>)}</>;
 
 /**
- * DESIGN.md §7: one layout for the card and the popup, a grid with the numbers in fixed columns
- * (name | restid, then size · rum | hyra and kr/m² chip, then the grey meta line, tags, warning).
+ * DESIGN.md §7: the cells of the card's button and the popup, placed by class in the grid of `Details.module.css`
+ * (so the order here does not matter): r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r5 tags and warning.
  */
-export function Details({ l, today }: { l: Listing; today: string }) {
-  const rum = fmt.rum(l.rooms), alder = fmt.alder(l.firstSeen, today);
-  const kpm = priceChip(l.kpm), source = sourceChip(l.sourceName);
-  const meta = <Meta l={l} today={today} alder={alder} source={source} />;
-  return (
-    <span className={styles.grid}>
-      <span data-line="1" className={styles.row}>
-        <span className={styles.name}><Atom name="adress" {...T1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" {...T3}>{l.area}</Atom></>}</span>
-        <Atom name="restid" {...T1} nowrap className={styles.num}>{fmt.restid(l.t)}</Atom>
-      </span>
-      <span data-line="2" className={styles.row}>
-        <Text {...T2} nowrap>
-          <Joined parts={[
-            <Atom key="s" name="storlek" {...T2} nowrap>{fmt.storlek(l.m2)}</Atom>,
-            rum ? <Atom key="u" name="rum" {...T2} nowrap>{rum}</Atom> : null,
-          ]} />
-        </Text>
-        <Text nowrap className={styles.num}>
-          <Atom name="hyra" {...T1}>{fmt.hyra(l.rent)}</Atom>{' '}
-          <Badge tone="custom" color={kpm.color} background={kpm.background}><span data-a="kpm">{fmt.kpm(l.kpm)}</span></Badge>
-        </Text>
-      </span>
-      {meta}
-    </span>
-  );
-}
-
-/** Line 3, tags and warning: the same on the card and in the popup. */
-function Meta({ l, today, alder, source }: { l: Listing; today: string; alder: string; source: { color: string; background: string } }) {
+export function Details({ l }: { l: Listing }) {
+  const rum = fmt.rum(l.rooms);
+  const kpm = priceChip(l.kpm);
   return (
     <>
-      <Text data-line="3" {...T3} className={styles.full}>
+      <span data-line="1" className={styles.name}>
+        <Atom name="adress" {...T1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" {...T3}>{l.area}</Atom></>}
+      </span>
+      <span data-line="1" className={styles.restid}>
+        <Atom name="restid" {...T1} nowrap>{fmt.restid(l.t)}</Atom>
+      </span>
+      <Text data-line="2" {...T2} nowrap className={styles.size}>
         <Joined parts={[
-          <Atom key="a" name="avtal" {...T3} nowrap>{fmt.avtal(l.start, l.end, today)}</Atom>,
-          <Badge key="c" tone="custom" color={source.color} background={source.background}><span data-a="kalla">{l.sourceName}</span></Badge>,
-          alder ? <Atom key="d" name="alder" {...T3}>{alder}</Atom> : null,
+          <Atom key="s" name="storlek" {...T2} nowrap>{fmt.storlek(l.m2)}</Atom>,
+          rum ? <Atom key="u" name="rum" {...T2} nowrap>{rum}</Atom> : null,
         ]} />
       </Text>
-      {l.tags.length > 0 && (
-        <Stack as="span" direction="row" gap={2} wrap className={styles.full}>
+      <Text data-line="2" nowrap className={styles.price}>
+        <Atom name="hyra" size="md">{fmt.hyraTal(l.rent)}</Atom>{SEP}
+        <Badge tone="custom" color={kpm.color} background={kpm.background}><span data-a="kpm">{fmt.kpm(l.kpm)}</span></Badge>
+      </Text>
+      {(l.tags.length > 0 || l.warn) && (
+        <Stack as="span" direction="row" gap={2} wrap className={styles.tags}>
           {l.tags.map(t => <Badge key={t}>{t}</Badge>)}
+          {l.warn && <Badge tone="danger">! långt under marknadspris</Badge>}
         </Stack>
       )}
-      {l.warn && <Text size="xs" weight="semibold" className={styles.full}>! långt under marknadspris, kontrollera</Text>}
     </>
   );
 }
 
-/** The link to the original ad, the last line of both card and popup. */
-export function SourceLink({ l }: { l: Listing }) {
-  return l.url ? <a className={styles.link} href={l.url} target="_blank" rel="noopener noreferrer">Öppna annons på {l.sourceName} ›</a> : null;
+/**
+ * DESIGN.md §7 line 3, full width: avtal · källa · ålder. The källa chip is the link to the original ad. The line is
+ * outside the card's button (a link cannot sit inside a button), so it passes clicks through to the card, except the chip.
+ */
+export function Meta({ l, today }: { l: Listing; today: string }) {
+  const alder = fmt.alder(l.firstSeen, today);
+  const { color, background } = sourceChip(l.sourceName);
+  const chip = { color, background };
+  return (
+    <Text data-meta data-line="3" {...T3} className={styles.meta}>
+      <Joined parts={[
+        <Atom key="a" name="avtal" {...T3} nowrap>{fmt.avtal(l.start, l.end, today)}</Atom>,
+        l.url
+          ? <a key="c" data-a="kalla" className={styles.source} style={chip} href={l.url} target="_blank" rel="noopener noreferrer">{l.sourceName}</a>
+          : <span key="c" data-a="kalla" className={styles.source} style={chip}>{l.sourceName}</span>,
+        alder ? <Atom key="d" name="alder" {...T3}>{alder}</Atom> : null,
+      ]} />
+    </Text>
+  );
 }
 
-/** The card's last line: `gång 8 min › T18 · 1 stopp › … › Karlaplan`. Nothing when there is no route to describe. */
+/** The card's route line, r4 full width, plain text: `gång 8 min > T18 · 1 stopp > … > Karlaplan`. Nothing when there is no route to describe. */
 export function RouteLine({ l }: { l: Listing }) {
-  const steps: ReactNode[] = l.byFoot
+  const steps: string[] = l.byFoot
     ? [fmt.gang(l.walk)]
-    : (l.legs ?? []).flatMap<ReactNode>(([mode, line, , minutes, stops], i) => {
+    : (l.legs ?? []).flatMap<string>(([mode, line, , minutes, stops]) => {
         if (mode === 'walk') return minutes ? [fmt.gang(minutes)] : [];
-        const { name, color } = lineStyle(mode, line);
-        return [<Fragment key={i}><Badge tone="custom" shape="pill" color="#fff" background={color}>{name}</Badge>{stops ? ` · ${stops} stopp` : ''}</Fragment>];
+        return [`${lineStyle(mode, line).name}${stops ? ` · ${stops} stopp` : ''}`];
       });
   if (!steps.length) return null;
-  return <Text {...T2}>{[...steps, 'Karlaplan'].map((s, i) => <Fragment key={i}>{i > 0 && ' › '}{s}</Fragment>)}</Text>;
+  return <Text {...T2} className={styles.route}>{[...steps, 'Karlaplan'].join(' > ')}</Text>;
 }

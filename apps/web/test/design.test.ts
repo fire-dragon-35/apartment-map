@@ -24,11 +24,11 @@ const DATE = `\\d{1,2}${NB}(?:${MON})(?:${NB}\\d{4})?`;
 const FORMATS: Record<string, string> = {   // DESIGN.md §5
   adress: '.+', omrade: '.+', kalla: '.+',
   restid: `~?\\d+${NB}min`,
-  hyra: `(?:\\d+(?:\\.\\d)?k|\\?)${NB}kr`,
+  hyra: `(?:\\d+(?:\\.\\d)?k|\\?)`,
   storlek: `(?:\\d+|\\?)${NB}m²`,
   rum: `\\d+(?:\\.\\d+)?${NB}rok`,
   kpm: `(?:\\d{1,3}(?:${NB}\\d{3})*|\\?)${NB}kr/m²`,
-  avtal: `(?:nu|\\?|${DATE}) → (?:tills vidare|${DATE}|\\?)`,
+  avtal: `(?:nu|\\?|${DATE}) > (?:tills vidare|${DATE}|\\?)`,
   alder: `idag|\\d+${NB}d`,
 };
 // DESIGN.md §3, written out here on purpose: the test must not trust the code it checks
@@ -126,15 +126,15 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   // R3: card tap from far down the list
   const target = ids[Math.floor((ids.length * 2) / 3)]!;
   await page.locator(`#c${target}`).scrollIntoViewIfNeeded(); await wait(200);
-  await page.click(`#c${target}`); await wait(1500);
+  await page.click(`#c${target}`, { position: { x: 24, y: 8 } }); await wait(1500);
   const inmap = await js(`(()=>{const s=__lgh.map.getSize(),p=__lgh.map.latLngToContainerPoint(__lgh.visible.find(x=>x.id===${target}).latlng);return p.x>0&&p.y>0&&p.x<s.x&&p.y<s.y})()`);
   const zoom = await js<number>('__lgh.map.getZoom()');
   check('R3 card tap: top of page, pin in map, zoom >= 14, popup open', (await js('scrollY')) === 0 && (await sel()) === target && await isOpen() && inmap && zoom >= 14, `scrollY=${await js('scrollY')} sel=${await sel()} zoom=${zoom}`);
-  await page.locator(`#c${target}`).scrollIntoViewIfNeeded(); await page.click(`#c${target}`); await wait(300);
+  await page.locator(`#c${target}`).scrollIntoViewIfNeeded(); await page.click(`#c${target}`, { position: { x: 24, y: 8 } }); await wait(300);
   check('R3 second card tap closes', (await sel()) === null && !(await isOpen()));
 
   // R4: close button, empty map, Esc
-  const openOne = async () => { await scrollTo(0); await page.click(`#c${ids[0]}`); await wait(1500); await scrollTo(0); };
+  const openOne = async () => { await scrollTo(0); await page.click(`#c${ids[0]}`, { position: { x: 24, y: 8 } }); await wait(1500); await scrollTo(0); };
   await openOne(); await page.click('.leaflet-popup-close-button'); await wait(300);
   check('R4 popup close button clears', (await sel()) === null && !(await isOpen()));
   await openOne();
@@ -160,7 +160,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   check('R5 pins: fill = price, radius = size, ring only when selected', r5 && pins.filter(p => p.on).length === 1);
 
   // R6: every atom in cards and the open popup
-  const atoms = await js<[string, string][]>(`[...document.querySelectorAll('[data-card] [data-a], .leaflet-popup [data-a]')].map(e=>[e.dataset.a,e.textContent])`);
+  const atoms = await js<[string, string][]>(`[...document.querySelectorAll('[data-card] [data-a], [data-meta] [data-a], .leaflet-popup [data-a]')].map(e=>[e.dataset.a,e.textContent])`);
   const inPopup = await js<number>("document.querySelectorAll('.leaflet-popup [data-a]').length");
   const wrong = atoms.filter(([a, t]) => !new RegExp(`^(?:${FORMATS[a]!})$`).test(t));
   check('R6 data formats (cards and popup)', atoms.length > 0 && inPopup > 0 && wrong.length === 0, JSON.stringify(wrong.slice(0, 5)));
@@ -179,7 +179,7 @@ test('page rules R1 to R12 (DESIGN.md v3)', async () => {
   check('R10 route only while open and Visa resväg on', drawn > 0 && off === 0 && back > 0 && (await count()) === 0, `drawn=${drawn} off=${off} back=${back}`);
 
   // R11: one selection at a time
-  await openOne(); await scrollTo(0); await page.locator(`#c${ids[1]}`).scrollIntoViewIfNeeded(); await page.click(`#c${ids[1]}`); await wait(1500);
+  await openOne(); await scrollTo(0); await page.locator(`#c${ids[1]}`).scrollIntoViewIfNeeded(); await page.click(`#c${ids[1]}`, { position: { x: 24, y: 8 } }); await wait(1500);
   const one = await js(`document.querySelectorAll('[data-card][aria-pressed="true"]').length===1&&document.querySelectorAll('.leaflet-popup').length===1&&[...__lgh.markers.values()].filter(m=>m.options.weight===3).length===1`);
   check('R11 one popup, one outlined card, one ringed pin', one);
   await close();

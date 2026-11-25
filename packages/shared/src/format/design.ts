@@ -96,7 +96,7 @@ export function tags(l: TagInput): string[] {
   return out.filter((t): t is string => t !== null);
 }
 
-/** `! långt under marknadspris, kontrollera` applies to this flag. */
+/** `! långt under marknadspris` applies to this flag. */
 export const isBelowMarket = (flags: readonly string[]) => flags.includes('below_market');
 
 /** Område: the area, hidden when it is "Stockholm" or the same as the address. */

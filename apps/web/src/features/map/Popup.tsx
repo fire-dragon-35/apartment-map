@@ -1,13 +1,14 @@
-import { Stack } from '@frame/core';
-import { Details, SourceLink } from '../listings/Details.tsx';
+import { Details, Meta, RouteLine } from '../listings/Details.tsx';
 import type { Listing } from '../listings/Listing.ts';
+import styles from '../listings/Details.module.css';
 
-/** DESIGN.md §7 popup: exactly the card's layout and link. No route line (the map draws the route). */
+/** DESIGN.md §7 popup: the card's grid, link and route text. The route is drawn on the map, not here. */
 export function Popup({ l, today }: { l: Listing; today: string }) {
   return (
-    <Stack gap={1}>
-      <Details l={l} today={today} />
-      <SourceLink l={l} />
-    </Stack>
+    <div className={styles.grid}>
+      <Details l={l} />
+      <Meta l={l} today={today} />
+      <RouteLine l={l} />
+    </div>
   );
 }

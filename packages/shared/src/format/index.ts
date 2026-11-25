@@ -19,7 +19,9 @@ const k = (kr: number) => `${Math.round(kr / 100) / 10}k`;
 
 export const fmt = {
   restid: (minutes: number, approx = false) => `${approx ? '~' : ''}${minutes}${NB}min`,
-  hyra: (kr: number | null) => `${kr ? k(kr) : '?'}${NB}kr`,
+  /** the rent without its unit, for the card: `15.2k`, `?` unknown */
+  hyraTal: (kr: number | null) => (kr ? k(kr) : '?'),
+  hyra: (kr: number | null) => `${fmt.hyraTal(kr)}${NB}kr`,
   storlek: (m2: number | null) => `${m2 ?? '?'}${NB}m²`,
   rum: (rooms: number | null) => (rooms ? `${rooms}${NB}rok` : ''),
   kpm: (kpm: number | null) => `${kpm === null ? '?' : thousands(kpm)}${NB}kr/m²`,
@@ -28,10 +30,10 @@ export const fmt = {
     if (Number.isNaN(d.getTime())) return '?';
     return `${d.getDate()}${NB}${MONTHS[d.getMonth()]}${d.getFullYear() !== thisYear ? NB + d.getFullYear() : ''}`;
   },
-  /** start → slut; `nu` for today or earlier, `?` unknown, `tills vidare` open ended. */
+  /** start > slut; `nu` for today or earlier, `?` unknown, `tills vidare` open ended. */
   avtal(start: string | null, end: string | null, today: string) {
     const from = start === null ? '?' : start <= today ? 'nu' : fmt.datum(start);
-    return `${from} → ${end === null ? 'tills vidare' : fmt.datum(end)}`;
+    return `${from} > ${end === null ? 'tills vidare' : fmt.datum(end)}`;
   },
   alder(firstSeen: string | null, today: string) {
     if (firstSeen === null) return '';

@@ -1,5 +1,6 @@
 /* DESIGN.md §7: padding 12 16, divider between cards, new.bg when new today, 2 px selected outline inside. */
 .item {
+  padding: 12px 16px;
   border-bottom: 1px solid var(--line);
 }
 /* the list clips to the panel's rounded corners; the end cards take the same radius so their outline is not cut */
@@ -20,10 +21,19 @@
 .item:has(.card:focus-visible) {
   box-shadow: inset 0 0 0 2px var(--selected);
 }
+/* the button covers the whole card: its negative margin reaches the item's padding, its padding brings the
+   cells back to the grid, so the net offset is zero. It takes the card's rows and columns (subgrid). */
 .card {
-  display: block;
-  width: 100%;
-  padding: 12px 16px 4px;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  align-self: stretch;
+  justify-self: stretch;
+  align-items: baseline;
+  margin: -12px -16px;
+  padding: 12px 16px;
   font: inherit;
   color: inherit;
   text-align: left;
@@ -32,7 +42,4 @@
   border: 0;
   outline: none;
   -webkit-tap-highlight-color: transparent;
-}
-.foot {
-  padding: 0 16px 12px;
 }

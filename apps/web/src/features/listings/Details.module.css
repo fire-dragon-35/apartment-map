@@ -1,37 +1,73 @@
-/* DESIGN.md §7 card grid: name | restid; size · rum | hyra and kr/m²; then full width lines. */
+/* DESIGN.md §7 card and popup grid: two columns, five rows (r1 name | restid, r2 size · rum | hyra kr/m², r3 meta full width,
+   r4 route, r5 tags and warning). Cells are placed by class, not by DOM order. Card and popup use the same grid. */
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: repeat(5, auto);
   column-gap: 14px;
-  row-gap: 2px;
   align-items: baseline;
 }
-.row {
-  display: contents;
-}
 .name {
+  grid-column: 1;
+  grid-row: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.num {
+.restid {
+  grid-column: 2;
+  grid-row: 1;
   justify-self: end;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-.full {
-  grid-column: 1 / -1;
+.size {
+  grid-column: 1;
+  grid-row: 2;
   margin-top: 2px;
 }
-.link {
-  display: inline-block;
-  font-size: 12px;
-  color: var(--t3);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+.price {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  margin-top: 2px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-/* Leaflet colours every link in the map blue; the popup link must look like the card's. */
-:global(.leaflet-container) .link {
-  color: var(--t3);
+.meta {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  position: relative;
+  z-index: 1;
+  margin-top: 2px;
+  pointer-events: none;
+}
+/* the source chip is the link to the original ad: the only part of line 3 that takes clicks */
+.source {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  text-decoration: none;
+  pointer-events: auto;
+}
+a.source:hover {
+  text-decoration: underline;
+}
+.tags {
+  grid-column: 1 / -1;
+  grid-row: 5;
+  margin-top: 2px;
+}
+.route {
+  grid-column: 1 / -1;
+  grid-row: 4;
+  margin-top: 2px;
+}
+:global(.leaflet-container) .source {
+  color: inherit;
 }

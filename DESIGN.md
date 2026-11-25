@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 3.3, 24 nov 2026 (3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 3.5, 25 nov 2026 (3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
@@ -51,7 +51,7 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | `price.text.1` … `.5` | #2F5E45, #46683F, #7A5A3C, #8A4733, #7E2E28 | text in the kr/m² chip (background: the price colour at 20 %) |
 | source colours | Qasa #4B48C9, Bostadsförmedlingen #0A6F8E, Samtrygg #8A3FB5, HomeQ #1F7A5C, Facebook #1662C4, other #6C6C70 | text in the source chip (background: same colour at 12 %) |
 
-Type: system font (SF Pro / Inter), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid, hyra). T2 13 / 400 `text.2` (size, rooms, kr/m², contract, route). T3 12 / 400 `text.3` (area, source, age, legend).
+Type: system font (SF Pro / Inter), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid). Hyra on the card is 15 / 400 `text.1`, without `kr`. T2 13 / 400 `text.2` (size, rooms, kr/m², contract, route). T3 12 / 400 `text.3` (area, source, age, legend).
 
 SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18, 19 #2EA84A; pendeltåg #EC619F; spårväg #F28C00; buss #E3242B; båt #00A3AD; gång #3A3A3C.
 
@@ -71,16 +71,16 @@ SL line colours (route only): tunnelbana 10, 11 #0072BC; 13, 14 #E3242B; 17, 18,
 | Adress | street; Facebook: area | Hornsgatan |
 | Område | area, hidden if "Stockholm" or same as address | Södermalm |
 | Restid | `N␣min`; `~N␣min` for Facebook | 23 min |
-| Hyra | thousands with `k`, dot decimal, max one decimal | 15.2k kr |
+| Hyra | thousands with `k`, dot decimal, max one decimal; no `kr` on the card (the map tooltip keeps it), regular weight | 15.2k |
 | Storlek | `N␣m²` | 52 m² |
 | Rum | `N␣rok` | 2 rok |
 | Pris per m² | chip: `N␣kr/m²`, thousands space, in its price colours | [296 kr/m²] |
-| Avtal | `start → slut`; `nu` if today or earlier, `?` if unknown; `tills vidare` if no end | nu → tills vidare |
+| Avtal | `start > slut`; `nu` if today or earlier, `?` if unknown; `tills vidare` if no end | nu > tills vidare |
 | Datum | `d␣mmm`, `␣yyyy` if not this year | 1 dec, 1 jan 2027 |
 | Källa | chip: platform name in its source colours | [Qasa] |
 | Ålder | `idag` or `N␣d`; hidden if unknown | 9 d |
 | Notering | lower case tag | förstahand, möblerad |
-| Varning | `! långt under marknadspris, kontrollera` | |
+| Varning | `! långt under marknadspris` | |
 | Unknown | `?` instead of the number | ? kr/m² |
 
 Notes from data: `first-hand` → förstahand, `student` → studentlägenhet, `short`/`korttid` → korttid, `extension` → kan förlängas, `also listed on X` → finns även på X, queue notes hidden, Facebook furnished → möblerad / omöblerad.
@@ -101,23 +101,21 @@ restid = walk if sl is missing or walk ≤ sl, else sl
 
 **Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
 
-**Card** (a full width `<button>`, then the source link below it, padding 12 16). Card and popup are identical: the same grid, the same link, two columns (text left, numbers right aligned with tabular figures):
+**Card** (padding 12 16; a `<button>` covers the whole card, line 3 with the source link sits on top of it). Card and popup are identical: the same grid, the same link, two columns (text left, numbers right aligned with tabular figures):
 
 ```
-Hornsgatan Södermalm                     23 min      (T1, area T3; restid right aligned)
-52 m² · 2 rok                  15.2k kr [296 kr/m²]  (T2, hyra T1; right aligned)
-15 dec → 15 dec 2027 · [Samtrygg] · 9 d              (T3, full width)
-[förstahand]
-! långt under marknadspris, kontrollera
-gång 8 min › T18 · 1 stopp › T13 · 2 stopp › gång 5 min › Karlaplan   (selected card only)
-Öppna annons på Samtrygg ›                           (T3, underlined)
+Hornsgatan · Södermalm                              23 min     r1: adress (T1), område (T3) | restid (T1)
+52 m² · 2 rok                           15.2k · [296 kr/m²]     r2: storlek · rum (T2) | hyra (T1), chip
+15 dec > 15 dec 2027 · [Samtrygg] · 9 d                        r3: full width: avtal · [källa, the link] · ålder (T3)
+gång 8 min > T18 · 1 stopp > T13 · 2 stopp > gång 5 min > Karlaplan   r4: full width, plain text (every card)
+[förstahand] [! långt under marknadspris]                      r5: full width: tags and warning, both badges
 ```
 
-Row 1: Adress, Område | Restid. Row 2: Storlek, Rum | Hyra, Pris per m². Line 3: Avtal, Källa, Ålder. Then tags, warning. The selected card ends with the route line: `gång N min › Karlaplan` when walking wins; line names `T` + number for metro, on their line colour.
+Grid: two columns (text left, numbers right aligned with tabular figures), five rows as above. Line 3 is a sibling of the button, not inside it, so the källa chip can be a link (a link cannot sit inside a button). Line 3 passes clicks through to the card, except the chip. The warning is a `danger` badge. Route line: no line colours, only the names; `>` separates the steps.
 
 New today: `new.bg` background. Selected and keyboard focus: 2 px `selected` outline inside, round the whole card; the first and last card take the panel's corner radius so the outline is never clipped. No blue focus ring.
 
-**Popup** (Leaflet popup, content 270 to 290 wide, room on the right for the close button): exactly the card (grid and link). No route line, as the map draws the route.
+**Popup** (Leaflet popup, content 270 to 290 wide, room on the right for the close button): exactly the card (grid, link and route text). The route is drawn on the map, not here.
 
 **Route on the map** (while the popup is open and `Visa resväg` is on): each leg on its own geometry. Walk: 3 px `#3A3A3C` dots. Transit: 4 px line colour on 7 px white. Walking only: one dotted line pin → Karlaplan.
 
@@ -128,10 +126,10 @@ New today: `new.bg` background. Selected and keyboard focus: 2 px `selected` out
 | Input | Result |
 | --- | --- |
 | Tap pin | select: popup, route, card outlined. No scrolling (R2). Leaflet auto pans the popup into the map. |
+| `Visa resväg` | draw or remove the open listing's route at once |
 | Tap card | page scrolls to top; map `setView` on the pin at zoom max(current, 14); popup (R3). Tap again: close. |
 | Tap empty map, popup ×, Esc | close, clear (R4) |
 | Filter change | refilter, close popup, keep the map where it is |
-| `Visa resväg` | draw or remove the open listing's route at once |
 | Load | fit Karlaplan and all pins once, max zoom 14 |
 
 Motion: only Leaflet's own pan and zoom animations and smooth page scroll. With reduced motion: none.
@@ -146,10 +144,9 @@ Motion: only Leaflet's own pan and zoom animations and smooth page scroll. With 
 | filter | Filter |
 | only new | Bara nya |
 | routes | Visa resväg |
-| open | Öppna annons på {källa} › |
 | walk | gång {N} min |
 | stops | {linje} · {N} stopp |
-| warning | långt under marknadspris, kontrollera |
+| warning | långt under marknadspris |
 | empty | Inga träffar med de här filtren |
 | error | Kunde inte ladda |
 
