@@ -18,7 +18,6 @@
 }
 .item {
   position: relative;
-  transition: background-color 150ms ease, box-shadow 150ms ease;
 }
 /* hover (pointer devices only): a light tint says the card is tappable */
 @media (hover: hover) {
@@ -51,15 +50,6 @@
   inset: 0 auto 0 0;
   width: 5px;
   background: var(--selected);
-  animation: accent-in 180ms ease-out;
-  transform-origin: top;
-}
-@keyframes accent-in {
-  from { transform: scaleY(0); }
-  to { transform: scaleY(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .item, .item::before { transition: none; animation: none; }
 }
 /* the button covers the whole card: its negative margin reaches the item's padding, its padding brings the
    cells back to the grid, so the net offset is zero. It takes the card's rows and columns (subgrid). */

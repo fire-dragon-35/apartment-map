@@ -42,15 +42,6 @@ const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, registe
   );
 });
 
-/** A ring that grows from a pin and fades (CSS, in the `pulses` pane below the pins). Remount it to play it again. */
-function Pulse({ l }: { l: Listing }) {
-  const icon = useMemo(() => L.divIcon({
-    className: '', iconSize: [0, 0],
-    html: `<span class="${styles.ring}" style="--d:${l.radius * 2}px"></span>`,
-  }), [l.radius]);
-  return <Marker position={l.latlng} icon={icon} pane="pulses" interactive={false} keyboard={false} />;
-}
-
 /** Fit Karlaplan and all pins once, max zoom 14 (DESIGN.md §8). */
 function FitOnce({ items }: { items: Listing[] }) {
   const map = useMap();
@@ -163,7 +154,7 @@ interface Props {
   onMovePin: (p: Place, lat: number, lon: number) => void;
 }
 
-/** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the rings, the pins, the popup and the route. */
+/** DESIGN.md §4.2 and §7: the Leaflet map with Karlaplan, the pins, the popup and the route. */
 export function MapView({ loaded, items, today, selected, autoPan, showRoutes, hoveredId, onHover, onSelect, onClose, pins, editablePins, placing, onPlace, onMovePin }: Props) {
   const first: [number, number] = [pins[0]!.lat, pins[0]!.lon];
   const markers = useRef(new Map<number, L.CircleMarker>());
@@ -185,16 +176,12 @@ export function MapView({ loaded, items, today, selected, autoPan, showRoutes, h
       <Pane name="pins" className={styles.pins}>
         {ordered.map(l => <Pin key={l.id} l={l} on={l.id === selected?.id} hot={l.id === hoveredId} renderer={canvas} onSelect={onSelect} onHover={onHover} register={register} />)}
       </Pane>
-      {/* rings sit below the pins and never take a click */}
-      <Pane name="pulses" className={styles.pulses}>
-        {selected && <Pulse key={selected.id} l={selected} />}
-      </Pane>
       <RouteLayer selected={selected} show={showRoutes} />
       <SelectionPopup selected={selected} today={today} autoPan={autoPan} onClose={onClose} />
       <FitOnce items={items} />
       <MapHooks />
     </MapContainer>
-    {!loaded && <div className={styles.loading} role="status"><span className={styles.spinner} />Laddar annonser…</div>}
+    {!loaded && <div className={styles.loading} role="status">Laddar annonser…</div>}
     </div>
   );
 }

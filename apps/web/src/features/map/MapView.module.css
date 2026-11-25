@@ -17,36 +17,6 @@
   font: inherit;
 }
 
-/* rings: below the pins, never clickable */
-.pulses {
-  z-index: 445;
-  pointer-events: none;
-}
-.ring {
-  position: absolute;
-  left: calc(var(--d) / -2);
-  top: calc(var(--d) / -2);
-  width: var(--d);
-  height: var(--d);
-  box-sizing: border-box;
-  border-radius: 50%;
-  border: 2px solid var(--ring);
-  opacity: 0;
-  /* selecting: one quick dark ring */
-  --ring: var(--selected);
-  --dur: 650ms;
-  --delay: 0ms;
-  --count: 1;
-  animation: ripple var(--dur) ease-out var(--delay) var(--count) forwards;
-}
-@keyframes ripple {
-  from { transform: scale(0.9); opacity: 0.8; }
-  to { transform: scale(2.8); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ring { animation: none; }
-}
-
 /* shown over the map until the listings have arrived */
 .wrap {
   position: relative;
@@ -59,26 +29,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
   background: color-mix(in srgb, var(--map-bg) 70%, transparent);
   color: var(--t2);
   font-size: 13px;
   border-radius: inherit;
   pointer-events: none;
-}
-.spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--line);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .spinner { animation-duration: 3s; }
 }
 /* a pin restid is measured to, draggable for subscribers */
 .place {

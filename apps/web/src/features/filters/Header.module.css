@@ -40,7 +40,6 @@
   border-right: 1.75px solid currentColor;
   border-bottom: 1.75px solid currentColor;
   transform: rotate(45deg);
-  transition: transform 150ms ease;
 }
 .details[open] .toggle::after {
   transform: rotate(-135deg) translate(-1px, -1px);
@@ -80,7 +79,4 @@
   justify-content: space-between;
   padding-top: var(--space-3);
   border-top: 1px solid var(--line);
-}
-@media (prefers-reduced-motion: reduce) {
-  .toggle::after { transition: none; }
 }
