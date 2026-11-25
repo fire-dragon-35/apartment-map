@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource-variable/inter-tight": "^5.3.0",
     "@frame/core": "*",
+    "@frame/site": "*",
     "@frame/themes": "*",
     "@frame/ui": "*",
     "@lk/shared": "*",

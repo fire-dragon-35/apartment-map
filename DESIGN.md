@@ -220,6 +220,8 @@ ThemeProvider (theme from section 3)
 
 ## 13. Site frame and landing page
 
+Built from Frame's `@frame/site` blocks (`Navbar`, `Footer`, `Hero`, `Stats`, `Steps`, `FeatureGrid`, `ChipList`, `CallToAction`) with `ButtonLink` actions; the app supplies only text, links and the `Wordmark`.
+
 The map page of sections 1 to 11 is one page of a small site. Pages are chosen by the URL hash (`app/useRoute.ts`, no router library): `#/` landing, `#/karta` the map, `#/om`, `#/logga-in`, `#/skapa-konto` (placeholders that say `Den här sidan är på väg.`), anything else says `Sidan finns inte`.
 
 * **Navbar** on every page: logo and brand `Lägenhetskartan` at the left (link to `#/`), the links `Hem`, `Karta`, `Om tjänsten` after it, `Logga in` and the accent button `Skapa konto` at the right. The current page has `aria-current="page"`. Under 768 px the links and the two account links fold into a `<details>` menu behind a three-line button. The navbar scrolls away with the page (R1 holds on every page: nothing sticky or fixed).
