@@ -11,7 +11,7 @@ const COLUMNS = [
 
 export function Footer() {
   return (
-    <FrameFooter size="wide" align="center" tone="dark" brand={<Wordmark />} columns={COLUMNS}
+    <FrameFooter size="wide" tone="dark" brand={<Wordmark />} columns={COLUMNS}
       tagline="Alla hyresannonser på en karta, med restid till Karlaplan."
       legal={`© 2026 ${BRAND}. Annonserna tillhör respektive källa.`} />
   );
