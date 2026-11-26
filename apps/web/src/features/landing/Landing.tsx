@@ -1,6 +1,7 @@
 import { Hero } from '@frame/site';
 import { Cities } from './Cities.tsx';
 import { Plus } from './Plus.tsx';
+import { MapExample } from './MapExample.tsx';
 import css from './Landing.module.css';
 
 const POINTS = [
@@ -16,6 +17,7 @@ export function Landing() {
         {/* The list goes in `actions`: Frame puts `lead` in a <p>, which cannot hold a <ul>. */}
         <Hero title="Alla hyresannonser på ett ställe."
           actions={<ul className={css.points}>{POINTS.map(p => <li key={p.title}><div><strong>{p.title}</strong><p>{p.text}</p></div></li>)}</ul>} />
+      <MapExample />
       <Cities />
       <Plus />
     </div>

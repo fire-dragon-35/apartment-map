@@ -216,7 +216,7 @@ ThemeProvider (theme from section 3)
 
 ## 13. Site frame and landing page
 
-Built from Frame's `@frame/site` blocks (`Navbar`, `Footer`, `Hero`, `Section`) with `ButtonLink` actions; the app supplies only text, links and the `Wordmark`.
+Built from Frame's `@frame/site` blocks (`Navbar`, `Footer`, `Hero`, `Section`) with `ButtonLink` actions; the app supplies only text, links and the `Wordmark`. Two app components: `MapExample`, a static SVG sketch of the map (a few price dots, Karlaplan with rings, one selected listing with its popup; no Leaflet, links to `#/karta`), and `Cities`, one photo card per city.
 
 The map page of sections 1 to 11 is one page of a small site. Pages are chosen by the URL hash (`app/useRoute.ts`, no router library): `#/` landing, `#/karta` the map, `#/om` (section 4.5 data sources), `#/logga-in`, `#/skapa-konto` (placeholders that say `Den här sidan är på väg.`), anything else says `Sidan finns inte`.
 
