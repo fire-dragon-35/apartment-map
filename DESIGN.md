@@ -219,11 +219,11 @@ ThemeProvider (theme from section 3)
   * every other page (about, legal, account, placeholders) is the app's `ContentPage`: narrow `Container` › `Page` › `Heading level={1}` and a lead;
   * everything outside the map page is centred, like Lovable: `Hero`, every landing `Section` and every `Page.Header` take `align="center"`, the landing blocks share `size="narrow"` (768 px), city cards are `landscape`;
   * the footer is Frame's `Footer align="center"`;
-  * app CSS Modules hold only what Frame cannot know (the map, the card grid, the SVG sketch); no font sizes, weights or margins for text in them.
+  * app CSS Modules hold only what Frame cannot know (the map and the listing cards); no font sizes, weights or margins for text in them.
 
 ## 13. Site frame and landing page
 
-Built from Frame's `@frame/site` blocks only: `Hero` (title and three `points`), a `Section` with `MapExample` (the one app component: a static SVG sketch of the map, a few price dots, Karlaplan with rings, one selected listing with its popup; no Leaflet, links to `#/karta`), `Section` "Kartor" with one `MediaCard` per city (no `href` and the note `Kommer snart` until the city has listings), `Section` "Plus" with `Pricing`, then the `Footer`.
+Built from Frame's `@frame/site` blocks only: `Hero` (title and three `points`), `Section` "Kartor" with one `MediaCard` per city (no `href` and the note `Kommer snart` until the city has listings), `Section` "Plus" with `Pricing`, then the `Footer`.
 
 The map page of sections 1 to 11 is one page of a small site. Pages are chosen by the URL hash (`app/useRoute.ts`, no router library): `#/` landing, `#/karta` the map, `#/om` (section 4.5 data sources), `#/logga-in`, `#/skapa-konto` (placeholders that say `Den här sidan är på väg.`), anything else says `Sidan finns inte`.
 

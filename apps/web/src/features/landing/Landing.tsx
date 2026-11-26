@@ -1,6 +1,5 @@
-import { Hero, Section } from '@frame/site';
+import { Hero } from '@frame/site';
 import { Cities } from './Cities.tsx';
-import { MapExample } from './MapExample.tsx';
 import { Plus } from './Plus.tsx';
 
 const POINTS = [
@@ -14,7 +13,6 @@ export function Landing() {
   return (
     <>
       <Hero align="center" size="narrow" title="Alla hyresannonser på ett ställe." points={POINTS} />
-      <Section align="center" size="narrow" label="Så ser kartan ut"><MapExample /></Section>
       <Cities />
       <Plus />
     </>
