@@ -5,7 +5,7 @@ export * from './domain/travel.ts';
 export * from './domain/sanity.ts';
 export * from './format/index.ts';
 export * from './format/design.ts';
-export type { Database } from './database.types.ts';
+export type { Database, Json } from './database.types.ts';
 export * from './travel/handler.ts';
 export * from './travel/grid.ts';
 export * from './travel/matrix.ts';

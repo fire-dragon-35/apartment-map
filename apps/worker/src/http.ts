@@ -34,8 +34,13 @@ export class HttpClient {
     return this.#json<T>(url, { method: 'GET' });
   }
 
-  postJson<T>(url: string, body: unknown): Promise<T> {
-    return this.#json<T>(url, { method: 'POST', body: JSON.stringify(body), headers: { 'content-type': 'application/json' } });
+  /** `headers` add to or replace the defaults (an API key, a user agent a service asks for). */
+  postJson<T>(url: string, body: unknown, headers: Record<string, string> = {}): Promise<T> {
+    return this.#json<T>(url, { method: 'POST', body: JSON.stringify(body), headers: { 'content-type': 'application/json', ...headers } });
+  }
+
+  getJsonWith<T>(url: string, headers: Record<string, string>): Promise<T> {
+    return this.#json<T>(url, { method: 'GET', headers });
   }
 
   async #json<T>(url: string, init: RequestInit): Promise<T> {

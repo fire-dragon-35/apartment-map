@@ -14,7 +14,7 @@ The map is served at https://fire-dragon-35.github.io/apartment-map/legacy/ (the
    "new" = not on yesterday's map. Duplicates across sources are merged.
 4. Commit + push `legacy/apartments.geojson` (not `legacy/results/`).
 5. **Facebook.** GitHub Actions (`.github/workflows/facebook.yml`, 06:30) fetches yesterday's posts
-   from the public groups in `legacy/fb/groups.txt` via Apify into `legacy/fb/posts.json`. Read every post's full
+   from the public groups in `apps/worker/facebook-groups.txt` via Apify into `legacy/fb/posts.json`. Read every post's full
    `text` and update `legacy/fb/listings.json` (a JSON list) by these rules – no guessing:
    - skip posts that are someone *looking* for a home, swaps only, shared rooms, and posts already
      in the list (same `url`)

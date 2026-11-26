@@ -49,10 +49,12 @@ export function DataSources() {
         <thead><tr><th>Källa</th><th>Senast körning</th><th>Antal</th><th>Senast lyckad körning</th><th>Antal</th><th>Alla körningar</th></tr></thead>
         <tbody>
           {rows.map(s => <Row key={s.source} s={s} now={now} />)}
-          <tr data-source="facebook">
-            <th scope="row"><Text size="sm" weight="semibold">Facebook-grupper</Text></th>
-            <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-          </tr>
+          {!rows.some(r => r.source === 'facebook') && (
+            <tr data-source="facebook">
+              <th scope="row"><Text size="sm" weight="semibold">Facebook-grupper</Text></th>
+              <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+            </tr>
+          )}
         </tbody>
         {rows.length > 0 && (
           <tfoot>

@@ -32,11 +32,12 @@ A web app that shows every rental apartment in Stockholm that matches a user's f
  ───────────────────────────               ───────────────────────────              ─────────────────
  fetch Qasa, HomeQ, Bostadsf., ──raw──▶   Storage: raw/{source}/{date}-{sha8}.json.gz
  Samtrygg, Apify(Facebook)                  │
+ read Facebook posts ──▶ Claude API,
+   area centres ──▶ Nominatim
  parse + validate (shared/zod) ──rows──▶   Postgres: listings, source_runs, …  ◀──read (RLS)── React app
                                             │                                    ──pins──▶   (Vercel)
                                             Edge Functions:                       ◀─times──
                                              travel-times  ──▶ SL planner / OTP
-                                             extract-fb    ──▶ Claude API
                                              stripe-webhook ◀── Stripe
                                             Auth (email link, Google)
 ```
@@ -49,7 +50,7 @@ A web app that shows every rental apartment in Stockholm that matches a user's f
 | **Database** | Supabase Postgres | all rows, row level security, `pg_cron` for housekeeping | |
 | **Storage** | Supabase Storage | raw responses (gzip), kept 30 days | |
 | **travel-times** | Supabase Edge Function | travel time + route from a pin to many places, cached | SL journey planner (phase 1), OpenTripPlanner (phase 2) |
-| **extract-fb** | Supabase Edge Function, triggered on new `fb_posts` | turn a free text post into listing fields with a fixed schema | Claude API |
+| **Facebook reading** | inside the worker (`sources/facebook.ts`), not an Edge Function: one process, one place for secrets | turn a free text post into listing fields with a fixed schema (Claude Haiku, a forced tool call, validated with zod); the area's centre from Nominatim | Claude API, Nominatim |
 | **stripe-webhook** | Supabase Edge Function | keep `subscriptions` in step with Stripe | Stripe |
 | **notify** | Supabase Edge Function, after each run | email paying users their new matches | Resend (or Supabase SMTP) |
 | **Web app** | Vercel (static build) | map, list, filters, pins, login, checkout | Supabase (anon key + user session) |
@@ -188,7 +189,7 @@ The paywall is enforced in the database (policy on `travel_times` and `destinati
    4. if the fetch was **complete**, set `removed_at = today` on this source's active listings not seen today. An incomplete fetch never removes anything.
    5. write `source_runs`.
 3. Duplicates: link listings of different sources with the same place (±50 m), m² (±2) and rent (±5 %) through `same_as`; the cheapest one is shown.
-4. Facebook: new posts are inserted into `fb_posts`; `extract-fb` fills `extracted` and creates or updates a listing.
+4. Facebook is one more adapter (`sources/facebook.ts`): Apify returns the last day's posts from `apps/worker/facebook-groups.txt`; new ones go into `fb_posts`; every post of the last 14 days is read once per `EXTRACTOR_VERSION` (kind, scam, area, street, rent, m², rooms, start, end, furnished, first hand; nothing guessed) and its area placed at the centre Nominatim gives (`places.exact = false`, shown as `~N min`). Offers that are not scams become listings. The adapter returns the whole 14 day window, so a listing leaves the map 14 days after its post through the normal removal rule; a post that cannot be read (Claude or Nominatim down) makes the run incomplete, so nothing is removed and it is read next run.
 5. Travel times from every active place without a fresh Karlaplan row are computed (the free default) with the shared `TravelTimeService` (§8); the run log shows computed, reused and failed. A failure here never fails the run.
    5b. The travel time matrix (§8, phase 1.5) is brought up to date: a full rebuild when the timetable or the grid changed, otherwise only the places that have no row. Logged as cells, places computed and seconds. A failure here never fails the run either.
 6. `runs.ok` set; `notify` runs.
@@ -216,7 +217,7 @@ interface Adapter {
 | HomeQ | `api.homeq.se/api/v3/search`, municipalities 180 to 186 | individual ads only |
 | Bostadsförmedlingen | `bostad.stockholm.se/AllaAnnonser/` | queue ads; show without queue data |
 | Samtrygg | `samtrygg.se/RentalObject/SearchResult` | |
-| Facebook | Apify actor on the public groups list | text goes to `extract-fb` |
+| Facebook | Apify actor `eiv~facebook-groups-scraper` on `apps/worker/facebook-groups.txt`, last day's posts | read in the worker, step 4 |
 
 Fetching is polite: one request at a time per site, a short pause between pages, a normal browser user agent. The search area is wide (all of Stockholm county's central municipalities); per user filters are applied on read, not at fetch.
 
@@ -360,7 +361,7 @@ apps/worker/cache/            GTFS, cropped OSM, JDK (gitignored)
 apps/web/                     React app on Frame: src/app, src/features/{listings,filters,map}, test/ (page rules); DESIGN.md §12
 vendor/frame/                 Frame, git submodule (read only)
 supabase/migrations/          SQL in §5
-supabase/functions/           travel-times (thin Deno wrapper); later extract-fb, stripe-webhook, notify (steps 3, 6)
+supabase/functions/           travel-times (thin Deno wrapper); stripe-webhook, notify (step 6); Facebook reading lives in the worker
 legacy/                       old pipeline, still running
 DESIGN.md                     page spec (UI)
 ARCHITECTURE.md               this file
@@ -374,7 +375,7 @@ Legacy files live in `legacy/` until the step that retires them (§16); only the
 | --- | --- | --- |
 | 1 | Supabase project, migrations, shared package. **Done:** shared package, worker adapters (dry run verified 23 nov: 2 356 listings, 0 invalid), migration written. **Open:** hosted Supabase project (migrations applied and types generated on local Supabase). Fixtures and test 1 done | |
 | 2 | Worker with the four site adapters writing to Supabase; runs next to the old task for a week, counts compared. **Done (verified on local Supabase 23 nov: 2 355 listings, second run changes nothing):** pipeline, duplicates, coverage check, test 2, Supabase repositories, systemd timer. **Done:** unchanged raw responses are not stored again, 30 day raw retention, and the alert when runs stop or coverage collapses (§14). **What remains of step 2** is the week of running next to the old task | |
-| 3 | Facebook through the worker + `extract-fb` | GitHub Actions `facebook.yml`, Claude reading posts |
+| 3 | Facebook through the worker (Apify + Claude in `sources/facebook.ts`) | GitHub Actions `facebook.yml`, Claude reading posts |
 | 4 | `travel-times` (phase 1). **Done (23 nov):** shared service, worker step, edge function deployed, test 4; first run computed 1 844 places in 14 min with 0 failed, and SL minutes match legacy `t` within 1 minute for all 77 shared listings. **Phase 1.5 done (23 nov, §8 for the numbers):** matrix for custom pins on production, full build 11 to 14 min, incremental day 31 s, 27 MB, custom pin with 300 ids 300 to 740 ms, accuracy against SL: median 3 min to the same cell centre, 6 min to the Karlaplan point. **Open:** run next to legacy for a week, then retire; percentile decided (p25, §8 item 9); the first 06:30 run after this change is a full rebuild | `routes.yml`, `routes.py`, `fb_eta.py` |
 | 5 | React app reading Supabase, same look as today. **Done (23 nov, not deployed):** `apps/web` on the view `listings_karlaplan` (applied to production); test 3 (R1 to R12) passes on a fixture; 193 KB gzipped JS, 145 KB gzipped data (194 rows), first pins about 2.1 s on Fast 4G (9 Mbps, 60 ms; median of 5 cold loads); against the legacy page for 23 nov, 74 listings are in both and restid is identical in 72 and within 1 min in all 74; the rest is explained in the step report. **Open:** deploy on Vercel (§9), a week next to the legacy page, then retire it | `index.html`, JSON files, GitHub Pages |
 | 6 | Auth, pins, Stripe, alerts | scheduled Claude task |

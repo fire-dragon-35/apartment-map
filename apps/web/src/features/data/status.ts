@@ -32,6 +32,7 @@ export const SOURCE_INFO: Record<string, { name: string; what: string }> = {
   homeq: { name: 'HomeQ', what: 'HomeQ · hyresbostäder' },
   bostadsformedlingen: { name: 'Bostadsförmedlingen', what: 'Stockholms Bostadsförmedling' },
   samtrygg: { name: 'Samtrygg', what: 'Samtrygg · hyresbostäder' },
+  facebook: { name: 'Facebook-grupper', what: 'Publika hyresgrupper · läses med AI, läge = områdets mitt' },
 };
 export const sourceName = (s: string) => SOURCE_INFO[s]?.name ?? s;
 

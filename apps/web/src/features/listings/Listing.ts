@@ -25,8 +25,8 @@ export class Listing {
   readonly warn: boolean;
   /** restid in minutes, from the travel matrix (DESIGN.md §6); Infinity when unknown or unreachable */
   readonly t: number;
-  /** true for restid to an own pin: its cell's time, shown as ~N min */
-  readonly approx: boolean = false;
+  /** restid is approximate, shown as ~N min: the position is an area's centre (Facebook), or it is measured to an own pin */
+  readonly approx: boolean;
   readonly radius: number;
   readonly isNew: boolean;
   readonly contractOk: boolean;
@@ -52,6 +52,7 @@ export class Listing {
     this.warn = isBelowMarket(row.flags ?? []);
 
     this.t = row.minutes ?? Number.POSITIVE_INFINITY;
+    this.approx = row.exact === false;
 
     this.radius = pinRadius(this.m2);
     this.isNew = row.first_seen === today;

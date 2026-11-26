@@ -5,6 +5,7 @@
  *   npm run worker -- qasa homeq   some sources (a source left out is not touched, nothing of it is removed)
  *
  * Needs SUPABASE_URL and SUPABASE_SERVICE_KEY, from the environment or a .env file at the repo root.
+ * Facebook also needs APIFY_TOKEN and ANTHROPIC_API_KEY; without them it is left out (and nothing of it is removed).
  * Exit code 0 only when the run is ok; the systemd unit shows anything else as failed.
  */
 import { fileURLToPath } from 'node:url';
@@ -17,6 +18,10 @@ import { SupabaseMatrixRepository } from './store/matrix.ts';
 import { Pipeline } from './services/pipeline.ts';
 import { systemClock } from './services/clock.ts';
 import { ADAPTERS } from './sources/index.ts';
+import { Facebook } from './sources/facebook.ts';
+import { ClaudeExtractor } from './sources/facebook/extract.ts';
+import { NominatimGeocoder } from './sources/facebook/geocode.ts';
+import { SupabaseFbPosts } from './store/fb-posts.ts';
 import { SupabaseStore } from './store/supabase.ts';
 
 const envFile = new URL('../../../.env', import.meta.url);
@@ -34,11 +39,23 @@ if (existsSync(lock)) {
 writeFileSync(lock, String(process.pid));
 process.on('exit', () => rmSync(lock, { force: true }));
 
-const wanted = process.argv.slice(2);
-const fetchers = wanted.length ? ADAPTERS.filter(a => wanted.includes(a.source)) : ADAPTERS;
-
 const store = SupabaseStore.fromEnv();
 const log = (m: string) => console.log(`${new Date().toISOString()} ${m}`);
+
+const facebook = () => {
+  const { APIFY_TOKEN, ANTHROPIC_API_KEY } = process.env;
+  if (!APIFY_TOKEN || !ANTHROPIC_API_KEY) { log('facebook: left out (APIFY_TOKEN or ANTHROPIC_API_KEY missing)'); return []; }
+  const groups = readFileSync(new URL('../facebook-groups.txt', import.meta.url), 'utf8').split('\n').map(l => l.trim()).filter(Boolean);
+  return [new Facebook({
+    apifyToken: APIFY_TOKEN, groups, posts: new SupabaseFbPosts(store.client), today: systemClock.today(),
+    extractor: new ClaudeExtractor(new HttpClient({ timeoutMs: 60_000, retries: 3, gapMs: 200 }), ANTHROPIC_API_KEY),
+    geocoder: new NominatimGeocoder(new HttpClient({ timeoutMs: 20_000, retries: 2, gapMs: 1100 }), 'EnkelLGH worker (https://apartment-map-smoky.vercel.app)'),
+    apifyHttp: new HttpClient({ timeoutMs: 300_000, retries: 1, gapMs: 0 }),
+  })];
+};
+const all = [...ADAPTERS, ...facebook()];
+const wanted = process.argv.slice(2);
+const fetchers = wanted.length ? all.filter(a => wanted.includes(a.source)) : all;
 const cacheDir = fileURLToPath(new URL('../cache', import.meta.url));
 const routerDir = fileURLToPath(new URL('../router', import.meta.url));
 const router = new R5Router(new RouterInputs({ cacheDir, gtfsKey: process.env.TRAFIKLAB_GTFS_KEY, log }), { routerDir, cacheDir, log });
