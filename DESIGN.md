@@ -230,7 +230,7 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
 * **Navbar** on every page: logo and brand `Lägenhetskartan` at the left (link to `#/`), the links `Hem`, `Karta`, `Om tjänsten` after it, `Logga in` and the accent button `Skapa konto` at the right. The current page has `aria-current="page"`. Under 768 px the links and the two account links fold into a `<details>` menu behind a three-line button. The navbar is sticky and glass: the page scrolls under it (R1).
 * **Width:** one column edge for the whole site: navbar, page content (map page included) and the footer's content are 768 px (`narrow`, and `--container-max` for the map page); the footer band runs full width and sits at the bottom of the window on short pages (AppShell `footer` slot). Text pages centre their title and lead (`Page.Header align="center"`); their content is left-aligned.
 * **Landing page**: sections are one Frame `Section` each (which adds `--space-8` above), with `--space-section` (2 × `--space-8`) between them; a section heading is followed by its content at `--space-4`. A hero with three points, the city cards under the heading `Kartor`, the heading `Plus` after a ✨, then a panel (left: one line, `299 kr/mån` incl. moms, `Skaffa Plus` which opens the map, where the pin bar sells it; right: own place, saved search and mail about new listings, each with an indigo check).
-* **Footer** on every page: brand line, three link columns (all pointing at placeholders for now), a legal line. `--space-section` above it; column titles semibold, links in text 2; the legal line in text 3 under a divider.
+* **Footer** on every page: brand line, three link columns (all pointing at placeholders for now), a legal line. `--space-section` above it; column titles semibold, links in text 2; the legal line in text 3, centred under a divider.
 * **Colour:** the accent is used for the primary buttons; R12 only concerns the map.
 
 ## 14. Own pin and saved search (paid, CORE.md)
@@ -240,7 +240,7 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
   are hidden, the popup closes, the cursor is a crosshair); the pin (22 px) can be dragged only in this mode; dropping it or the next tap on the map
   places it and ends the mode; `Avbryt` leaves it unchanged.
 * **Pin bar** in the header toolbar, beside Filter. Free: `Egna platser och bevakning` with an accent `Plus` badge at the right edge, which opens the Plus
-  offer, floating over the page like the filter panel (closes on a click outside or Escape) (`CheckoutButton`, or log in first). Plus: `Flytta pinnen`, `Spara sökning` and
+  offer, floating over the page like the filter panel but at most 20rem wide, right-aligned under the toolbar (closes on a click outside or Escape) (`CheckoutButton`, or log in first). Plus: `Flytta pinnen`, `Spara sökning` and
   `Mejla mig nya träffar` (these two on a line of their own).
 * **The pin on the map:** an indigo dot with a permanent label; draggable for Plus. The 2/4/6 km rings follow it.
 * **Restid to an own place** comes from the travel matrix and shows as `~18 min`; the card's route line shows
