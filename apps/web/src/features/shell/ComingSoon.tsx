@@ -1,7 +1,6 @@
-import { Container } from '@frame/core';
-import { Text } from '@frame/ui';
+import { ButtonLink } from '@frame/ui';
 import { ROUTES, type RouteId } from '../../app/useRoute.ts';
-import styles from './ComingSoon.module.css';
+import { ContentPage } from './ContentPage.tsx';
 
 const TITLES: Partial<Record<RouteId, string>> = {
   'logga-in': 'Logga in',
@@ -12,12 +11,9 @@ const TITLES: Partial<Record<RouteId, string>> = {
 export function ComingSoon({ route }: { route: RouteId }) {
   const unknown = route === 'okand';
   return (
-    <Container size="narrow">
-      <div className={styles.box}>
-        <h1>{unknown ? 'Sidan finns inte' : TITLES[route]}</h1>
-        <Text as="p" size="md" tone="secondary">{unknown ? 'Adressen stämmer inte med någon sida.' : 'Den här sidan är på väg.'}</Text>
-        <a href={ROUTES.hem} className={styles.back}>Till startsidan</a>
-      </div>
-    </Container>
+    <ContentPage title={unknown ? 'Sidan finns inte' : TITLES[route] ?? ''}
+      lead={unknown ? 'Adressen stämmer inte med någon sida.' : 'Den här sidan är på väg.'}>
+      <div><ButtonLink variant="secondary" href={ROUTES.hem}>Till startsidan</ButtonLink></div>
+    </ContentPage>
   );
 }

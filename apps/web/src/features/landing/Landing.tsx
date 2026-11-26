@@ -1,8 +1,7 @@
-import { Hero } from '@frame/site';
+import { Hero, Section } from '@frame/site';
 import { Cities } from './Cities.tsx';
-import { Plus } from './Plus.tsx';
 import { MapExample } from './MapExample.tsx';
-import css from './Landing.module.css';
+import { Plus } from './Plus.tsx';
 
 const POINTS = [
   { title: 'Alla källor', text: 'Annonser från Bostadsförmedlingen, HomeQ, Qasa, Samtrygg, Facebook m.m.' },
@@ -10,16 +9,14 @@ const POINTS = [
   { title: 'AI-drivet', text: 'Smart bearbetning av data från annonser med hjälp av AI.' },
 ];
 
-/** The landing page: what it is, why it helps, one way in. */
+/** The landing page: Frame blocks only, so spacing and type come from Frame. */
 export function Landing() {
   return (
-    <div className={css.sections}>
-        {/* The list goes in `actions`: Frame puts `lead` in a <p>, which cannot hold a <ul>. */}
-        <Hero title="Alla hyresannonser på ett ställe."
-          actions={<ul className={css.points}>{POINTS.map(p => <li key={p.title}><div><strong>{p.title}</strong><p>{p.text}</p></div></li>)}</ul>} />
-      <MapExample />
+    <>
+      <Hero title="Alla hyresannonser på ett ställe." points={POINTS} />
+      <Section label="Så ser kartan ut"><MapExample /></Section>
       <Cities />
       <Plus />
-    </div>
+    </>
   );
 }

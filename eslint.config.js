@@ -18,6 +18,12 @@ export default tseslint.config(
       'no-restricted-syntax': ['error', {
         selector: "JSXAttribute[name.name='style']",
         message: 'No inline styles (DESIGN.md §12). Use a CSS Module; a data colour goes through app/Tones.tsx.',
+      }, {
+        selector: "JSXOpeningElement[name.name=/^h[1-6]$/]",
+        message: 'Headings are Frame `Heading` (level display|1|2|3), never a raw <h1>-<h6> (DESIGN.md §12).',
+      }, {
+        selector: "JSXOpeningElement[name.name!='Heading'] > JSXAttribute[name.name='as'][value.value=/^h[1-6]$/]",
+        message: 'Use Frame `Heading` for headings, not `as="h…"` on Text or Stack (DESIGN.md §12).',
       }],
     },
   },

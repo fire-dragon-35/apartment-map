@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Stack } from '@frame/core';
-import { Button, Checkbox, Text } from '@frame/ui';
+import { Button, Checkbox, Text, Heading } from '@frame/ui';
 import { DEFAULT_FILTERS, fmt, SEP, SLIDERS, type PageFilters } from '@lk/shared';
 import { RangeSlider } from './RangeSlider.tsx';
 import styles from './Header.module.css';
@@ -33,7 +33,7 @@ export function Header({ filters, onFilters, shown, newCount, loaded, error, chi
   }, []);
   return (
     <Stack gap={2}>
-      <h1>Lägenheter i Stockholm</h1>
+      <Heading level={3} as="h1">Lägenheter i Stockholm</Heading>
       <Text as="p" size="xs" tone="muted">
         {error ? 'Kunde inte ladda' : loaded && <>{fmt.traffar(shown)}{SEP}<span id="nya">{fmt.nya(newCount)}</span>{(summary => summary && <>{SEP}{summary}</>)(fmt.filterSummary(filters))}</>}
       </Text>

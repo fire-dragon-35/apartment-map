@@ -1,4 +1,4 @@
-import { Text } from '@frame/ui';
+import { Text, Heading } from '@frame/ui';
 import { useState } from 'react';
 import styles from './DataSources.module.css';
 import { SOURCE_INFO, shownTime, sourceName, stateOf, when, type SourceStatus, type State } from './status.ts';
@@ -39,11 +39,11 @@ function Row({ s, now }: { s: SourceStatus; now: number }) {
 export function DataSources() {
   const { rows, error } = useSources();
   const [now] = useState(Date.now);
-  if (error) return <section id="sources" className={styles.root}><h2>Stockholms data</h2><Text size="sm" tone="muted">Kunde inte läsa datakällornas status</Text></section>;
-  if (!rows) return <section id="sources" className={styles.root}><h2>Stockholms data</h2><Text size="sm" tone="muted">Läser datakällor…</Text></section>;
+  if (error) return <section id="sources" className={styles.root}><Heading level={2}>Stockholms data</Heading><Text size="sm" tone="muted">Kunde inte läsa datakällornas status</Text></section>;
+  if (!rows) return <section id="sources" className={styles.root}><Heading level={2}>Stockholms data</Heading><Text size="sm" tone="muted">Läser datakällor…</Text></section>;
   return (
     <section id="sources" className={styles.root}>
-      <h2>Stockholms data</h2>
+      <Heading level={2}>Stockholms data</Heading>
       {rows.length === 0 && <Text size="sm" tone="muted">Ingen hämtning registrerad</Text>}
       <table className={styles.table}>
         <thead><tr><th>Källa</th><th>Senast körning</th><th>Antal</th><th>Senast lyckad körning</th><th>Antal</th><th>Alla körningar</th></tr></thead>

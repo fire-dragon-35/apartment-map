@@ -20,8 +20,6 @@ export function cssVariables(): Record<string, string> {
     '--new': TOKENS.newBg, '--selected': TOKENS.selected, '--tag': TOKENS.tagBg, '--map-bg': TOKENS.mapBg, '--map-water': TOKENS.mapWater,
     '--accent-text': TOKENS.accentText, '--warn-bg': TOKENS.warnBg, '--warn-text': TOKENS.warnText,
     '--shadow-pop': TOKENS.shadowPop, '--shadow-thumb': TOKENS.shadowThumb,
-    /* Between landing sections; Frame's scale stops at --space-8. */
-    '--space-section': 'calc(var(--space-8) * 2)',
     ...Object.fromEntries(PRICE_BANDS.flatMap((b, i) => [[`--price-${i + 1}`, b.color], [`--price-text-${i + 1}`, b.text]])),
     '--price-unknown': PRICE_UNKNOWN.color,
   };

@@ -1,5 +1,6 @@
-import { Container, Stack } from '@frame/core';
 import { Button, Text } from '@frame/ui';
+import { Stack } from '@frame/core';
+import { ContentPage } from './ContentPage.tsx';
 import { BillingPortalButton, CheckoutButton, Paywall, RequireAuth, SignInForm, useAuth } from '@frame/supabase';
 
 const LABELS = { email: 'E-post', submit: 'Skicka inloggningslänk', sent: 'Kolla din inkorg, vi har skickat en inloggningslänk.', invalid: 'Skriv en giltig e-postadress.' };
@@ -8,9 +9,8 @@ const LABELS = { email: 'E-post', submit: 'Skicka inloggningslänk', sent: 'Koll
 export function Account({ title }: { title: string }) {
   const { user, signOut } = useAuth();
   return (
-    <Container size="narrow">
-      <Stack gap={4}>
-        <h1>{user ? 'Ditt konto' : title}</h1>
+    <ContentPage title={user ? 'Ditt konto' : title}>
+      <Stack gap={4} align="start">
         <RequireAuth fallback={<SignInForm labels={LABELS} />}>
           <Text as="p" tone="secondary">Inloggad som {user?.email}</Text>
           <Paywall fallback={<CheckoutButton>Uppgradera: egna platser på kartan</CheckoutButton>}>
@@ -20,6 +20,6 @@ export function Account({ title }: { title: string }) {
           <Button variant="ghost" onClick={() => void signOut()}>Logga ut</Button>
         </RequireAuth>
       </Stack>
-    </Container>
+    </ContentPage>
   );
 }
