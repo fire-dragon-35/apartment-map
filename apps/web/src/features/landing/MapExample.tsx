@@ -21,18 +21,19 @@ export function MapExample() {
           <rect width="360" height="240" className={css.land} />
           <path d="M0 140 C60 120 110 160 170 140 S280 110 360 124 V156 C290 144 240 172 170 172 S70 150 0 172 Z" className={css.water} />
           <path d="M0 82 H360 M150 0 V240 M240 0 L330 240" className={css.street} />
-          <circle cx={KARLAPLAN.x} cy={KARLAPLAN.y} r="34" className={css.ring} />
-          <circle cx={KARLAPLAN.x} cy={KARLAPLAN.y} r="62" className={css.ring} />
+          <circle cx={KARLAPLAN.x} cy={KARLAPLAN.y} r="50" className={css.ring} />
+          <circle cx={KARLAPLAN.x} cy={KARLAPLAN.y} r="96" className={css.ring} />
           {DOTS.map(([x, y, r, band]) => <circle key={`${x}-${y}`} cx={x} cy={y} r={r} className={css[`p${band}`]} />)}
           <circle cx={PICKED.x} cy={PICKED.y} r="11" className={css.picked} />
           <circle cx={PICKED.x} cy={PICKED.y} r="7" className={css.p2} />
           <circle cx={KARLAPLAN.x} cy={KARLAPLAN.y} r="7" className={css.pin} />
           <text x={KARLAPLAN.x + 12} y={KARLAPLAN.y + 4} className={css.label}>Karlaplan</text>
-          <g transform="translate(138 186)">
-            <rect width="206" height="46" rx="8" className={css.popup} />
+          <g transform="translate(134 168)">
+            <rect width="216" height="64" rx="8" className={css.popup} />
             <text x="10" y="18" className={css.strong}>Hornsgatan · Södermalm</text>
-            <text x="196" y="18" textAnchor="end" className={css.strong}>18 min</text>
             <text x="10" y="35" className={css.small}>54 m² · 2 rum · 13 900 · 257 kr/m²</text>
+            <text x="10" y="53" className={css.strong}>18 min till Karlaplan</text>
+            <text x="206" y="53" textAnchor="end" className={css.ext}>Extern länk &gt;</text>
           </g>
         </svg>
       </a>
