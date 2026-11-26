@@ -32,7 +32,8 @@ export function useFilters(): [PageFilters, (change: Partial<PageFilters>) => vo
       const q = new URLSearchParams();
       for (const k of NUM) if (filters[k] !== DEFAULT_FILTERS[k]) q.set(k, String(filters[k]));
       if (filters.onlyNew) q.set('new', '1');
-      history.replaceState(null, '', q.size ? `?${q}` : location.pathname);
+      // keep the hash: it is the page (#/karta); without it a reload lands on the landing page
+      history.replaceState(null, '', `${location.pathname}${q.size ? `?${q}` : ''}${location.hash}`);
       try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(NUM.map(k => [k, filters[k]])))); } catch { /* private mode */ }
     }, 300);
     return () => clearTimeout(t);
