@@ -87,7 +87,7 @@ Type: Inter Tight (self hosted, `@fontsource-variable/inter-tight`), tabular fig
 | Pris per m² | chip: `N␣kr/m²`, thousands space, in its price colours | [296 kr/m²] |
 | Avtal | `start > slut`; `nu` if today or earlier, `?` if unknown; `tills vidare` if no end | nu > tills vidare |
 | Datum | `d␣mmm`, `␣yyyy` if not this year | 1 dec, 1 jan 2027 |
-| Källa | chip: platform name in its source colours | [Qasa] |
+| Källa | chip: platform name in its source colours, with a small external-link symbol (↗) when it links to the ad | [Qasa ↗] |
 | Ålder | `idag` or `N␣d`; hidden if unknown | 9 d |
 | Notering | lower case tag | förstahand, möblerad |
 | Varning | `! långt under marknadspris` | |
@@ -222,9 +222,9 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
 
 * **Navbar** on every page: logo and brand `Lägenhetskartan` at the left (link to `#/`), the links `Hem`, `Karta`, `Om tjänsten` after it, `Logga in` and the accent button `Skapa konto` at the right. The current page has `aria-current="page"`. Under 768 px the links and the two account links fold into a `<details>` menu behind a three-line button. The navbar scrolls away with the page (R1 holds on every page: nothing sticky or fixed).
 * **Width:** the navbar and footer are `wide` on every page so they never change shape; the footer text is centred; the map page keeps its 720 px column; the other pages use Frame's `wide` container.
-* **Landing page** (filler copy until the real text exists): hero with `Öppna kartan` and `Skapa konto`, a band of four figures, `Så fungerar det` (3 steps), `Det du får` (6 features), `Annonser från` (the sources), a closing call to action.
+* **Landing page** (filler copy until the real text exists): a hero, a band of four figures, `Så fungerar det` (3 steps), `Det du får` (6 features), `Annonser från` (the sources), a closing call to action.
 * **Footer** on every page: brand line, three link columns (all pointing at placeholders for now), a legal line.
-* **Colour:** the accent is used for the primary buttons and the hero eyebrow; R12 only concerns the map.
+* **Colour:** the accent is used for the primary buttons; R12 only concerns the map.
 
 ## 14. Own pin and saved search (paid, CORE.md)
 

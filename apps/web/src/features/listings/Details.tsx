@@ -64,7 +64,12 @@ export function Meta({ l, today }: { l: Listing; today: string }) {
       <Joined parts={[
         <Atom key="a" name="avtal" {...T3} nowrap>{fmt.avtal(l.start, l.end, today)}</Atom>,
         l.url
-          ? <a key="c" data-a="kalla" className={styles.source} href={l.url} target="_blank" rel="noopener noreferrer">{l.sourceName}</a>
+          ? <a key="c" data-a="kalla" className={styles.source} href={l.url} target="_blank" rel="noopener noreferrer">
+              {l.sourceName}
+              <svg className={styles.sourceIcon} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M11 3.5h5.5V9M16.5 3.5 9 11M8 4.5H4.5v11h11V12" />
+              </svg>
+            </a>
           : <span key="c" data-a="kalla" className={styles.source}>{l.sourceName}</span>,
         alder ? <Atom key="d" name="alder" {...T3}>{alder}</Atom> : null,
       ]} />

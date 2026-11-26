@@ -46,6 +46,13 @@
 a.source:hover {
   text-decoration: underline;
 }
+.sourceIcon {
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-left: 3px;
+  vertical-align: -0.1em;
+}
 :global(.leaflet-container) .source {
   color: inherit;
 }
