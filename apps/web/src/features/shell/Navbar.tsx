@@ -10,7 +10,7 @@ const LINKS = [['hem', 'Hem'], ['karta', 'Karta'], ['om', 'Om tjänsten']] as co
 export function Navbar({ route }: { route: RouteId }) {
   const { user } = useAuth();
   return (
-    <FrameNavbar size="wide" brand={<Wordmark />} brandLabel={`${BRAND}, startsidan`} brandHref={ROUTES.hem}
+    <FrameNavbar size="narrow" brand={<Wordmark />} brandLabel={`${BRAND}, startsidan`} brandHref={ROUTES.hem}
       navLabel="Huvudmeny" menuLabel="Meny"
       links={LINKS.map(([id, label]) => ({ label, href: ROUTES[id], current: route === id }))}
       actions={user
