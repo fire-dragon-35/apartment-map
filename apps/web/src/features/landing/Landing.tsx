@@ -1,42 +1,24 @@
 import { ButtonLink } from '@frame/ui';
-import { CallToAction, ChipList, FeatureGrid, Hero, Stats, Steps } from '@frame/site';
+import { CallToAction, ChipList, FeatureGrid, Hero } from '@frame/site';
 import { ROUTES } from '../../app/useRoute.ts';
 
-/** All text below is filler until the real copy exists. */
-const STATS = [
-  { value: '1 200+', label: 'annonser just nu' },
-  { value: '4', label: 'källor, hämtade varje dag' },
-  { value: '0 till 60 min', label: 'restid, dörr till dörr' },
-  { value: '100 %', label: 'gratis att använda' },
-];
-const STEPS = [
-  { title: 'Sätt dina gränser', text: 'Välj största hyra, storlek, antal rum och hur lång restid du vill ha.' },
-  { title: 'Se allt på kartan', text: 'Varje annons är en prick. Färgen visar kr/m², storleken visar yta.' },
-  { title: 'Gå till annonsen', text: 'Hitta något bra? Ett tryck tar dig till källan, där du ansöker.' },
-];
 const FEATURES = [
-  { title: 'Restid som räknas', text: 'Kollektivtrafik från dörr till dörr, inte fågelvägen.' },
-  { title: 'Pris per kvadratmeter', text: 'Se direkt vad som är dyrt och vad som är en bra affär.' },
-  { title: 'Nya annonser först', text: 'Det som kom in sedan sist är markerat.' },
-  { title: 'Utan dubbletter', text: 'Samma lägenhet på flera sajter visas en gång.' },
-  { title: 'Din egen plats', text: 'Med Plus mäter du restiden till jobbet eller skolan i stället för Karlaplan.' },
-  { title: 'Öppen om sina källor', text: 'Vi visar när varje sajt hämtades senast och om något saknas.' },
+  { title: 'Restid med SL', text: 'Varje annons visar hur lång tid det tar att åka kollektivt till Karlaplan.' },
+  { title: 'Pris per kvadratmeter', text: 'Färgen på pricken visar direkt vad som är dyrt och vad som är prisvärt.' },
+  { title: 'Plus: din egen plats', text: 'Mät restiden till jobbet eller skolan, spara din sökning och få mejl när något nytt dyker upp.' },
 ];
 const SOURCES = ['Bostadsförmedlingen', 'HomeQ', 'Qasa', 'Samtrygg'];
 
-/** The landing page, composed from Frame's site blocks. */
+/** The landing page: what it is, why it helps, where the ads come from, one way in. */
 export function Landing() {
   const open = <ButtonLink href={ROUTES.karta}>Öppna kartan</ButtonLink>;
   return (
     <>
-      <Hero eyebrow="Hyresbostäder i Stockholm" title="Hitta lägenheten som ligger rätt, inte bara billigt."
-        lead="Alla hyresannonser från flera sajter på en karta, med restid till Karlaplan och pris per kvadratmeter."
-        actions={<>{open}<ButtonLink variant="secondary" href={ROUTES['skapa-konto']}>Skapa konto</ButtonLink></>} />
-      <Stats label="Nyckeltal" items={STATS} />
-      <Steps title="Så fungerar det" items={STEPS} />
+      <Hero eyebrow="Hyresbostäder i Stockholm" title="Alla hyresannonser på en karta."
+        lead="Se hyra, storlek och restid för varje lägenhet på ett ställe. Gratis, utan konto." actions={open} />
       <FeatureGrid title="Det du får" items={FEATURES} />
       <ChipList title="Annonser från" items={SOURCES} />
-      <CallToAction title="Redo att leta?" text="Kartan är öppen för alla. Konto behövs först när bevakningar kommer." actions={open} />
+      <CallToAction title="Hitta rätt läge" text="Annonserna uppdateras varje morgon." actions={open} />
     </>
   );
 }
