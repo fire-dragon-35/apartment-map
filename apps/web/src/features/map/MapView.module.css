@@ -17,9 +17,19 @@
   font: inherit;
 }
 
+/* glass popup: the map shows through */
+.popup :global(.leaflet-popup-content-wrapper),
+.popup :global(.leaflet-popup-tip) {
+  background: color-mix(in srgb, var(--color-background) 72%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(180%) blur(12px);
+  box-shadow: var(--shadow-pop);
+}
+
 /* the page's one loading message, over the map */
 .wrap {
   position: relative;
+  isolation: isolate; /* Leaflet's z-indexes stay inside, so the sticky navbar passes over the map */
   border-radius: inherit;
 }
 .loading {

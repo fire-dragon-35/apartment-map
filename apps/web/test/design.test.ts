@@ -99,8 +99,8 @@ test('page rules R1 to R13 (DESIGN.md v4)', async () => {
   check('no script errors', errors.length === 0, errors.join('; '));
 
   // R1: plain scrolling document
-  const r1 = await js(`[...document.querySelectorAll('*')].every(e=>{const s=getComputedStyle(e);return s.position!=='fixed'&&s.position!=='sticky'&&(s.backdropFilter||'none')==='none'&&(s.webkitBackdropFilter||'none')==='none'})&&document.documentElement.scrollHeight>innerHeight`);
-  check('R1 normal scrolling page, no fixed/sticky/blur', r1);
+  const r1 = await js(`[...document.querySelectorAll('*')].every(e=>{const s=getComputedStyle(e);const blur=(s.backdropFilter||'none')!=='none'||(s.webkitBackdropFilter||'none')!=='none';return s.position!=='fixed'&&(s.position!=='sticky'||e.firstElementChild?.tagName==='HEADER')&&(!blur||e.tagName==='HEADER'||!!e.closest('.leaflet-popup'))})&&document.documentElement.scrollHeight>innerHeight`);
+  check('R1 normal scrolling page, only the navbar sticky, blur only on navbar and popup', r1);
 
   // R2: tap every pin centre in the visible map; the tapped pin (or one drawn over that spot) opens; no scrolling
   const ids = await js<number[]>('__lgh.visible.map(l=>l.id)');

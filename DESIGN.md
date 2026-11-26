@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 4.1, 26 nov 2026 (4.1: one source for every restid, the travel matrix; no SL at runtime and no routes: `Visa resväg`, route text and route lines are gone, R10 dropped. 4.0: brand EnkelLGH; black and white with one indigo accent; original traffic light price colours in steps of 100; sources and tags neutral grey; warning black; Inter Tight; selected pin ring and card outline in indigo; R13. 3.9: the app gets a navbar, a footer and a landing page, section 13; the map page moves to `#/karta`, every rule in sections 1 to 11 applies to that page. 3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 4.2, 26 nov 2026 (4.2: sticky glass navbar and a glass map popup, R1. 4.1: one source for every restid, the travel matrix; no SL at runtime and no routes: `Visa resväg`, route text and route lines are gone, R10 dropped. 4.0: brand EnkelLGH; black and white with one indigo accent; original traffic light price colours in steps of 100; sources and tags neutral grey; warning black; Inter Tight; selected pin ring and card outline in indigo; R13. 3.9: the app gets a navbar, a footer and a landing page, section 13; the map page moves to `#/karta`, every rule in sections 1 to 11 applies to that page. 3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 > `CORE.md` is the fixed part and wins over this file. This file is the detailed current spec: keep it true when you change the page.
 
@@ -14,10 +14,10 @@ Prose is English. UI strings are written exactly as they appear on the page.
 
 ## 1. Principles
 
-v3 goes back to the plain layout that felt smooth: **a normal web page** with a map at the top and a list under it. The browser does the scrolling, Leaflet does the map. Nothing floats over the map, nothing is blurred, nothing animates that the user did not ask for.
+v3 goes back to the plain layout that felt smooth: **a normal web page** with a map at the top and a list under it. The browser does the scrolling, Leaflet does the map. Nothing floats over the map but its popup, only the navbar and the popup are blurred (glass), nothing animates that the user did not ask for.
 
 1. **Native first.** Page scroll, Leaflet markers, popups and tooltips, `<details>` for filters. No custom gestures, hit testing or overlays.
-2. **Cheap to draw.** Pins are canvas circles. No `backdrop-filter`, no fixed or sticky layers.
+2. **Cheap to draw.** Pins are canvas circles. `backdrop-filter` only on the navbar and the map popup; the navbar is the one sticky layer, nothing is fixed.
 3. **Only move what the user pointed at.** A pin tap never scrolls the page or list. A card tap brings the map to that pin.
 4. **Every element earns its place.** If it carries no data or action, it goes.
 
@@ -25,7 +25,7 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 
 | Id | Rule |
 | --- | --- |
-| R1 ✓ | The page MUST be one normal scrolling document: header, map, legend, list. No element is `position: fixed` or `sticky`, and nothing uses `backdrop-filter`. |
+| R1 ✓ | The page MUST be one normal scrolling document: header, map, legend, list. No element is `position: fixed`; only the navbar region is `sticky`. Only the navbar and the map popup use `backdrop-filter` (glass: background 72 % opaque, `saturate(180%) blur(12px)`). |
 | R2 ✓ | Tapping a pin MUST open its popup and outline its card, and MUST NOT scroll the page or the list. |
 | R3 ✓ | Tapping a card MUST select it: outline the card and open its popup. It MUST NOT scroll the page or move the map (no pan, no zoom). Tapping the selected card again closes it. |
 | R4 ✓ | The popup's close button, a tap on empty map, and Esc MUST close the popup and clear the selection. |
@@ -174,7 +174,7 @@ Page filters: restid ≤ slider, hyra ≤ slider, kr/m² ≤ slider, storlek ≥
 
 `legacy/tests/design_check.py` opens the page in a phone sized headless browser with the repo data:
 
-* R1: no element has computed position fixed or sticky, none uses backdrop-filter; the document is taller than the viewport and scrolls.
+* R1: no element has computed position fixed; sticky only on the navbar region; backdrop-filter only on the navbar and inside the map popup; the document is taller than the viewport and scrolls.
 * R2: tapping each pin centre in view selects the pin on top there, opens a popup and outlines its card; page and list scroll positions are unchanged.
 * R3: after scrolling down and tapping a card: page scroll and map view are unchanged, the card is outlined, popup open. Tapping again closes.
 * R4: popup × closes; empty map tap closes; Esc closes.
@@ -220,7 +220,7 @@ Built from Frame's `@frame/site` blocks (`Navbar`, `Footer`, `Hero`, `Stats`, `S
 
 The map page of sections 1 to 11 is one page of a small site. Pages are chosen by the URL hash (`app/useRoute.ts`, no router library): `#/` landing, `#/karta` the map, `#/om` (section 4.5 data sources), `#/logga-in`, `#/skapa-konto` (placeholders that say `Den här sidan är på väg.`), anything else says `Sidan finns inte`.
 
-* **Navbar** on every page: logo and brand `Lägenhetskartan` at the left (link to `#/`), the links `Hem`, `Karta`, `Om tjänsten` after it, `Logga in` and the accent button `Skapa konto` at the right. The current page has `aria-current="page"`. Under 768 px the links and the two account links fold into a `<details>` menu behind a three-line button. The navbar scrolls away with the page (R1 holds on every page: nothing sticky or fixed).
+* **Navbar** on every page: logo and brand `Lägenhetskartan` at the left (link to `#/`), the links `Hem`, `Karta`, `Om tjänsten` after it, `Logga in` and the accent button `Skapa konto` at the right. The current page has `aria-current="page"`. Under 768 px the links and the two account links fold into a `<details>` menu behind a three-line button. The navbar is sticky and glass: the page scrolls under it (R1).
 * **Width:** the navbar and footer are `wide` on every page so they never change shape; the footer text is centred; the map page keeps its 720 px column; the other pages use Frame's `wide` container.
 * **Landing page** (filler copy until the real text exists): a hero, a band of four figures, `Så fungerar det` (3 steps), `Det du får` (6 features), `Annonser från` (the sources), a closing call to action.
 * **Footer** on every page: brand line, three link columns (all pointing at placeholders for now), a legal line.

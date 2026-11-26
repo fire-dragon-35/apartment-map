@@ -25,7 +25,7 @@ Karlaplan. Paid (one plan): your own pinned places. Links always go to the origi
 * Colour jobs, never mixed: traffic light (green to red) = price per m² only; indigo = the app (brand, selection,
   new, actions, Karlaplan); black = warnings; grey = everything else (sources, tags, text).
 * All values (hex, sizes, fonts) live in `@lk/shared` tokens and `apps/web/src/app/theme.ts`; components use tokens.
-* Mobile first: one column, the page scrolls normally; nothing fixed or sticky.
+* Mobile first: one column, the page scrolls normally. Only the navbar is sticky; only the navbar and the map popup are glass (blur).
 
 ## UX rules that must always hold
 
