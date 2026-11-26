@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: repeat(4, auto);
-  column-gap: 14px;
+  column-gap: var(--space-3);
   align-items: baseline;
 }
 .name {
@@ -28,12 +28,12 @@
 .price,
 .meta,
 .tags {
-  margin-top: 2px;
+  margin-top: var(--space-1);
 }
 /* the source chip is the link to the original ad: the only part of line 3 that takes clicks */
 .source {
   display: inline-block;
-  padding: 0 6px;
+  padding: 0 var(--space-2);
   border-radius: 6px;
   font-size: var(--text-xs, 0.75rem);
   font-weight: 600;
@@ -50,7 +50,7 @@ a.source:hover {
   display: inline-block;
   width: 0.85em;
   height: 0.85em;
-  margin-left: 3px;
+  margin-left: var(--space-1);
   vertical-align: -0.1em;
 }
 :global(.leaflet-container) .source {

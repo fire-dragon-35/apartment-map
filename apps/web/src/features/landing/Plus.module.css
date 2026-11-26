@@ -1,0 +1,38 @@
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.mark {
+  font-size: calc(var(--text-lg) * 1.6);
+  line-height: 1;
+}
+.price {
+  font-size: calc(var(--text-lg) * 2);
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+.features {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.features li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+.check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.75em;
+  height: 1.75em;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent-text);
+  font-size: var(--text-md);
+  font-weight: 700;
+}

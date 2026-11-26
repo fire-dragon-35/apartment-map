@@ -24,12 +24,12 @@ export interface NotifyDeps {
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export function emailHtml(hits: Row[], siteUrl: string): string {
-  const items = hits.map(r => `<li style="margin:0 0 12px"><a href="${esc(r.url)}" style="color:#3A2DC2;font-weight:600">${esc(r.street ?? r.area ?? 'Annons')}</a>`
+  const items = hits.map(r => `<li style="margin:0 0 12px"><a href="${esc(r.url)}" style="color:#4E22B5;font-weight:600">${esc(r.street ?? r.area ?? 'Annons')}</a>`
     + `${r.area && r.street ? ` <span style="color:#6E6E6E">${esc(r.area)}</span>` : ''}<br>`
     + `${esc([fmt.hyra(r.rent), r.m2 ? `${r.m2} m²` : null, r.kpm ? `${r.kpm} kr/m²` : null].filter(Boolean).join(' · '))}</li>`).join('');
   return `<div style="font-family:system-ui,sans-serif;font-size:15px;color:#0A0A0A">`
     + `<p>${hits.length === 1 ? 'En ny annons' : `${hits.length} nya annonser`} som passar din sökning:</p><ul style="padding-left:18px">${items}</ul>`
-    + `<p><a href="${esc(siteUrl)}/#/karta" style="color:#3A2DC2">Öppna kartan</a> · <a href="${esc(siteUrl)}/#/logga-in" style="color:#6E6E6E">Stäng av bevakningen</a></p></div>`;
+    + `<p><a href="${esc(siteUrl)}/#/karta" style="color:#4E22B5">Öppna kartan</a> · <a href="${esc(siteUrl)}/#/logga-in" style="color:#6E6E6E">Stäng av bevakningen</a></p></div>`;
 }
 
 export async function notifyMatches({ db, send, today, siteUrl }: NotifyDeps): Promise<{ searches: number; sent: number }> {

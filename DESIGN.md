@@ -49,10 +49,10 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | `price.text.1` … `.5` | #1E7B34, #4A7208, #7F6200, #9C4E00, #B42318 | text in the kr/m² chip (background: the price colour at 20 %) |
 | `text.1` / `.2` / `.3` | #0A0A0A / #3A3A3A / #6E6E6E | primary / secondary / tertiary text |
 | `line` | #EAEAEA | dividers |
-| `accent` | #5B4BFF (indigo) | logo `LGH`, primary buttons, links, Karlaplan, the `ny` badge text colour family; never a data colour |
-| `accent.text` | #3A2DC2 | text on `new.bg`, the `ny` badge and the `{N} nya` count |
-| `new.bg` | #EEEBFF | `ny` badge background and the card of a listing new today |
-| `selected` | #5B4BFF | pin ring, card outline (2 px) |
+| `accent` | #6E3AEE (indigo) | logo `LGH`, primary buttons, links, Karlaplan, the `ny` badge text colour family; never a data colour |
+| `accent.text` | #4E22B5 | text on `new.bg`, the `ny` badge and the `{N} nya` count |
+| `new.bg` | #F1EAFF | `ny` badge background and the card of a listing new today |
+| `selected` | #6E3AEE | pin ring, card outline (2 px) |
 | `tag.bg` | #F0F0F2 | source chip and tag badges (text `text.2`); sources are told apart by name, never by colour |
 | `warn.bg` / `warn.text` | #16161C / #FFFFFF | the warning badge (`! …`); red and orange belong to price |
 | `map.bg` | #F1F1EE | map background |
@@ -216,14 +216,14 @@ ThemeProvider (theme from section 3)
 
 ## 13. Site frame and landing page
 
-Built from Frame's `@frame/site` blocks (`Navbar`, `Footer`, `Hero`, `Stats`, `Steps`, `FeatureGrid`, `ChipList`, `CallToAction`) with `ButtonLink` actions; the app supplies only text, links and the `Wordmark`.
+Built from Frame's `@frame/site` blocks (`Navbar`, `Footer`, `Hero`, `Section`) with `ButtonLink` actions; the app supplies only text, links and the `Wordmark`.
 
 The map page of sections 1 to 11 is one page of a small site. Pages are chosen by the URL hash (`app/useRoute.ts`, no router library): `#/` landing, `#/karta` the map, `#/om` (section 4.5 data sources), `#/logga-in`, `#/skapa-konto` (placeholders that say `Den här sidan är på väg.`), anything else says `Sidan finns inte`.
 
 * **Navbar** on every page: logo and brand `Lägenhetskartan` at the left (link to `#/`), the links `Hem`, `Karta`, `Om tjänsten` after it, `Logga in` and the accent button `Skapa konto` at the right. The current page has `aria-current="page"`. Under 768 px the links and the two account links fold into a `<details>` menu behind a three-line button. The navbar is sticky and glass: the page scrolls under it (R1).
 * **Width:** the navbar and footer are `wide` on every page so they never change shape; the footer text is centred; the map page keeps its 720 px column; the other pages use Frame's `wide` container.
-* **Landing page** (filler copy until the real text exists): a hero, a band of four figures, `Så fungerar det` (3 steps), `Det du får` (6 features), `Annonser från` (the sources), a closing call to action.
-* **Footer** on every page: brand line, three link columns (all pointing at placeholders for now), a legal line.
+* **Landing page**: sections are one Frame `Section` each (which adds `--space-8` above), with `--space-section` (2 × `--space-8`) between them; a section heading is followed by its content at `--space-4`. A hero with three points, the city cards under the heading `Kartor`, the heading `Plus` after a ✨, then a panel (left: one line, `299 kr/mån` incl. moms, `Skaffa Plus` which opens the map, where the pin bar sells it; right: own place, saved search and mail about new listings, each with an indigo check).
+* **Footer** on every page: brand line, three link columns (all pointing at placeholders for now), a legal line. `--space-section` above it; column titles semibold, links in text 2; the legal line in text 3 under a divider.
 * **Colour:** the accent is used for the primary buttons; R12 only concerns the map.
 
 ## 14. Own pin and saved search (paid, CORE.md)
