@@ -37,7 +37,7 @@ const ACCENT = TOKENS.accent.toUpperCase();
 const statusRow = (source: string, over: Record<string, unknown> = {}) => ({
   source, started_at: new Date().toISOString(), finished_at: new Date().toISOString(), complete: true, pages: 3, fetched: 210,
   skipped: 5, invalid: 1, kept: 204, error: null, duration_ms: 4000, usual_kept: 200, usual_runs: 7,
-  last_complete_at: new Date().toISOString(), active: 190, ...over,
+  last_complete_at: new Date().toISOString(), active: 190, last_complete_kept: 204, total_listings: 900, ...over,
 });
 const STATUS = [statusRow('qasa'), statusRow('homeq'), statusRow('bostadsformedlingen'), statusRow('samtrygg', { complete: false, error: 'page 2: 503', kept: 40 })];
 
@@ -219,7 +219,7 @@ test('page rules R1 to R13 (DESIGN.md v4)', async () => {
   await page.goto(base + '#/om'); await page.waitForSelector('#sources'); await wait(300);
   const states = await js<string>("[...document.querySelectorAll('#sources [data-source][data-state]')].map(e=>e.dataset.source+':'+e.dataset.state).join()");
   check('Datakällor one row per source with its state', states === 'qasa:ok,homeq:ok,bostadsformedlingen:ok,samtrygg:incomplete', states);
-  check('Datakällor shows the error, a check for complete sources and that Facebook is not included', await js<boolean>("(t=>t.includes('page 2: 503')&&t.includes('✓')&&t.includes('ingår inte ännu'))(document.getElementById('sources').textContent)"));
+  check('Datakällor shows the error, a check for complete sources and that Facebook has no data', await js<boolean>("(t=>t.includes('page 2: 503')&&t.includes('✓')&&t.includes('Facebook-grupper-----'))(document.getElementById('sources').textContent)"));
 
   await page.close();
   console.log('\n' + (failures.length ? `${failures.length} FAILED: ${failures.join(', ')}` : 'ALL PASS'));

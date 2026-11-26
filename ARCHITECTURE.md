@@ -58,7 +58,7 @@ The worker does the parsing on the laptop so a broken site is fixed in one place
 
 ## 5. Data model
 
-The SQL below is the design; `supabase/migrations/` is the source of truth and also holds the `active_listings` view, the helper functions `is_karlaplan` / `is_paying`, `listings.content_hash`, `source_runs.skipped/invalid/pages` (`pages` = raw pages fetched), the public view `source_status` (latest run per source: times, completeness, pages, fetched/kept/skipped/invalid, a short error, the median of the 7 earlier complete runs, active listings; `runs` and `source_runs` themselves stay private) and `subscriptions.last_event_id`. The private Storage bucket `raw` is created by its own migration.
+The SQL below is the design; `supabase/migrations/` is the source of truth and also holds the `active_listings` view, the helper functions `is_karlaplan` / `is_paying`, `listings.content_hash`, `source_runs.skipped/invalid/pages` (`pages` = raw pages fetched), the public view `source_status` (latest run per source: times, completeness, pages, fetched/kept/skipped/invalid, a short error, the median of the 7 earlier complete runs, active listings, the latest successful run's kept count, the number of different listings ever collected; `runs` and `source_runs` themselves stay private) and `subscriptions.last_event_id`. The private Storage bucket `raw` is created by its own migration.
 
 ```sql
 -- runs and coverage

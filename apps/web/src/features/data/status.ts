@@ -16,6 +16,10 @@ export interface SourceStatus {
   usual_runs: number;
   last_complete_at: string | null;
   active: number;
+  /** `kept` of the run behind `last_complete_at` */
+  last_complete_kept: number | null;
+  /** different listings collected over all runs, removed ones included */
+  total_listings: number;
 }
 
 export type State = 'ok' | 'incomplete' | 'old';
@@ -34,7 +38,8 @@ export const sourceName = (s: string) => SOURCE_INFO[s]?.name ?? s;
 const hoursSince = (iso: string, now: number) => (now - Date.parse(iso)) / 3_600_000;
 
 export function stateOf(s: SourceStatus, now: number): State {
-  if (!s.complete) return 'incomplete';
+  // a site can be fully fetched while its run died or is still going: that is not a finished collection
+  if (!s.complete || s.finished_at === null) return 'incomplete';
   return s.last_complete_at === null || hoursSince(s.last_complete_at, now) > STALE_HOURS ? 'old' : 'ok';
 }
 

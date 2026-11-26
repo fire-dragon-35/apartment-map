@@ -84,11 +84,12 @@ export function MapPage() {
     <Page>
       <Page.Header>
         <Header filters={filters} onFilters={changeFilters}
-          shown={visible.length} newCount={newCount} loaded={loaded} error={error} />
-      </Page.Header>
-      <Page.Content>
+          shown={visible.length} newCount={newCount} loaded={loaded} error={error}>
         <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} onReset={() => void reset()} placing={placing} onPlacing={on => { setSelectedId(null); setPlacing(on); }}
           alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} error={pinError ?? timesError ?? saveError} />
+        </Header>
+      </Page.Header>
+      <Page.Content>
         <Panel flush aria-label="Karta">
           <MapView pins={pins} editablePins={canEdit} placing={placing} onPlace={place} busy={!loaded ? 'Laddar annonser…' : timesLoading ? 'Räknar restider…' : null} items={visible} today={today} selected={selected} autoPan={autoPan} hoveredId={hoveredId} onHover={setHoveredId} onSelect={select} onClose={close} />
         </Panel>

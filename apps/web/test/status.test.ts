@@ -7,7 +7,7 @@ const NOW = Date.parse('2026-11-25T08:00:00Z');
 const row = (over: Partial<SourceStatus> = {}): SourceStatus => ({
   source: 'qasa', started_at: '2026-11-25T05:30:00Z', finished_at: '2026-11-25T05:34:00Z', complete: true, pages: 3, fetched: 210,
   skipped: 5, invalid: 1, kept: 204, error: null, duration_ms: 4000, usual_kept: 200, usual_runs: 7,
-  last_complete_at: '2026-11-25T05:34:00Z', active: 190, ...over,
+  last_complete_at: '2026-11-25T05:34:00Z', active: 190, last_complete_kept: 204, total_listings: 900, ...over,
 });
 
 test('complete and recent is ok; incomplete and stale are not', () => {

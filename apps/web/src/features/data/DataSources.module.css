@@ -11,7 +11,7 @@
 }
 .table th,
 .table td {
-  padding: var(--space-2);
+  padding: var(--space-2) var(--space-1);
   border-top: 1px solid var(--line);
   vertical-align: top;
   font-weight: 400;
@@ -21,10 +21,21 @@
   font-size: var(--text-xs);
   color: var(--color-foreground-secondary);
 }
+.table thead th {
+  hyphens: manual;
+}
+.table td {
+  font-size: var(--text-xs);
+}
 .table th[scope='row'] {
+  overflow-wrap: anywhere;
   display: grid;
 }
-.check {
+.check,
+.cross {
   color: var(--color-success);
   font-weight: 700;
+}
+.cross {
+  color: var(--color-danger);
 }

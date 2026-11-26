@@ -66,11 +66,11 @@ Type: Inter Tight (self hosted, `@fontsource-variable/inter-tight`), tabular fig
 
 ## 4. Layout (top to bottom, one column, max width 720 px)
 
-1. **Header** (spacing from Frame, section 12): title `Lägenheter nära Karlaplan`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; a `<details>` whose summary is a bordered button with a sliders icon, the word `Filter` and a chevron. The details open a bordered panel that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 60+ min step 1 (one thumb, 30 by default), Max hyra 0 to 30k+ kr step 500 (one thumb), Max kr/m² 0 to 700+ step 25 (one thumb; listings without a known kr/m² always pass), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkbox `Bara nya` and `Återställ`.
+1. **Header** (spacing from Frame, section 12): title `Lägenheter i Stockholm`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; then one toolbar row of equally tall controls: the pin bar (section 14) beside a `<details>` whose summary is a bordered button with a sliders icon, the word `Filter` and a chevron. The details open a bordered panel, as wide as the toolbar, that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 60+ min step 1 (one thumb, 30 by default), Max hyra 0 to 30k+ kr step 500 (one thumb), Max kr/m² 0 to 700+ step 25 (one thumb; listings without a known kr/m² always pass), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkbox `Bara nya` and `Återställ`.
 2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
 3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 349`, `350 till 449`, `450 till 549`, `550+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
 4. **List** of cards in a flush panel, divider between cards. A sort row on top: one chip per key (`Restid`, `Hyra`, `Storlek`, `kr/m²`); a tap picks the key in its natural direction (storlek largest first, the rest lowest first), a tap on the chosen chip flips it; the chosen chip shows ` ↑` or ` ↓`. Default: restid ascending, then hyra. Missing values go last. The list shows 5 cards and scrolls inside itself for the rest.
-5. **Stockholms data**, a section on the `Om tjänsten` page (`#/om`, not on the map page), always visible, no dropdown. A table, one row per site: `Källa` (name and what it covers), `Hämtat` (`✓` in green and `{idag|igår|datum} {HH:MM}` when the latest fetch was complete, meaning every page was fetched without error; otherwise `Ofullständig, ...` or `Gammal, ...` (last complete fetch over 36 hours ago) with no check; the error text below when it failed), `Annonser hämtade` (the number kept). Facebook-grupper is a row saying `ingår inte ännu`. The last row is `Totalt`, the sum of `Annonser hämtade`. If the status cannot be read the section says `Kunde inte läsa datakällornas status`. Times are Stockholm time and approximate on purpose: each source's time is moved 5 to 45 minutes earlier by `shownTime` (fixed per source and fetch, never later than the real time). The data is the view `source_status` (ARCHITECTURE.md §5).
+5. **Stockholms data**, a section on the `Om tjänsten` page (`#/om`, not on the map page), always visible, no dropdown. A table, one row per site: `Källa` (name and what it covers), `Senast körning` (always a symbol, then `{idag|igår|datum} {HH:MM}`: a green `✓` when the latest fetch was complete, meaning every page was fetched without error and its run finished; otherwise a red `✗`, for an incomplete fetch, an unfinished run (still going or interrupted, with the time the run started) or a stale one (last complete fetch over 36 hours ago). The status in words is the symbol's accessible label; the error text below when it failed), `Antal` (the number kept when the symbol is `✓`, else 0), `Senast lyckad körning` (a green `✓` and the time of the latest successful run, complete and finished), `Antal` (the number that run kept) and `Alla körningar` (how many different listings all runs together have collected from the source, removed ones and cross site copies included, so it is never under `Antal`). Counts are bare integers, without a unit; a cell with nothing to show is `-`. Facebook-grupper is a row of `-`. The last row is `Totalt`: the sums of both `Antal` columns and of `Alla körningar`, `-` elsewhere. If the status cannot be read the section says `Kunde inte läsa datakällornas status`. Times are Stockholm time and approximate on purpose: each source's time is moved 5 to 45 minutes earlier by `shownTime` (fixed per source and fetch, never later than the real time). The data is the view `source_status` (ARCHITECTURE.md §5).
 
 ## 5. Data formats
 
@@ -128,7 +128,7 @@ New today: `new.bg` background. Selected and keyboard focus: 2 px `selected` out
 
 **Popup** (Leaflet popup, content 270 to 290 wide, room on the right for the close button): exactly the card (grid and link).
 
-**Hover tooltip** (mouse only): `Hornsgatan · 23 min · 15.2k kr`.
+**Hover tooltip** (mouse only): `Hornsgatan · 23 min · 15.2k kr`. It sits in Leaflet's tooltip pane, above the dots. A card or popup name line cut off with an ellipsis shows in full as the native hover text (`title`).
 
 ## 8. Interaction
 
@@ -146,7 +146,7 @@ Motion: only Leaflet's own pan and zoom animations and smooth page scroll. With 
 
 | Key | Text |
 | --- | --- |
-| title | Lägenheter nära Karlaplan |
+| title | Lägenheter i Stockholm |
 | count | {N} träffar |
 | new | {N} nya |
 | filter | Filter |
@@ -232,9 +232,9 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
   with `Tillbaka till Karlaplan`. No extra pins. Moving: `Flytta pinnen` turns on a placing mode (the listing dots
   are hidden, the popup closes, the cursor is a crosshair); the pin (22 px) can be dragged only in this mode; dropping it or the next tap on the map
   places it and ends the mode; `Avbryt` leaves it unchanged.
-* **Pin bar** above the map. Free: "Restid till Karlaplan." and `Egna platser och bevakning`, which opens the Plus
-  offer (`CheckoutButton`, or log in first). Plus: the pin's chip, `Flytta pinnen`, `Spara sökning` and
-  `Mejla mig nya träffar`.
+* **Pin bar** in the header toolbar, beside Filter. Free: `Egna platser och bevakning` with an accent `Plus` badge at the right edge, which opens the Plus
+  offer, floating over the page like the filter panel (closes on a click outside or Escape) (`CheckoutButton`, or log in first). Plus: `Flytta pinnen`, `Spara sökning` and
+  `Mejla mig nya träffar` (these two on a line of their own).
 * **The pin on the map:** an indigo dot with a permanent label; draggable for Plus. The 2/4/6 km rings follow it.
 * **Restid to an own place** comes from the travel matrix and shows as `~18 min`; the card's route line shows
   `Din plats ~18 min` instead of Karlaplan's route; the map draws the exact SL trip to the pin for the selected

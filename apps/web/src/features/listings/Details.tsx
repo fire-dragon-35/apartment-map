@@ -26,7 +26,7 @@ export function Details({ l }: { l: Listing }) {
   const kpm = priceChip(l.kpm);
   return (
     <>
-      <span data-line="1" className={styles.name}>
+      <span data-line="1" className={styles.name} title={l.area ? `${l.street} ${l.area}` : l.street}>
         <Atom name="adress" {...T1}>{l.street}</Atom>{l.area && <> <Atom name="omrade" {...T3}>{l.area}</Atom></>}
         {l.isNew && <> <Badge tone="custom" color={TOKENS.accent} background={TOKENS.newBg} data-badge="ny">Ny</Badge></>}
       </span>

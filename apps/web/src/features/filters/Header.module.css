@@ -1,6 +1,11 @@
 /* The Filter toggle, a bordered button with an icon and a chevron. The panel floats over the page below it (no reflow). */
-.details {
+/* One row of equally tall controls; it anchors the filter panel, which spans its width. */
+.toolbar {
   position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
 }
 .summary {
   display: flex;
@@ -17,7 +22,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  box-sizing: border-box;
+  min-height: var(--control-height);
+  padding: 0 var(--space-3);
   border: 1px solid var(--line);
   border-radius: var(--radius-md, 8px);
   color: var(--accent);

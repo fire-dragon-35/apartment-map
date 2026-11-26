@@ -36,7 +36,8 @@ const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, registe
     <>
       <CircleMarker ref={m => { marker.current = m; register(l.id, m); }} center={l.latlng} radius={l.radius} pathOptions={options} renderer={renderer}
         eventHandlers={events}>
-        {HOVER && <Tooltip direction="top">{`${l.street}${SEP}${fmt.restid(l.t)}${SEP}${fmt.hyra(l.rent)}`}</Tooltip>}
+        {/* its own pane: inside "pins" it would be drawn under the dots */}
+        {HOVER && <Tooltip pane="tooltipPane" direction="top">{`${l.street}${SEP}${fmt.restid(l.t)}${SEP}${fmt.hyra(l.rent)}`}</Tooltip>}
       </CircleMarker>
     </>
   );
