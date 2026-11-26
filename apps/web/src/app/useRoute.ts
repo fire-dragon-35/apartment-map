@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export type RouteId = 'hem' | 'karta' | 'om' | 'logga-in' | 'skapa-konto' | 'integritet' | 'villkor' | 'okand';
+export type RouteId = 'hem' | 'karta' | 'om' | 'logga-in' | 'skapa-konto' | 'okand';
 
 export const ROUTES: Record<Exclude<RouteId, 'okand'>, string> = {
   hem: '#/',
@@ -8,8 +8,6 @@ export const ROUTES: Record<Exclude<RouteId, 'okand'>, string> = {
   om: '#/om',
   'logga-in': '#/logga-in',
   'skapa-konto': '#/skapa-konto',
-  integritet: '#/integritet',
-  villkor: '#/villkor',
 };
 
 /** A section of a page, as `#/om/kontakt`: the page is `om`, the section the element with id `kontakt`. */

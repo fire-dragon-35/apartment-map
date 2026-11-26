@@ -1,8 +1,7 @@
 import { Stack } from '@frame/core';
-import { ButtonLink, Heading, Text } from '@frame/ui';
-import { ROUTES } from '../../app/useRoute.ts';
+import { Heading, Text } from '@frame/ui';
 import { DataSources } from '../data/DataSources.tsx';
-import { CONTACT } from '../legal/texts.ts';
+import { CONTACT, PRIVACY, TERMS, type LegalDoc } from '../legal/texts.ts';
 import { ContentPage } from './ContentPage.tsx';
 
 /** The questions people ask before they sign up. Facts only; keep in step with the product. */
@@ -14,7 +13,26 @@ const FAQ = [
   { q: 'Hur avslutar jag Plus?', a: 'Under Konto, "Hantera abonnemang". Plus gäller perioden ut, och inget mer dras.' },
 ];
 
-/** Om tjänsten: everything the footer links to lives here, one section each (`#/om/fragor`, `#/om/kontakt`, …). */
+/** A legal text in full, as a section of this page: no separate page, nothing hidden behind a link. */
+function LegalSection({ id, doc }: { id: string; doc: LegalDoc }) {
+  return (
+    <Stack id={id} as="section" gap={4}>
+      <Stack gap={1}>
+        <Heading level={2}>{doc.title}</Heading>
+        <Text size="xs" tone="muted">Senast ändrad {doc.updated}</Text>
+      </Stack>
+      <Text as="p" size="md" tone="secondary">{doc.intro}</Text>
+      {doc.sections.map(s => (
+        <Stack key={s.title} gap={2}>
+          <Heading level={3}>{s.title}</Heading>
+          {s.body.map(p => <Text as="p" size="md" key={p} tone="secondary">{p}</Text>)}
+        </Stack>
+      ))}
+    </Stack>
+  );
+}
+
+/** Om tjänsten: everything the footer links to is on this page, one section each (`#/om/fragor`, `#/om/villkor`, …). */
 export function About() {
   return (
     <ContentPage title="Om tjänsten" lead="EnkelLGH samlar hyresannonser från flera sajter på en karta, med restid och pris per kvadratmeter.">
@@ -32,13 +50,8 @@ export function About() {
         <Text as="p" size="md" tone="secondary">Frågor, fel i en annons eller en annons som ska bort: mejla {CONTACT}.</Text>
       </Stack>
       <div id="data"><DataSources /></div>
-      <Stack id="juridiskt" as="section" gap={2} align="start">
-        <Heading level={2}>Juridiskt</Heading>
-        <Stack direction="row" gap={2} wrap>
-          <ButtonLink variant="secondary" href={ROUTES.integritet}>Integritetspolicy</ButtonLink>
-          <ButtonLink variant="secondary" href={ROUTES.villkor}>Villkor</ButtonLink>
-        </Stack>
-      </Stack>
+      <LegalSection id="integritet" doc={PRIVACY} />
+      <LegalSection id="villkor" doc={TERMS} />
     </ContentPage>
   );
 }

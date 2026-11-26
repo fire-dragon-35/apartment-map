@@ -3,8 +3,6 @@ import { Footer } from '../features/shell/Footer.tsx';
 import { Navbar } from '../features/shell/Navbar.tsx';
 import { Landing } from '../features/landing/Landing.tsx';
 import { ComingSoon } from '../features/shell/ComingSoon.tsx';
-import { Legal } from '../features/legal/Legal.tsx';
-import { PRIVACY, TERMS } from '../features/legal/texts.ts';
 import { About } from '../features/shell/About.tsx';
 import { Account } from '../features/shell/Account.tsx';
 import { MapPage } from './MapPage.tsx';
@@ -21,8 +19,6 @@ export function App() {
         : route === 'om' ? <About />
         : route === 'logga-in' ? <Account title="Logga in" />
         : route === 'skapa-konto' ? <Account title="Skapa konto" />
-        : route === 'integritet' ? <Legal doc={PRIVACY} />
-        : route === 'villkor' ? <Legal doc={TERMS} />
         : <ComingSoon route={route} />}
       <Footer />
     </AppShell>

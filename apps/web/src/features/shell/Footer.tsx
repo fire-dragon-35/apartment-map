@@ -6,7 +6,7 @@ import { BRAND, Wordmark } from './Wordmark.tsx';
 const COLUMNS = [
   { title: 'Tjänsten', links: [{ label: 'Karta', href: ROUTES.karta }, { label: 'Om tjänsten', href: ROUTES.om }, { label: 'Datakällor', href: section('om', 'data') }] },
   { title: 'Hjälp', links: [{ label: 'Vanliga frågor', href: section('om', 'fragor') }, { label: 'Kontakt', href: section('om', 'kontakt') }, { label: 'Logga in', href: ROUTES['logga-in'] }] },
-  { title: 'Juridiskt', links: [{ label: 'Integritetspolicy', href: ROUTES.integritet }, { label: 'Villkor', href: ROUTES.villkor }] },
+  { title: 'Juridiskt', links: [{ label: 'Integritetspolicy', href: section('om', 'integritet') }, { label: 'Villkor', href: section('om', 'villkor') }] },
 ];
 
 export function Footer() {
