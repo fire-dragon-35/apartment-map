@@ -11,7 +11,7 @@ const FEATURES = [
 /** What Plus adds, and its price. Buying happens on the map page (pin bar). */
 export function Plus() {
   return (
-    <Section title="Plus">
+    <Section align="center" size="narrow" title="Plus">
       <Pricing lead="Kartan är gratis med restider till Karlaplan. Plus gör den till din."
         price="299" unit="kr/mån" note="Inklusive moms. Avsluta när du vill."
         action={<ButtonLink href={ROUTES.karta}>Skaffa Plus</ButtonLink>} features={FEATURES} />

@@ -13,8 +13,8 @@ const POINTS = [
 export function Landing() {
   return (
     <>
-      <Hero title="Alla hyresannonser på ett ställe." points={POINTS} />
-      <Section label="Så ser kartan ut"><MapExample /></Section>
+      <Hero align="center" size="narrow" title="Alla hyresannonser på ett ställe." points={POINTS} />
+      <Section align="center" size="narrow" label="Så ser kartan ut"><MapExample /></Section>
       <Cities />
       <Plus />
     </>

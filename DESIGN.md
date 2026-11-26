@@ -217,6 +217,7 @@ ThemeProvider (theme from section 3)
   * every heading is `Heading` (`display` the hero title, `1` a page title, `2` a section title, `3` a card, tool or sub-section title; the map page title is `level={3} as="h1"`). Raw `<h1>`–`<h6>` and `as="h…"` on other components fail lint;
   * the landing page is `Hero` (with `points`) followed by `Section`s (`title`, optional `lead`); a Section owns the space between sections (`--space-section`), so the page adds none. Benefits are `CheckList`, photos `MediaCard`, the plan `Pricing`;
   * every other page (about, legal, account, placeholders) is the app's `ContentPage`: narrow `Container` › `Page` › `Heading level={1}` and a lead;
+  * everything outside the map page is centred, like Lovable: `Hero`, every landing `Section` and every `Page.Header` take `align="center"`, the landing blocks share `size="narrow"` (768 px), city cards are `landscape`;
   * the footer is Frame's `Footer align="center"`;
   * app CSS Modules hold only what Frame cannot know (the map, the card grid, the SVG sketch); no font sizes, weights or margins for text in them.
 

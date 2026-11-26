@@ -10,11 +10,11 @@ const CITIES = [
 
 export function Cities() {
   return (
-    <Section title="Kartor">
+    <Section align="center" size="narrow" title="Kartor">
       <Grid>
         {CITIES.map(c => (
           <Grid.Item key={c.name} span={{ base: 12, md: 6 }}>
-            <MediaCard title={c.name} image={c.image} href={c.href} note={c.href ? undefined : 'Kommer snart'} />
+            <MediaCard ratio="landscape" title={c.name} image={c.image} href={c.href} note={c.href ? undefined : 'Kommer snart'} />
           </Grid.Item>
         ))}
       </Grid>
