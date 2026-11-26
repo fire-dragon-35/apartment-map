@@ -7,7 +7,7 @@ import styles from './Footer.module.css';
 const COLUMNS = [
   { title: 'Tjänsten', links: [{ label: 'Karta', href: ROUTES.karta }, { label: 'Om tjänsten', href: ROUTES.om }, { label: 'Skapa konto', href: ROUTES['skapa-konto'] }] },
   { title: 'Hjälp', links: [{ label: 'Vanliga frågor', href: ROUTES.om }, { label: 'Kontakt', href: ROUTES.om }, { label: 'Logga in', href: ROUTES['logga-in'] }] },
-  { title: 'Juridiskt', links: [{ label: 'Integritet', href: ROUTES.om }, { label: 'Villkor', href: ROUTES.om }, { label: 'Cookies', href: ROUTES.om }] },
+  { title: 'Juridiskt', links: [{ label: 'Integritetspolicy', href: ROUTES.integritet }, { label: 'Villkor', href: ROUTES.villkor }] },
 ];
 
 export function Footer() {
