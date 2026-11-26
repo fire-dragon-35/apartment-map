@@ -6,7 +6,7 @@
       directory, nothing is unpacked), so a re-published identical feed has the same hash.
 
   matrix.py build --gtfs sl.zip --osm stockholm.osm.pbf --origins o.json --cells c.json --date YYYY-MM-DD
-                     --out m.i16 [--percentile 50]
+                     --out m.i16 [--percentile 50] [--batch 300]
       origins: [{"lat", "lon"}, ...]   cells: [{"lat", "lon"}, ...]   (positions in the order of the output)
       out: little endian int16, origins x cells, row major: transit minutes at the given percentile (default the
       median) over the departures 07:30 to 08:00,
@@ -52,26 +52,29 @@ def build(a: argparse.Namespace) -> None:
     network = r5py.TransportNetwork(a.osm, [a.gtfs])
     print(f'network built in {time.time() - t0:.0f} s', file=sys.stderr, flush=True)
 
-    t0 = time.time()
-    ttm = r5py.TravelTimeMatrix(
-        network,
-        origins=origins,
-        destinations=cells,
-        snap_to_network=True,
-        departure=datetime.fromisoformat(f'{a.date}T07:30:00'),
-        departure_time_window=timedelta(minutes=30),
-        percentiles=[a.percentile],
-        transport_modes=[r5py.TransportMode.TRANSIT, r5py.TransportMode.WALK],
-        max_time=timedelta(minutes=120),
-    )
-    print(f'{len(origins)} origins x {len(cells)} cells routed in {time.time() - t0:.0f} s', file=sys.stderr, flush=True)
-
-    column = 'travel_time' if 'travel_time' in ttm.columns else f'travel_time_p{a.percentile:02d}'
+    # origins in batches: one result table of all pairs (millions of rows) is what ran the laptop out of memory
     out = numpy.full((len(origins), len(cells)), -1, dtype='<i2')
-    found = ttm.dropna(subset=[column])
-    out[found['from_id'].to_numpy(), found['to_id'].to_numpy()] = numpy.rint(found[column].to_numpy()).astype('<i2')
+    t0, trips = time.time(), 0
+    for start in range(0, len(origins), a.batch):
+        ttm = r5py.TravelTimeMatrix(
+            network,
+            origins=origins.iloc[start:start + a.batch],   # keeps the global ids, so from_id is the output row
+            destinations=cells,
+            snap_to_network=True,
+            departure=datetime.fromisoformat(f'{a.date}T07:30:00'),
+            departure_time_window=timedelta(minutes=30),
+            percentiles=[a.percentile],
+            transport_modes=[r5py.TransportMode.TRANSIT, r5py.TransportMode.WALK],
+            max_time=timedelta(minutes=120),
+        )
+        column = 'travel_time' if 'travel_time' in ttm.columns else f'travel_time_p{a.percentile:02d}'
+        found = ttm.dropna(subset=[column])
+        out[found['from_id'].to_numpy(), found['to_id'].to_numpy()] = numpy.rint(found[column].to_numpy()).astype('<i2')
+        trips += len(found)
+        del ttm, found
+        print(f'{min(start + a.batch, len(origins))} of {len(origins)} origins routed, {time.time() - t0:.0f} s', file=sys.stderr, flush=True)
     out.tofile(a.out)
-    print(f'{len(found)} of {out.size} pairs have a trip', file=sys.stderr, flush=True)
+    print(f'{trips} of {out.size} pairs have a trip', file=sys.stderr, flush=True)
 
 
 def main() -> None:
@@ -84,6 +87,7 @@ def main() -> None:
         b.add_argument(f'--{name}', required=True)
     b.add_argument('--max-memory', default='3G')
     b.add_argument('--percentile', type=int, default=50)
+    b.add_argument('--batch', type=int, default=300, help='origins per routing batch (memory)')
     a = p.parse_args()
     if a.command == 'hash':
         print(gtfs_hash(a.gtfs))
