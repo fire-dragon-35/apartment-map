@@ -218,7 +218,7 @@ ThemeProvider (theme from section 3)
   * the landing page is `Hero` (with `points`) followed by `Section`s (`title`, optional `lead`); a Section owns the space between sections (`--space-section`), so the page adds none. Benefits are `CheckList`, photos `MediaCard`, the plan `Pricing`;
   * every other page (about, legal, account, placeholders) is the app's `ContentPage`: narrow `Container` › `Page` › `Heading level={1}` and a lead;
   * everything outside the map page is centred, like Lovable: `Hero`, every landing `Section` and every `Page.Header` take `align="center"`, the landing blocks share `size="narrow"` (768 px), city cards are `landscape`;
-  * the footer is Frame's `Footer align="center"`;
+  * the footer is Frame's `Footer align="center" tone="dark"`: a black band, white titles and brand (`LGH` stays indigo), links at 65 % white;
   * app CSS Modules hold only what Frame cannot know (the map and the listing cards); no font sizes, weights or margins for text in them.
 
 ## 13. Site frame and landing page

@@ -1,7 +1,7 @@
 .mark {
   font-size: 18px;
   letter-spacing: -0.02em;
-  color: var(--t1);
+  color: inherit;
 }
 .lgh {
   font-weight: 800;
