@@ -1,6 +1,6 @@
 /* The app's whole global stylesheet (Frame §10: small). Layout belongs to Frame primitives, the rest to CSS Modules. */
 :root {
-  --container-max: 45rem; /* DESIGN.md §4: one column, max width 720 px */
+  --container-max: 48rem; /* DESIGN.md §4: one column, max width 768 px, the same edges as navbar and footer */
   /* DESIGN.md §3 type scale and colours, in the token names Frame's Text, Badge and Slider read */
   --text-xs: 12px;
   --text-sm: 13px;

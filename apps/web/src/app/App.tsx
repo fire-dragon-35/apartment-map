@@ -13,14 +13,13 @@ export function App() {
   const route = useRoute();
   const size = route === 'karta' ? 'default' : 'wide';
   return (
-    <AppShell navigation={<Navbar route={route} />}>
+    <AppShell navigation={<Navbar route={route} />} footer={<Footer />}>
       {route === 'karta' ? <Container size={size}><MapPage /></Container>
         : route === 'hem' ? <Landing />
         : route === 'om' ? <About />
         : route === 'logga-in' ? <Account title="Logga in" />
         : route === 'skapa-konto' ? <Account title="Skapa konto" />
         : <ComingSoon route={route} />}
-      <Footer />
     </AppShell>
   );
 }

@@ -10,7 +10,7 @@ export function Account({ title }: { title: string }) {
   const { user, signOut } = useAuth();
   return (
     <ContentPage title={user ? 'Ditt konto' : title}>
-      <Stack gap={4} align="start">
+      <Stack gap={4} align="center">
         <RequireAuth fallback={<SignInForm labels={LABELS} />}>
           <Text as="p" tone="secondary">Inloggad som {user?.email}</Text>
           <Paywall fallback={<CheckoutButton>Uppgradera: egna platser på kartan</CheckoutButton>}>

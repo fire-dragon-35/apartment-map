@@ -64,7 +64,7 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 Type: Inter Tight (self hosted, `@fontsource-variable/inter-tight`), tabular figures. Title 20 / 700. T1 15 / 600 `text.1` (address, restid). Hyra on the card is 15 / 400 `text.1`, without `kr`. T2 13 / 400 `text.2` (size, rooms, kr/m², contract). T3 12 / 400 `text.3` (area, source, age, legend).
 
 
-## 4. Layout (top to bottom, one column, max width 720 px)
+## 4. Layout (top to bottom, one column, max width 768 px)
 
 1. **Header** (spacing from Frame, section 12): title `Lägenheter i Stockholm`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; then one toolbar row of equally tall controls: the pin bar (section 14) beside a `<details>` whose summary is a bordered button with a sliders icon, the word `Filter` and a chevron. The details open a bordered panel, as wide as the toolbar, that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 60+ min step 1 (one thumb, 30 by default), Max hyra 0 to 30k+ kr step 500 (one thumb), Max kr/m² 0 to 700+ step 25 (one thumb; listings without a known kr/m² always pass), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkbox `Bara nya` and `Återställ`.
 2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
@@ -198,7 +198,7 @@ The same checks run on `apps/web` with `npm test -w @lk/web`. That test finds el
 ```
 ThemeProvider (theme from section 3)
 └ AppShell
-  └ Container              max width 720 px (token --container-max), gutters from Frame
+  └ Container              max width 768 px (token --container-max), gutters from Frame
     └ Page
       ├ Page.Header        Header: title, meta line, Filter <details>
       └ Page.Content
@@ -228,7 +228,7 @@ Built from Frame's `@frame/site` blocks only: `Hero` (title and three `points`),
 The map page of sections 1 to 11 is one page of a small site. Pages are chosen by the URL hash (`app/useRoute.ts`, no router library): `#/` landing, `#/karta` the map, `#/om` Om tjänsten (sections `Vanliga frågor` `#/om/fragor`, `Kontakt` `#/om/kontakt`, data sources of section 4.5 `#/om/data`, and the full `Integritetspolicy` `#/om/integritet` and `Villkor` `#/om/villkor`; there are no separate legal pages; a third hash segment scrolls to that section). No page is hidden: every footer link goes to a navbar page or a section of one, `#/logga-in`, `#/skapa-konto` (placeholders that say `Den här sidan är på väg.`), anything else says `Sidan finns inte`.
 
 * **Navbar** on every page: logo and brand `Lägenhetskartan` at the left (link to `#/`), the links `Hem`, `Karta`, `Om tjänsten` after it, `Logga in` and the accent button `Skapa konto` at the right. The current page has `aria-current="page"`. Under 768 px the links and the two account links fold into a `<details>` menu behind a three-line button. The navbar is sticky and glass: the page scrolls under it (R1).
-* **Width:** the navbar is `wide` on every page; the footer's band is full width but its content `narrow` (768 px, the landing column), both the same on every page; the map page keeps its 720 px column; the other pages use Frame's `wide` container.
+* **Width:** one column edge for the whole site: navbar, page content (map page included) and the footer's content are 768 px (`narrow`, and `--container-max` for the map page); the footer band runs full width and sits at the bottom of the window on short pages (AppShell `footer` slot). Text pages centre their title and lead (`Page.Header align="center"`); their content is left-aligned.
 * **Landing page**: sections are one Frame `Section` each (which adds `--space-8` above), with `--space-section` (2 × `--space-8`) between them; a section heading is followed by its content at `--space-4`. A hero with three points, the city cards under the heading `Kartor`, the heading `Plus` after a ✨, then a panel (left: one line, `299 kr/mån` incl. moms, `Skaffa Plus` which opens the map, where the pin bar sells it; right: own place, saved search and mail about new listings, each with an indigo check).
 * **Footer** on every page: brand line, three link columns (all pointing at placeholders for now), a legal line. `--space-section` above it; column titles semibold, links in text 2; the legal line in text 3 under a divider.
 * **Colour:** the accent is used for the primary buttons; R12 only concerns the map.

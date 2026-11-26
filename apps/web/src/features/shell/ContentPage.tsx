@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Container, Page } from '@frame/core';
 import { Heading, Text } from '@frame/ui';
 
-/** Every text page (about, legal, account, placeholders): one narrow column, a centred page title and lead. */
+/** Every text page (about, legal, account, placeholders): one narrow column, a centred title and lead, the content left-aligned. */
 export function ContentPage({ title, lead, children }: { title: string; lead?: ReactNode; children?: ReactNode }) {
   return (
     <Container size="narrow">
