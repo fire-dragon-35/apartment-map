@@ -4,7 +4,7 @@ import { Navbar as FrameNavbar } from '@frame/site';
 import { ROUTES, type RouteId } from '../../app/useRoute.ts';
 import { BRAND, Wordmark } from './Wordmark.tsx';
 
-const LINKS = [['hem', 'Hem'], ['karta', 'Karta'], ['om', 'Om tjänsten']] as const;
+const LINKS = [['hem', 'Hem'], ['karta', 'Karta'], ['plus', 'Plus'], ['om', 'Om tjänsten']] as const;
 
 /** The site bar (Frame `Navbar`): wordmark, pages, log in and sign up. */
 export function Navbar({ route }: { route: RouteId }) {

@@ -1,6 +1,5 @@
 import { Stack } from '@frame/core';
 import { Badge, Button, ButtonLink, Checkbox, Text } from '@frame/ui';
-import { CheckoutButton } from '@frame/supabase';
 import { useEffect, useRef, useState } from 'react';
 import { TOKENS } from '@lk/shared';
 import { ROUTES } from '../../app/useRoute.ts';
@@ -10,7 +9,6 @@ import styles from './PinBar.module.css';
 interface Props {
   pins: Pin[];
   canEdit: boolean;
-  signedIn: boolean;
   onReset: () => void;
   placing: boolean;
   onPlacing: (on: boolean) => void;
@@ -21,7 +19,7 @@ interface Props {
 }
 
 /** In the header toolbar: the pins restid is measured to, and the saved search. Everything but Karlaplan is paid (CORE.md). */
-export function PinBar({ pins, canEdit, signedIn, onReset, placing, onPlacing, alerts, onSave, saved, error }: Props) {
+export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onSave, saved, error }: Props) {
   const [upsell, setUpsell] = useState(false);
   const offer = useRef<HTMLDivElement>(null);
   // the offer floats over the page, like the filter panel: close it on a click outside or Escape
@@ -44,9 +42,7 @@ export function PinBar({ pins, canEdit, signedIn, onReset, placing, onPlacing, a
           <div className={styles.upsell}>
             <Stack gap={2}>
               <Text as="p" size="sm">Med Plus flyttar du pinnen från Karlaplan till din egen plats (jobb, skola), sparar din sökning och får ett mejl när något nytt passar.</Text>
-              {signedIn
-                ? <CheckoutButton returnPath="/#/karta">Uppgradera till Plus</CheckoutButton>
-                : <ButtonLink href={ROUTES['logga-in']}>Logga in för att uppgradera</ButtonLink>}
+              <ButtonLink href={ROUTES.plus}>Läs mer och skaffa Plus</ButtonLink>
             </Stack>
           </div>
         )}

@@ -49,5 +49,5 @@ export function usePins() {
   /** back to Karlaplan */
   const reset = useCallback(() => run(async () => client.from('destinations').delete().eq('user_id', user!.id)), [run, client, user]);
 
-  return { pins, canEdit, signedIn: !!user, error, move, reset };
+  return { pins, canEdit, error, move, reset };
 }

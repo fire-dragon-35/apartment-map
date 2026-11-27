@@ -21,7 +21,7 @@ export function MapPage() {
   const { listings: base0, today, loaded, error } = useListings();
   const [filters, setFilters] = useFilters();
   // paid (CORE.md): own pins, a saved search with a daily email; free: Karlaplan
-  const { pins, canEdit, signedIn, error: pinError, move, reset } = usePins();
+  const { pins, canEdit, error: pinError, move, reset } = usePins();
   const [placing, setPlacing] = useState(false);
   const placeIds = useMemo(() => [...new Set(base0.map(l => l.placeId))], [base0]);
   const pin = pins[0]!;
@@ -85,7 +85,7 @@ export function MapPage() {
       <Page.Header>
         <Header filters={filters} onFilters={changeFilters}
           shown={visible.length} newCount={newCount} loaded={loaded} error={error}>
-        <PinBar pins={pins} canEdit={canEdit} signedIn={signedIn} onReset={() => void reset()} placing={placing} onPlacing={on => { setSelectedId(null); setPlacing(on); }}
+        <PinBar pins={pins} canEdit={canEdit} onReset={() => void reset()} placing={placing} onPlacing={on => { setSelectedId(null); setPlacing(on); }}
           alerts={saved?.alerts ?? false} onSave={a => void save(filters, a)} saved={!!saved} error={pinError ?? timesError ?? saveError} />
         </Header>
       </Page.Header>
