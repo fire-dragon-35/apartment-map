@@ -18,7 +18,7 @@ export const PRIVACY: LegalDoc = {
     ] },
     { title: 'Med konto', body: [
       'E-postadress: för inloggning (en länk skickas till dig) och, om du slår på det, för mejl om nya annonser. Grund: avtalet med dig.',
-      'Din egen plats och din sparade sökning: för att räkna restider och skicka bevakningar. Grund: avtalet med dig.',
+      'Din egen plats, din sparade sökning och vilka annonser du bockat för som sedda: för att räkna restider, skicka bevakningar och visa det du redan sett. Grund: avtalet med dig.',
       'Abonnemang: Stripe sköter betalningen. Vi får aldrig dina kortuppgifter, bara om abonnemanget är aktivt. Kvitton och betalningar sparas i sju år enligt bokföringslagen.',
     ] },
     { title: 'Vilka vi delar med', body: [
@@ -51,7 +51,7 @@ export const TERMS: LegalDoc = {
       'Du loggar in med din e-post. Ett konto per person. Missbruk kan leda till att kontot stängs.',
     ] },
     { title: 'Plus', body: [
-      'Plus är ett abonnemang som förnyas varje månad till det pris som visas vid köpet, inklusive moms. Det ger egen plats på kartan, sparad sökning och mejl om nya annonser.',
+      'Plus är ett abonnemang som förnyas varje månad till det pris som visas vid köpet, inklusive moms. Det ger egen plats på kartan, sparad sökning, mejl om nya annonser och möjligheten att bocka för annonser du sett.',
       'Du avslutar när du vill under Konto, "Hantera abonnemang". Plus gäller då perioden ut, och inget mer dras.',
       'Ångerrätt: du har 14 dagar att ångra köpet. Börjar du använda Plus direkt godkänner du att tjänsten startar, och vid ånger betalar du för den tid du hunnit använda.',
     ] },

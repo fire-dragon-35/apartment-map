@@ -37,7 +37,7 @@ function Welcome({ active, gaveUp }: { active: boolean; gaveUp: boolean }) {
         <Heading level={2}>{active ? 'Välkommen till Plus' : 'Betalningen gick igenom'}</Heading>
         <Text as="p" size="md" tone="secondary">
           {active
-            ? 'Allt är klart. Börja med att flytta pinnen till din egen plats, och slå på mejl om nya träffar under kartan.'
+            ? 'Allt är klart. Börja med att flytta pinnen till din egen plats och slå på mejl om nya träffar. Bocka för Sett på annonser du redan kollat.'
             : gaveUp ? 'Plus tar längre tid än vanligt att aktivera. Ladda om sidan om en minut.' : 'Vi aktiverar Plus, det tar några sekunder…'}
         </Text>
         {active && <ButtonLink href={ROUTES.karta}>Till kartan</ButtonLink>}
