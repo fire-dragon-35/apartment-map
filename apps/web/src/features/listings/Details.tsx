@@ -3,7 +3,7 @@ import { Fragment, type ReactNode } from 'react';
 import { fmt, priceChip, SEP, TOKENS } from '@lk/shared';
 import { Badge, Text, type TextProps } from '@frame/ui';
 import type { Listing } from './Listing.ts';
-import { MarkButton } from './marks.tsx';
+import { MarkBox } from './marks.tsx';
 import styles from './Details.module.css';
 
 /** One datum of DESIGN.md §5; `data-a` names it for the page rules test. */
@@ -58,7 +58,7 @@ export function Details({ l }: { l: Listing }) {
  * DESIGN.md §7 line 3, full width: avtal · källa · ålder. The källa chip is the link to the original ad. The line is
  * outside the card's button (a link cannot sit inside a button), so it passes clicks through to the card, except the chip.
  */
-export function Meta({ l, today, inPopup = false }: { l: Listing; today: string; inPopup?: boolean }) {
+export function Meta({ l, today }: { l: Listing; today: string }) {
   const alder = fmt.alder(l.firstSeen, today);
   return (
     <Text data-meta data-line="3" {...T3} className={styles.meta}>
@@ -74,7 +74,7 @@ export function Meta({ l, today, inPopup = false }: { l: Listing; today: string;
           : <span key="c" data-a="kalla" className={styles.source}>{l.sourceName}</span>,
         alder ? <Atom key="d" name="alder" {...T3}>{alder}</Atom> : null,
       ]} />
-      <MarkButton l={l} inPopup={inPopup} />
+      <MarkBox l={l} />
     </Text>
   );
 }
