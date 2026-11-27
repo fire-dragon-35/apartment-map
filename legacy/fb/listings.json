@@ -1310,7 +1310,10 @@
   "end": null,
   "furnished": false,
   "contact": "dm",
-  "summary": "attefallshus in brf area, +12 m² sleeping loft, el/heat/water/parking incl., ~1 km to pendeltåg, 1 month deposit"
+  "summary": "attefallshus in brf area, +12 m² sleeping loft, el/heat/water/parking incl., ~1 km to pendeltåg, 1 month deposit",
+  "lat": 59.1906,
+  "lon": 18.1304,
+  "t": 59
  },
  {
   "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29861138880136855/",
@@ -1326,7 +1329,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "new-build 2:a with balcony near red line, 6 months to ~may, el/water extra"
+  "summary": "new-build 2:a with balcony near red line, 6 months to ~may, el/water extra",
+  "lat": 59.2543,
+  "lon": 17.8441,
+  "t": 67
  },
  {
   "url": "https://www.facebook.com/groups/454007021327136/posts/29372993812335072/",
@@ -1342,7 +1348,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "2.5:a from 2027 for 2 years, 15 min bus to gullmarsplan"
+  "summary": "2.5:a from 2027 for 2 years, 15 min bus to gullmarsplan",
+  "lat": 59.2167,
+  "lon": 18.3333,
+  "t": 93
  },
  {
   "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29860624703521606/",
@@ -1358,7 +1367,10 @@
   "end": null,
   "furnished": null,
   "contact": "dm",
-  "summary": "mini-villa/attefallshus +8 m² loft, fully equipped, patio, parking, el/water incl."
+  "summary": "mini-villa/attefallshus +8 m² loft, fully equipped, patio, parking, el/water incl.",
+  "lat": 59.4044,
+  "lon": 18.0359,
+  "t": 33
  },
  {
   "url": "https://www.facebook.com/groups/490254901708953/posts/2361569527910805/",
@@ -1374,7 +1386,10 @@
   "end": null,
   "furnished": true,
   "contact": "dm",
-  "summary": "furnished 1:a with balcony by kallhäll station, el/water/internet incl., 1 year at a time, 2 months deposit"
+  "summary": "furnished 1:a with balcony by kallhäll station, el/water/internet incl., 1 year at a time, 2 months deposit",
+  "lat": 59.4541,
+  "lon": 17.8071,
+  "t": 45
  },
  {
   "url": "https://www.facebook.com/groups/1666084590295034/posts/4872766526293475/",
@@ -1390,7 +1405,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "several 22–30 m² flats, furniture optional, el/water/heat/internet incl., can register address"
+  "summary": "several 22–30 m² flats, furniture optional, el/water/heat/internet incl., can register address",
+  "lat": 59.2511,
+  "lon": 17.8049,
+  "t": 66
  },
  {
   "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29859669523617124/",
@@ -1406,7 +1424,10 @@
   "end": null,
   "furnished": false,
   "contact": "dm",
-  "summary": "unfurnished attefallshus with deck, el/water/broadband/parking incl., house is for sale so viewings may occur"
+  "summary": "unfurnished attefallshus with deck, el/water/broadband/parking incl., house is for sale so viewings may occur",
+  "lat": 59.2342,
+  "lon": 18.0545,
+  "t": 62
  },
  {
   "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29859326466984763/",
@@ -1422,7 +1443,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "1:a, ~10000 incl. internet and el, free from 1 march"
+  "summary": "1:a, ~10000 incl. internet and el, free from 1 march",
+  "lat": 59.3413,
+  "lon": 18.0489,
+  "t": 22
  },
  {
   "url": "https://www.facebook.com/groups/490254901708953/posts/2358092671591824/",
@@ -1454,7 +1478,10 @@
   "end": null,
   "furnished": null,
   "contact": "dm",
-  "summary": "2:a by tumba centrum near pendeltåg"
+  "summary": "2:a by tumba centrum near pendeltåg",
+  "lat": 59.2006,
+  "lon": 17.8343,
+  "t": 46
  },
  {
   "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29857794503804626/",
@@ -1470,7 +1497,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "~30 m² flat in villa, heat/water/fibre incl., small patio"
+  "summary": "~30 m² flat in villa, heat/water/fibre incl., small patio",
+  "lat": 59.2552,
+  "lon": 18.1124,
+  "t": 50
  },
  {
   "url": "https://www.facebook.com/groups/1666084590295034/posts/4872063326363795/",
@@ -1486,7 +1516,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "3:a, el/wifi/water/parking incl., direct bus to gullmarsplan, 1 month deposit"
+  "summary": "3:a, el/wifi/water/parking incl., direct bus to gullmarsplan, 1 month deposit",
+  "lat": 59.0497,
+  "lon": 18.2667,
+  "t": null
  },
  {
   "url": "https://www.facebook.com/groups/lagenheter.stockholm/posts/29852354011015342/",
@@ -1502,7 +1535,10 @@
   "end": null,
   "furnished": true,
   "contact": "qasa",
-  "summary": "furnished 1:a built 2016, until further notice, 10563 incl. el/water/wifi, only via qasa"
+  "summary": "furnished 1:a built 2016, until further notice, 10563 incl. el/water/wifi, only via qasa",
+  "lat": 59.386,
+  "lon": 17.9479,
+  "t": 51
  },
  {
   "url": "https://www.facebook.com/groups/1691859567806459/posts/4733111320347920/",
@@ -1518,7 +1554,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "small flat for long-term rent, el extra"
+  "summary": "small flat for long-term rent, el extra",
+  "lat": 59.2784,
+  "lon": 17.8987,
+  "t": 46
  },
  {
   "url": "https://www.facebook.com/groups/490254901708953/posts/2360717697995988/",
@@ -1566,7 +1605,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "attefallshus +10 m² sleeping loft, direct buses to gullmarsplan/city"
+  "summary": "attefallshus +10 m² sleeping loft, direct buses to gullmarsplan/city",
+  "lat": 59.1931,
+  "lon": 18.189,
+  "t": 65
  },
  {
   "url": "https://www.facebook.com/groups/1691859567806459/posts/4732092403783145/",
@@ -1582,7 +1624,10 @@
   "end": null,
   "furnished": false,
   "contact": "070 677 18 38",
-  "summary": "unfurnished 2:a, el extra, broadband incl., min 6 months"
+  "summary": "unfurnished 2:a, el extra, broadband incl., min 6 months",
+  "lat": 59.4467,
+  "lon": 17.9697,
+  "t": 56
  },
  {
   "url": "https://www.facebook.com/groups/1691859567806459/posts/4732187773773608/",
@@ -1614,7 +1659,10 @@
   "end": null,
   "furnished": null,
   "contact": null,
-  "summary": "3:a, slightly furnished, long-term, el extra, no address registration"
+  "summary": "3:a, slightly furnished, long-term, el extra, no address registration",
+  "lat": 59.4228,
+  "lon": 17.8373,
+  "t": 45
  },
  {
   "url": "https://www.facebook.com/groups/1691859567806459/posts/4732060447119674/",
@@ -1630,7 +1678,10 @@
   "end": null,
   "furnished": true,
   "contact": null,
-  "summary": "renovated furnished flat, 6 months, el extra, no internet"
+  "summary": "renovated furnished flat, 6 months, el extra, no internet",
+  "lat": 59.4293,
+  "lon": 17.9501,
+  "t": 37
  },
  {
   "url": "https://www.facebook.com/groups/1691859567806459/posts/4731992830459769/",
@@ -1646,6 +1697,9 @@
   "end": null,
   "furnished": false,
   "contact": null,
-  "summary": "unfurnished 2:a on 15th floor, feb–aug 2027 (6 months)"
+  "summary": "unfurnished 2:a on 15th floor, feb–aug 2027 (6 months)",
+  "lat": 59.4228,
+  "lon": 17.8373,
+  "t": 45
  }
 ]
