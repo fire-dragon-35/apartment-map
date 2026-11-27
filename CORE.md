@@ -13,8 +13,8 @@ Karlaplan. Paid (one plan): your own pinned places. Links always go to the origi
 
 * The laptop worker is the only thing that talks to listing sites (polite fetching, own accounts, nothing else).
 * Supabase is the backend: Postgres with RLS, Edge Functions, Storage. SQL migrations are the only schema source.
-* The web app (`apps/web`) is static on Vercel and reads Supabase with the publishable key. No secret key in the browser.
-* `@lk/shared` is the single source for domain rules, formats and design tokens. Never duplicate them.
+* The web app (`apps/web`) is static on Cloudflare (Workers, static assets) and reads Supabase with the publishable key. No secret key in the browser
+*  `@lk/shared` is the single source for domain rules, formats and design tokens. Never duplicate them.
 * Frame (`vendor/frame`) is the UI foundation. Never edit it from this repo; compose with its components.
 * Stack: TypeScript, React, Vite, Leaflet. No new framework, state library or CSS framework without the owner.
 
