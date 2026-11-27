@@ -14,6 +14,8 @@ import { PinBar } from '../features/pins/PinBar.tsx';
 import { isDefault, usePins } from '../features/pins/usePins.ts';
 import { usePinTimes } from '../features/pins/usePinTimes.ts';
 import { useSavedSearch } from '../features/pins/useSavedSearch.ts';
+import { MarksContext } from '../features/listings/marks.tsx';
+import { useMarks } from '../features/listings/useMarks.ts';
 import { hooks } from './test-hooks.ts';
 
 /** The map page (DESIGN.md §12): state lives here, the features only render and report. */
@@ -29,7 +31,10 @@ export function MapPage() {
   const { minutes, ready, loading: timesLoading, error: timesError } = usePinTimes(isDefault(pins) ? null : pin, placeIds);
   const { saved, save, error: saveError } = useSavedSearch();
   // until the own pin's times are in (or if they fail), the page keeps centrum's
-  const listings = useMemo(() => ready && !isCentrum(pin) ? base0.map(l => l.toOwnPin(minutes(l.placeId))) : base0, [base0, pin, ready, minutes]);
+  const { marked, canMark, toggle } = useMarks();
+  const marks = useMemo(() => ({ canMark, toggle: (id: number) => void toggle(id) }), [canMark, toggle]);
+  const listings = useMemo(() => (ready && !isCentrum(pin) ? base0.map(l => l.toOwnPin(minutes(l.placeId))) : base0)
+    .map(l => l.withDone(marked.has(l.id))), [base0, pin, ready, minutes, marked]);
   // a saved search fills the filters once, when the page opens without filters of its own
   const applied = useRef(false);
   useEffect(() => {
@@ -81,6 +86,7 @@ export function MapPage() {
   if (import.meta.env.MODE === 'test') Object.assign(hooks, { all: listings, visible, selectedId, today });
 
   return (
+    <MarksContext.Provider value={marks}>
     <Page>
       <Page.Header>
         <Header filters={filters} onFilters={changeFilters}
@@ -100,5 +106,6 @@ export function MapPage() {
         </Panel>
       </Page.Content>
     </Page>
+    </MarksContext.Provider>
   );
 }

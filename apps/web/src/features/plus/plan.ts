@@ -8,6 +8,7 @@ export const PLAN = {
     { title: 'Din egen plats', text: 'Flytta pinnen från centrum till jobbet, skolan eller en vän och se restiden från varje lägenhet dit.' },
     { title: 'Sparad sökning', text: 'Dina filter finns kvar nästa gång du öppnar kartan.' },
     { title: 'Mejl om nytt', text: 'Få ett mejl när en ny annons passar din sökning.' },
+    { title: 'Bocka av', text: 'Gråa ut annonser du redan kollat, sökt eller inte vill ha, på kartan och i listan.' },
   ],
 };
 

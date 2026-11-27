@@ -30,6 +30,8 @@ export class Listing {
   readonly radius: number;
   readonly isNew: boolean;
   readonly contractOk: boolean;
+  /** checked off by the user (Plus): grey on the map and in the list */
+  readonly done: boolean = false;
 
   constructor(row: ListingRow, today: string) {
     this.id = row.id!;
@@ -62,6 +64,11 @@ export class Listing {
   /** The same listing measured to the user's own pin (CORE.md, paid): restid from the pin's matrix cell. */
   toOwnPin(minutes: number | null): Listing {
     return Object.assign(Object.create(Listing.prototype) as Listing, this, { t: minutes ?? Number.POSITIVE_INFINITY, approx: true });
+  }
+
+  /** The same listing, checked off or not (Plus). */
+  withDone(done: boolean): Listing {
+    return done === this.done ? this : Object.assign(Object.create(Listing.prototype) as Listing, this, { done });
   }
 
 }

@@ -7,7 +7,7 @@ export function Popup({ l, today }: { l: Listing; today: string }) {
   return (
     <div className={styles.grid}>
       <Details l={l} />
-      <Meta l={l} today={today} />
+      <Meta l={l} today={today} inPopup />
     </div>
   );
 }

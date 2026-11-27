@@ -14,7 +14,7 @@ export const Card = memo(function Card({ l, today, selected, hot, onPick, onHove
   l: Listing; today: string; selected: boolean; hot: boolean; onPick: (l: Listing) => void; onHover: (id: number | null) => void;
 }) {
   return (
-    <div className={`${styles.item} ${details.grid}`} data-hot={hot || undefined}
+    <div className={`${styles.item} ${details.grid}`} data-hot={hot || undefined} data-done={l.done || undefined}
       onMouseEnter={CAN_HOVER ? () => onHover(l.id) : undefined} onMouseLeave={CAN_HOVER ? () => onHover(null) : undefined}>
       <button type="button" className={styles.card} id={`c${l.id}`} data-card={l.id} data-new={l.isNew || undefined}
         aria-pressed={selected} onClick={() => onPick(l)}>

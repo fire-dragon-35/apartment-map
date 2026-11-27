@@ -10,6 +10,8 @@ export const TOKENS = {
   text1: '#0A0A0A', text2: '#3A3A3A', text3: '#6E6E6E', line: '#EAEAEA', accent: '#6E3AEE', accentText: '#4E22B5',
   newBg: '#F1EAFF', selected: '#6E3AEE', tagBg: '#F0F0F2', mapBg: '#F1F1EE', warnBg: '#16161C', warnText: '#FFFFFF',
   white: '#FFFFFF', guide: '#8E8E93',
+  /** a checked-off listing's dot (Plus): grey fill and edge, so it reads as handled */
+  doneFill: '#D1D1D6', doneEdge: '#AEAEB2',
   shadowPop: '0 8px 24px rgb(0 0 0 / 14%)', shadowThumb: '0 0 0 1px rgb(0 0 0 / 8%), 0 1px 4px rgb(0 0 0 / 28%)',
 } as const;
 

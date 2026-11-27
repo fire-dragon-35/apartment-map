@@ -66,3 +66,7 @@
   outline: none;
   -webkit-tap-highlight-color: transparent;
 }
+/* checked off (Plus): faded, like its grey dot on the map; still tappable and undoable */
+.item[data-done] {
+  opacity: 0.5;
+}

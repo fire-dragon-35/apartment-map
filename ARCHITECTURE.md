@@ -174,6 +174,7 @@ create table subscriptions (
 | travel_times | read Karlaplan rows | read Karlaplan rows | read all | write |
 | travel_matrix | none | none | none (through the function) | read / write (service key) |
 | destinations, saved_searches | none | own rows, Karlaplan only | own rows | read |
+| listing_marks | none | own rows; insert only when paying | own rows | read |
 | subscriptions | none | own row (read) | own row (read) | write (stripe-webhook) |
 | runs, source_runs, fb_posts | none | none | none | read / write |
 

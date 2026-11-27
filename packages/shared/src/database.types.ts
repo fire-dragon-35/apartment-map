@@ -181,6 +181,18 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"listing_marks": {
+                  Row: {
+                    "created_at": string,"listing_id": number,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"listing_id": number,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"listing_id"?: number,"user_id"?: string
+                  }
+                  Relationships: []
                 },"saved_searches": {
                   Row: {
                     "alerts": boolean,"filters": Json,"id": number,"last_sent_on": string | null,"user_id": string

@@ -246,3 +246,9 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
   listing (`travel-times` with one `placeId`: slow the first time, then cached), so it can differ from `~18 min` by a few minutes.
 * **Saved search:** one per user: the filters (not "Bara nya") and the pin. Opening the map without a filter query
   applies it. The email (07:45, edge function `notify-matches`) lists that morning's new matches once a day.
+
+* **Bocka av (Plus):** `Bocka av` at the end of line 3 of the card and the popup marks a listing as handled (seen, not
+  interested, applied); `✓ Avbockad` undoes it. A checked-off listing's dot is grey (`doneFill` #D1D1D6, edge `doneEdge`
+  #AEAEB2) and its card at 50 % opacity; it stays in the list and on the map, filters and sorting unchanged. Stored in
+  `listing_marks` (one row per user and listing; only a paying user adds one). Without Plus the popup shows
+  `Bocka av med Plus`, a link to `#/plus`; the card shows nothing.

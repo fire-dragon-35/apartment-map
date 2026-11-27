@@ -23,10 +23,12 @@ const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, registe
 }) {
   const marker = useRef<L.CircleMarker | null>(null);
   const lit = on || hot;
-  const options = useMemo(() => ({
-    fillColor: (priceBand(l.kpm) ?? PRICE_UNKNOWN).color, fillOpacity: lit ? 1 : 0.9,
-    color: lit ? TOKENS.selected : (priceBand(l.kpm) ?? PRICE_UNKNOWN).edge, weight: lit ? 2 : 1.5, bubblingMouseEvents: false,
-  }), [l.kpm, lit]);
+  const options = useMemo(() => {
+    const band = priceBand(l.kpm) ?? PRICE_UNKNOWN;
+    // checked off (Plus): grey, so the price colours are left for what is still open
+    const [fill, edge] = l.done ? [TOKENS.doneFill, TOKENS.doneEdge] : [band.color, band.edge];
+    return { fillColor: fill, fillOpacity: lit ? 1 : 0.9, color: lit ? TOKENS.selected : edge, weight: lit ? 2 : 1.5, bubblingMouseEvents: false };
+  }, [l.kpm, l.done, lit]);
   // the lit pin is drawn on top of its neighbours
   useEffect(() => { if (lit) marker.current?.bringToFront(); }, [lit]);
   const events = useMemo(() => HOVER
