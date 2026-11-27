@@ -1,5 +1,4 @@
 import { Badge, Button, ButtonLink, Checkbox, Text } from '@frame/ui';
-import { TOKENS } from '@lk/shared';
 import { ROUTES } from '../../app/useRoute.ts';
 import { isDefault, type Pin } from './usePins.ts';
 import styles from './PinBar.module.css';
@@ -20,11 +19,11 @@ interface Props {
 export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onSave, saved, error }: Props) {
   if (!canEdit) {
     // the same two tools as with Plus, each a link to the Plus page, so the free map shows what Plus adds
-    const plus = <Badge tone="custom" color="var(--color-background)" background={TOKENS.accent}>Plus</Badge>;
+    const plus = <Badge tone="neutral">Plus</Badge>;
     return (
       <div className={styles.tools}>
-        <ButtonLink variant="secondary" href={ROUTES.plus}>Flytta pinnen {plus}</ButtonLink>
-        <ButtonLink variant="secondary" href={ROUTES.plus}>Spara sökning {plus}</ButtonLink>
+        <ButtonLink variant="ghost" href={ROUTES.plus}>Flytta pinnen {plus}</ButtonLink>
+        <ButtonLink variant="ghost" href={ROUTES.plus}>Spara sökning {plus}</ButtonLink>
       </div>
     );
   }
@@ -33,9 +32,9 @@ export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onS
     <>
       <div className={styles.tools}>
         {placing
-          ? <Button variant="secondary" onClick={() => onPlacing(false)}>Avbryt</Button>
-          : <Button variant="secondary" onClick={() => onPlacing(true)}>Flytta pinnen</Button>}
-        <Button variant="secondary" onClick={() => onSave(alerts)}>{saved ? 'Uppdatera sökning' : 'Spara sökning'}</Button>
+          ? <Button variant="ghost" onClick={() => onPlacing(false)}>Avbryt</Button>
+          : <Button variant="ghost" onClick={() => onPlacing(true)}>Flytta pinnen</Button>}
+        <Button variant="ghost" onClick={() => onSave(alerts)}>{saved ? 'Uppdatera sökning' : 'Spara sökning'}</Button>
       </div>
       <div className={styles.row}>
         <Checkbox label="Mejla mig nya träffar varje morgon" checked={alerts} onChange={e => onSave(e.target.checked)} />
