@@ -1,24 +1,23 @@
 import { Button, ButtonLink, Text } from '@frame/ui';
 import { Stack } from '@frame/core';
-import { ContentPage } from './ContentPage.tsx';
-import { BillingPortalButton, Paywall, RequireAuth, useAuth } from '@frame/supabase';
+import { BillingPortalButton, useAuth, useSubscription } from '@frame/supabase';
 import { ROUTES } from '../../app/useRoute.ts';
-import { SIGN_IN_TITLE, SignIn } from '../plus/SignIn.tsx';
+import { SignIn } from '../plus/SignIn.tsx';
+import { ContentPage } from './ContentPage.tsx';
 
-/** Logga in, skapa konto and the account itself: one page. Google or an email link; signing up is the same step. */
+/** Konto: signed out, the sign-in (which also creates the account); signed in, who you are, your plan, sign out. */
 export function Account() {
-  const { user, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
+  const { active } = useSubscription();
+  if (loading) return null;
+  if (!user) return <ContentPage title="Logga in" lead="Med Google eller en länk till din e-post. Är du ny skapas kontot direkt."><SignIn /></ContentPage>;
   return (
-    <ContentPage title={user ? 'Ditt konto' : SIGN_IN_TITLE}>
-      <Stack gap={4} align="center">
-        <RequireAuth fallback={<SignIn />}>
-          <Text as="p" tone="secondary">Inloggad som {user?.email}</Text>
-          <Paywall fallback={<ButtonLink href={ROUTES.plus}>Skaffa Plus</ButtonLink>}>
-            <Text as="p">Du har ett aktivt abonnemang.</Text>
-            <BillingPortalButton variant="secondary">Hantera abonnemang</BillingPortalButton>
-          </Paywall>
-          <Button variant="ghost" onClick={() => void signOut()}>Logga ut</Button>
-        </RequireAuth>
+    <ContentPage title="Konto" lead={`Inloggad som ${user.email}`}>
+      <Stack gap={3} align="center">
+        {active
+          ? <><Text as="p" tone="secondary">Du har Plus.</Text><BillingPortalButton variant="secondary" returnPath="/#/konto">Hantera abonnemang</BillingPortalButton></>
+          : <><Text as="p" tone="secondary">Du har gratisversionen.</Text><ButtonLink href={ROUTES.plus}>Skaffa Plus</ButtonLink></>}
+        <Button variant="ghost" onClick={() => void signOut()}>Logga ut</Button>
       </Stack>
     </ContentPage>
   );

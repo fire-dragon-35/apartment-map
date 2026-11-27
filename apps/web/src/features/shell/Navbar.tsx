@@ -13,11 +13,7 @@ export function Navbar({ route }: { route: RouteId }) {
     <FrameNavbar size="narrow" brand={<Wordmark />} brandLabel={`${BRAND}, startsidan`} brandHref={ROUTES.hem}
       navLabel="Huvudmeny" menuLabel="Meny"
       links={LINKS.map(([id, label]) => ({ label, href: ROUTES[id], current: route === id }))}
-      actions={user
-        ? <ButtonLink variant="secondary" href={ROUTES['logga-in']} aria-current={route === 'logga-in' ? 'page' : undefined}>Konto</ButtonLink>
-        : <>
-          <ButtonLink variant="ghost" href={ROUTES['logga-in']} aria-current={route === 'logga-in' ? 'page' : undefined}>Logga in</ButtonLink>
-          <ButtonLink href={ROUTES['skapa-konto']}>Skapa konto</ButtonLink>
-        </>} />
+      actions={<ButtonLink variant={user ? 'secondary' : 'primary'} href={ROUTES.konto} aria-current={route === 'konto' ? 'page' : undefined}>
+        {user ? 'Konto' : 'Logga in'}</ButtonLink>} />
   );
 }

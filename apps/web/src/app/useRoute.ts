@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 
-export type RouteId = 'hem' | 'karta' | 'om' | 'logga-in' | 'skapa-konto' | 'plus' | 'okand';
+export type RouteId = 'hem' | 'karta' | 'om' | 'konto' | 'plus' | 'okand';
 
 export const ROUTES: Record<Exclude<RouteId, 'okand'>, string> = {
   hem: '#/',
   karta: '#/karta',
   om: '#/om',
-  'logga-in': '#/logga-in',
-  'skapa-konto': '#/skapa-konto',
+  konto: '#/konto',
   plus: '#/plus',
 };
 
