@@ -41,7 +41,7 @@ export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onS
         {upsell && (
           <div className={styles.upsell}>
             <Stack gap={2}>
-              <Text as="p" size="sm">Med Plus flyttar du pinnen från centrum till din egen plats (jobb, skola), sparar din sökning, får ett mejl när något nytt passar och bockar för annonser du sett.</Text>
+              <Text as="p" size="sm">Med Plus flyttar du pinnen från centrum till din egen plats (jobb, skola), sparar din sökning, får ett mejl när något nytt passar och sållar bort annonser du redan kollat.</Text>
               <ButtonLink href={ROUTES.plus}>Läs mer och skaffa Plus</ButtonLink>
             </Stack>
           </div>
