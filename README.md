@@ -1,6 +1,6 @@
 # apartment-map
 
-EnkelLGH: every Stockholm rental ad on one map, with travel times. Live at https://apartment-map-smoky.vercel.app/
+EnkelLGH: every Stockholm rental ad on one map, with travel times. Live at https://enkellgh-web.johan-linden14.workers.dev/
 How it is built: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 **Fixed rules: [CORE.md](CORE.md). Plan to v1: [ROADMAP.md](ROADMAP.md). Agents: [CLAUDE.md](CLAUDE.md).**
