@@ -1,6 +1,7 @@
 import { Footer as FrameFooter } from '@frame/site';
 import { ROUTES, section } from '../../app/useRoute.ts';
-import { BRAND, Wordmark } from './Wordmark.tsx';
+import { CONTACT } from '../legal/texts.ts';
+import { BRAND, Logo } from './Logo.tsx';
 import styles from './Footer.module.css';
 
 /** Every link goes to a page in the navbar, or to a section of one (Om tjänsten holds questions, contact, data and legal). */
@@ -12,8 +13,8 @@ const COLUMNS = [
 
 export function Footer() {
   return (
-    <FrameFooter size="narrow" tone="dark" brand={<Wordmark />} columns={COLUMNS}
-      tagline="Alla hyresannonser på en karta, med restider."
+    <FrameFooter size="narrow" tone="dark" brand={<Logo tone="ink" />} columns={COLUMNS}
+      tagline={<>Alla hyresannonser på en karta, med restider.<br /><a className={styles.mail} href={`mailto:${CONTACT}`}>{CONTACT}</a></>}
       legal={<span className={styles.legal}>{`© 2026 ${BRAND}. Annonserna tillhör respektive källa.`}</span>} />
   );
 }
