@@ -6,6 +6,7 @@ import { ROUTES } from '../../app/useRoute.ts';
 const CITIES = [
   { name: 'Stockholm', image: '/cities/stockholm.webp', href: ROUTES.karta },
   { name: 'Göteborg', image: '/cities/goteborg.webp' },
+  { name: 'Malmö', image: '/cities/malmo.webp' },
 ];
 
 export function Cities() {
@@ -13,7 +14,7 @@ export function Cities() {
     <Section align="center" size="narrow" title="Kartor">
       <Grid>
         {CITIES.map(c => (
-          <Grid.Item key={c.name} span={{ base: 12, md: 6 }}>
+          <Grid.Item key={c.name} span={{ base: 12, md: 4 }}>
             <MediaCard ratio="landscape" title={c.name} image={c.image} href={c.href} note={c.href ? undefined : 'Kommer snart'} />
           </Grid.Item>
         ))}
