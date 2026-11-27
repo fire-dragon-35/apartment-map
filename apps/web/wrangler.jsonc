@@ -1,0 +1,6 @@
+// Cloudflare Workers, static assets only: the built page from `npm run build -w @lk/web`. Routes are hashes, so no fallback.
+{
+  "name": "enkellgh-web",
+  "compatibility_date": "2026-11-27",
+  "assets": { "directory": "./dist" }
+}

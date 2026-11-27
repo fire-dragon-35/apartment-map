@@ -49,7 +49,7 @@ const facebook = () => {
   return [new Facebook({
     apifyToken: APIFY_TOKEN, groups, posts: new SupabaseFbPosts(store.client), today: systemClock.today(),
     extractor: new ClaudeExtractor(new HttpClient({ timeoutMs: 60_000, retries: 3, gapMs: 200 }), ANTHROPIC_API_KEY),
-    geocoder: new NominatimGeocoder(new HttpClient({ timeoutMs: 20_000, retries: 2, gapMs: 1100 }), 'EnkelLGH worker (https://apartment-map-smoky.vercel.app)'),
+    geocoder: new NominatimGeocoder(new HttpClient({ timeoutMs: 20_000, retries: 2, gapMs: 1100 }), 'EnkelLGH worker (https://enkellgh-web.johan-linden14.workers.dev)'),
     apifyHttp: new HttpClient({ timeoutMs: 300_000, retries: 1, gapMs: 0 }),
   })];
 };

@@ -22,7 +22,7 @@ export const PRIVACY: LegalDoc = {
       'Abonnemang: Stripe sköter betalningen. Vi får aldrig dina kortuppgifter, bara om abonnemanget är aktivt. Kvitton och betalningar sparas i sju år enligt bokföringslagen.',
     ] },
     { title: 'Vilka vi delar med', body: [
-      'Supabase (databas och inloggning), Vercel (webbplatsen), Stripe (betalning) och Resend (e-post). De behandlar uppgifterna bara för vår räkning. Om uppgifter förs utanför EU sker det med EU-kommissionens standardavtalsklausuler.',
+      'Supabase (databas och inloggning), Cloudflare (webbplatsen), Stripe (betalning) och Resend (e-post). De behandlar uppgifterna bara för vår räkning. Om uppgifter förs utanför EU sker det med EU-kommissionens standardavtalsklausuler.',
       'Vi säljer aldrig dina uppgifter och lämnar inte ut dem till någon annan.',
     ] },
     { title: 'Annonserna', body: [
