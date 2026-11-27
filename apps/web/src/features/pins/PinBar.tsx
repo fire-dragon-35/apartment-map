@@ -22,7 +22,7 @@ export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onS
     const plus = <Badge tone="neutral">Plus</Badge>;
     return (
       <div className={styles.tools}>
-        <ButtonLink variant="ghost" href={ROUTES.plus}>Flytta pinnen {plus}</ButtonLink>
+        <ButtonLink variant="ghost" href={ROUTES.plus}>Flytta centrum {plus}</ButtonLink>
         <ButtonLink variant="ghost" href={ROUTES.plus}>Spara sökning {plus}</ButtonLink>
       </div>
     );
@@ -33,14 +33,14 @@ export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onS
       <div className={styles.tools}>
         {placing
           ? <Button variant="ghost" onClick={() => onPlacing(false)}>Avbryt</Button>
-          : <Button variant="ghost" onClick={() => onPlacing(true)}>Flytta pinnen</Button>}
+          : <Button variant="ghost" onClick={() => onPlacing(true)}>Flytta centrum</Button>}
         <Button variant="ghost" onClick={() => onSave(alerts)}>{saved ? 'Uppdatera sökning' : 'Spara sökning'}</Button>
       </div>
       <div className={styles.row}>
         <Checkbox label="Mejla mig nya träffar varje morgon" checked={alerts} onChange={e => onSave(e.target.checked)} />
         {!placing && !isDefault(pins) && <Button variant="ghost" onClick={onReset}>Tillbaka till centrum</Button>}
       </div>
-      {placing && <div className={styles.row}><Text size="xs" role="status">Dra pinnen eller tryck på kartan där den ska stå.</Text></div>}
+      {placing && <div className={styles.row}><Text size="xs" role="status">Dra centrum eller tryck på kartan där det ska ligga.</Text></div>}
       {error && <div className={styles.row}><Text size="xs" tone="muted" role="alert">{error}</Text></div>}
     </>
   );
