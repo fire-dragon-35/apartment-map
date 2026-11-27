@@ -3,9 +3,9 @@ export const PLAN = {
   price: '299',
   unit: 'kr/mån',
   note: 'Inklusive moms. Avsluta när du vill under Konto.',
-  lead: 'Kartan är gratis med restider till Karlaplan. Plus gör den till din.',
+  lead: 'Kartan är gratis med restider till centrum. Plus gör den till din.',
   features: [
-    { title: 'Din egen plats', text: 'Flytta pinnen från Karlaplan till jobbet, skolan eller en vän och se restiden från varje lägenhet dit.' },
+    { title: 'Din egen plats', text: 'Flytta pinnen från centrum till jobbet, skolan eller en vän och se restiden från varje lägenhet dit.' },
     { title: 'Sparad sökning', text: 'Dina filter finns kvar nästa gång du öppnar kartan.' },
     { title: 'Mejl om nytt', text: 'Få ett mejl när en ny annons passar din sökning.' },
   ],

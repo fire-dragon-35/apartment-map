@@ -41,7 +41,7 @@ export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onS
         {upsell && (
           <div className={styles.upsell}>
             <Stack gap={2}>
-              <Text as="p" size="sm">Med Plus flyttar du pinnen från Karlaplan till din egen plats (jobb, skola), sparar din sökning och får ett mejl när något nytt passar.</Text>
+              <Text as="p" size="sm">Med Plus flyttar du pinnen från centrum till din egen plats (jobb, skola), sparar din sökning och får ett mejl när något nytt passar.</Text>
               <ButtonLink href={ROUTES.plus}>Läs mer och skaffa Plus</ButtonLink>
             </Stack>
           </div>
@@ -55,7 +55,7 @@ export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onS
       {placing
         ? <Button variant="ghost" onClick={() => onPlacing(false)}>Avbryt</Button>
         : <><Button variant="secondary" onClick={() => onPlacing(true)}>Flytta pinnen</Button>
-          {!isDefault(pins) && <Button variant="ghost" onClick={onReset}>Tillbaka till Karlaplan</Button>}</>}
+          {!isDefault(pins) && <Button variant="ghost" onClick={onReset}>Tillbaka till centrum</Button>}</>}
       {placing && <div className={styles.row}><Text size="xs" role="status">Dra pinnen eller tryck på kartan där den ska stå.</Text></div>}
       <div className={styles.row}>
         <Button variant="secondary" onClick={() => onSave(alerts)}>{saved ? 'Uppdatera sparad sökning' : 'Spara sökning'}</Button>

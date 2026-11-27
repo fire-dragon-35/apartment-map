@@ -40,8 +40,8 @@ export function usePinTimes(pin: Pin | null, placeIds: number[]) {
     }).catch((e: unknown) => {
       if (!alive) return;
       const message = e instanceof Error && e.message === 'empty'
-        ? 'Inga restider till den platsen. Välj en plats inom 20 km från Karlaplan.'
-        : 'Kunde inte räkna restider till din plats just nu. Visar restid till Karlaplan.';
+        ? 'Inga restider till den platsen. Välj en plats inom 20 km från centrum.'
+        : 'Kunde inte räkna restider till din plats just nu. Visar restid till centrum.';
       setFailed({ key, message });
     });
     return () => { alive = false; };

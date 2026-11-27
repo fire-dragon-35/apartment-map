@@ -110,7 +110,7 @@ restid = the travel matrix minutes from the listing to the pin, computed every n
 
 **Pin** (Leaflet `circleMarker` on one canvas renderer in its own pane above the rings, tap tolerance 8 px; rings and the pin are non interactive SVG): radius 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1); fill price colour, opacity 0.9; 1.5 px edge in its `price.edge` colour. Selected: `selected` 2 px edge, brought to front. Smaller pins drawn above larger.
 
-**Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Karlaplan`, not clickable.
+**Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Centrum`, not clickable. The page never names Karlaplan: the free default pin is called `centrum` in all copy (pin label, `Tillbaka till centrum`, `restid till centrum`); Karlaplan stays the point's position and its name in code and docs.
 
 **Card** (padding 12 16; a `<button>` covers the whole card, line 3 with the source link sits on top of it). Card and popup are identical: the same grid, the same link, two columns (text left, numbers right aligned with tabular figures):
 
@@ -234,7 +234,7 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
 ## 14. Own pin and saved search (paid, CORE.md)
 
 * **One pin** restid is measured to: Karlaplan for everyone; Plus moves it to an own place ("Din plats") and back
-  with `Tillbaka till Karlaplan`. No extra pins. Moving: `Flytta pinnen` turns on a placing mode (the listing dots
+  with `Tillbaka till centrum`. No extra pins. Moving: `Flytta pinnen` turns on a placing mode (the listing dots
   are hidden, the popup closes, the cursor is a crosshair); the pin (22 px) can be dragged only in this mode; dropping it or the next tap on the map
   places it and ends the mode; `Avbryt` leaves it unchanged.
 * **Pin bar** in the header toolbar, beside Filter. Free: `Egna platser och bevakning` with an accent `Plus` badge at the right edge, which opens the Plus

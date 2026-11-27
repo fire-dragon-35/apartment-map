@@ -53,7 +53,7 @@ export async function handleTravelTimes(req: Request, deps: HandlerDeps): Promis
       const { data } = token ? await user.auth.getUser(token) : { data: { user: null } };
       if (!data.user) return json(402, { error: 'Logga in och skaffa Plus för att välja egen plats.' });
       const { data: paying } = await user.rpc('is_paying', { uid: data.user.id });
-      if (paying !== true) return json(402, { error: 'Egen plats ingår i Plus. Karlaplan är gratis.' });
+      if (paying !== true) return json(402, { error: 'Egen plats ingår i Plus. Restid till centrum är gratis.' });
     }
     const found = await new MatrixReader(service).minutes(destKey(dest), MATRIX_PROFILE, ids);
     return json(200, {

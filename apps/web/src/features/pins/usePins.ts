@@ -5,7 +5,7 @@ import { isKarlaplan, KARLAPLAN } from '@lk/shared';
 /** A place restid is measured to. `id` null = Karlaplan as the free default (not stored). */
 export interface Pin { id: number | null; label: string; lat: number; lon: number }
 
-export const KARLAPLAN_PIN: Pin = { id: null, label: 'Karlaplan', lat: KARLAPLAN.lat, lon: KARLAPLAN.lon };
+export const KARLAPLAN_PIN: Pin = { id: null, label: 'Centrum', lat: KARLAPLAN.lat, lon: KARLAPLAN.lon };
 export const OWN_LABEL = 'Din plats';
 export const pinKey = (p: { lat: number; lon: number }) => `${p.lat.toFixed(4)},${p.lon.toFixed(4)}`;
 export const isDefault = (pins: Pin[]) => pins.length === 1 && isKarlaplan(pins[0]!);
