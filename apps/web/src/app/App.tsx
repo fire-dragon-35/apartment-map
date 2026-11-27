@@ -19,9 +19,8 @@ export function App() {
         : route === 'hem' ? <Landing />
         : route === 'om' ? <About />
         : route === 'plus' ? <PlusPage />
-        : route === 'logga-in' ? <Account title="Logga in" />
-        : route === 'skapa-konto' ? <Account title="Skapa konto" />
-        : <ComingSoon route={route} />}
+        : route === 'logga-in' || route === 'skapa-konto' ? <Account />
+        : <ComingSoon />}
     </AppShell>
   );
 }

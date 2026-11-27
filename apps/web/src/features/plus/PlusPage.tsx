@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { Panel, Stack } from '@frame/core';
 import { ButtonLink, Heading, Text } from '@frame/ui';
 import { Pricing } from '@frame/site';
-import { BillingPortalButton, CheckoutButton, SignInForm, useAuth, useSubscription } from '@frame/supabase';
+import { BillingPortalButton, CheckoutButton, useAuth, useSubscription } from '@frame/supabase';
 import { ROUTES, section } from '../../app/useRoute.ts';
 import { ContentPage } from '../shell/ContentPage.tsx';
-import { PLAN, SIGN_IN_LABELS } from './plan.ts';
+import { PLAN } from './plan.ts';
+import { SIGN_IN_TITLE, SignIn } from './SignIn.tsx';
 
 /** Back from Stripe with ?checkout=success: read once, then dropped from the address so a reload does not repeat it. */
 function useJustPaid() {
@@ -66,9 +67,8 @@ export function PlusPage() {
       <Pricing price={PLAN.price} unit={PLAN.unit} note={PLAN.note} action={action} features={PLAN.features} />
       {!loading && !user && (
         <Stack id="logga-in" as="section" gap={3} align="center">
-          <Heading level={2}>Logga in eller skapa konto</Heading>
-          <Text as="p" size="md" tone="secondary" align="center">Samma steg för båda. Sedan betalar du med kort, Apple Pay eller Google Pay hos Stripe.</Text>
-          <SignInForm google labels={SIGN_IN_LABELS} />
+          <Heading level={2}>{SIGN_IN_TITLE}</Heading>
+          <SignIn />
         </Stack>
       )}
       {user && active && !justPaid && (
