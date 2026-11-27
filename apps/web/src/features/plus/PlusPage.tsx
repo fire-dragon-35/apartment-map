@@ -53,20 +53,28 @@ export function PlusPage() {
   const justPaid = useJustPaid();
   const wait = useWaitForActive(justPaid);
 
-  const action = loading ? null
+  // the one next step, under the plan: sign in, pay, or manage
+  const next = loading ? null
     : !user ? (
-      <Stack gap={2} align="center">
-        <Text as="p" size="sm" tone="secondary" align="center">Logga in för att köpa. Nytt konto skapas automatiskt.</Text>
+      <Stack gap={3} align="center">
+        <Heading level={3} as="h2">Logga in för att köpa</Heading>
+        <Text as="p" tone="secondary" align="center">Med Google eller en länk till din e-post. Är du ny skapas kontot direkt.</Text>
         <SignIn />
       </Stack>
     )
-    : active ? <BillingPortalButton variant="secondary" returnPath="/#/plus">Hantera abonnemang</BillingPortalButton>
-    : <CheckoutButton returnPath="/#/plus">Betala {PLAN.price} {PLAN.unit}</CheckoutButton>;
+    : (
+      <Stack gap={2} align="center">
+        {active
+          ? <BillingPortalButton variant="secondary" returnPath="/#/plus">Hantera abonnemang</BillingPortalButton>
+          : <CheckoutButton returnPath="/#/plus">Betala {PLAN.price} {PLAN.unit}</CheckoutButton>}
+      </Stack>
+    );
 
   return (
     <ContentPage title="Plus">
       {justPaid && <Welcome {...wait} />}
-      <PlanCard action={action} />
+      <PlanCard />
+      {next}
     </ContentPage>
   );
 }

@@ -3,8 +3,8 @@ import { Grid, Panel, Stack } from '@frame/core';
 import { CheckList, Text } from '@frame/ui';
 import { PLAN } from './plan.ts';
 
-/** The one plan: what it adds beside the price, and one action under the price (a link, the sign-in, or pay). */
-export function PlanCard({ action }: { action: ReactNode }) {
+/** The one plan: what it adds beside the price, and optionally one action under the price. */
+export function PlanCard({ action }: { action?: ReactNode }) {
   return (
     <Panel>
       <Stack gap={6}>
