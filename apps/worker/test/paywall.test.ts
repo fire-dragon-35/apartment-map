@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { after, before, test } from 'node:test';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { cellOf, handleTravelTimes, KARLAPLAN_DEST, MATRIX_PROFILE, type Database } from '@lk/shared';
+import { cellOf, handleTravelTimes, CENTRUM_DEST, MATRIX_PROFILE, type Database } from '@lk/shared';
 
 type Db = SupabaseClient<Database>;
 
@@ -21,7 +21,7 @@ function localSupabase(): { url: string; anon: string; service: string } | null 
 
 const local = localSupabase();
 const SKIP = local ? false : 'local Supabase is not running (npx supabase start): paywall not tested';
-const KARLAPLAN = { lat: 59.339, lon: 18.091 };   // the free pin
+const CENTRUM = { lat: 59.339, lon: 18.091 };   // the free pin
 const CUSTOM = { lat: 59.33, lon: 18.07 };        // somebody's own pin
 const PLACE = { lat: 59.4999, lon: 18.4999 };     // a place only this test uses
 const UNREACHABLE = 2_000_000_001;   // a place in the fixture matrix row with no trip and a long walk: null minutes
@@ -54,7 +54,7 @@ before(async () => {
   placeId = place.data!.id;
   // matrix rows: Karlaplan's exact point 21, the custom pin's cell 19
   assert.ifError((await service.from('travel_matrix').upsert([
-    { cell: KARLAPLAN_DEST, profile: MATRIX_PROFILE, place_ids: [placeId], minutes: [21], gtfs_hash: 'test' },
+    { cell: CENTRUM_DEST, profile: MATRIX_PROFILE, place_ids: [placeId], minutes: [21], gtfs_hash: 'test' },
     { cell: cellOf(CUSTOM), profile: MATRIX_PROFILE, place_ids: [placeId, UNREACHABLE], minutes: [19, null] as unknown as number[], gtfs_hash: 'test' },
   ])).error);
 
@@ -69,7 +69,7 @@ before(async () => {
 
 after(async () => {
   if (!local) return;
-  await service.from('travel_matrix').delete().in('cell', [cellOf(CUSTOM), KARLAPLAN_DEST]).eq('profile', MATRIX_PROFILE);
+  await service.from('travel_matrix').delete().in('cell', [cellOf(CUSTOM), CENTRUM_DEST]).eq('profile', MATRIX_PROFILE);
   await service.from('places').delete().eq('id', placeId);
   for (const id of users) await service.auth.admin.deleteUser(id);   // cascades to subscriptions and destinations
 });
@@ -90,7 +90,7 @@ test('other users\' rows are not readable, and a free user cannot save a custom 
   const { data: me } = await free.auth.getUser();
   const custom = await free.from('destinations').insert({ user_id: me.user!.id, label: 'x', lat: CUSTOM.lat, lon: CUSTOM.lon });
   assert.ok(custom.error, 'a free user cannot insert a custom pin');
-  assert.ifError((await free.from('destinations').insert({ user_id: me.user!.id, label: 'Karlaplan', lat: KARLAPLAN.lat, lon: KARLAPLAN.lon })).error);
+  assert.ifError((await free.from('destinations').insert({ user_id: me.user!.id, label: 'Karlaplan', lat: CENTRUM.lat, lon: CENTRUM.lon })).error);
 });
 
 test('travel-times function: 402 on a custom pin unless paying; Karlaplan open', { skip: SKIP }, async () => {

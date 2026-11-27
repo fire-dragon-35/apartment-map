@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Circle, CircleMarker, MapContainer, Marker, Pane, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet';
-import { fmt, KARLAPLAN, priceBand, PRICE_UNKNOWN, SEP, TOKENS } from '@lk/shared';
+import { fmt, CENTRUM, priceBand, PRICE_UNKNOWN, SEP, TOKENS } from '@lk/shared';
 import { CAN_HOVER as HOVER } from '../../app/hover.ts';
 import { hooks } from '../../app/test-hooks.ts';
 import type { Listing } from '../listings/Listing.ts';
@@ -11,7 +11,7 @@ import type { Pin as Place } from '../pins/usePins.ts';
 import { Popup } from './Popup.tsx';
 import styles from './MapView.module.css';
 
-const CENTRE: [number, number] = [KARLAPLAN.lat, KARLAPLAN.lon];
+const CENTRE: [number, number] = [CENTRUM.lat, CENTRUM.lon];
 const esri = (layer: 'Base' | 'Reference') => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_${layer}/MapServer/tile/{z}/{y}/{x}`;
 
 /**
@@ -43,7 +43,7 @@ const Pin = memo(function Pin({ l, on, hot, renderer, onSelect, onHover, registe
   );
 });
 
-/** Fit Karlaplan and all pins once, max zoom 14 (DESIGN.md §8). */
+/** Fit centrum and all pins once, max zoom 14 (DESIGN.md §8). */
 function FitOnce({ items }: { items: Listing[] }) {
   const map = useMap();
   const done = useRef(false);

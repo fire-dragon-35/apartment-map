@@ -1,6 +1,6 @@
 import { Page, Panel } from '@frame/core';
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
-import { isKarlaplan, passesFilters, type PageFilters } from '@lk/shared';
+import { isCentrum, passesFilters, type PageFilters } from '@lk/shared';
 import { Header } from '../features/filters/Header.tsx';
 import { useFilters } from '../features/filters/useFilters.ts';
 import type { Listing } from '../features/listings/Listing.ts';
@@ -20,7 +20,7 @@ import { hooks } from './test-hooks.ts';
 export function MapPage() {
   const { listings: base0, today, loaded, error } = useListings();
   const [filters, setFilters] = useFilters();
-  // paid (CORE.md): own pins, a saved search with a daily email; free: Karlaplan
+  // paid (CORE.md): own pins, a saved search with a daily email; free: centrum
   const { pins, canEdit, error: pinError, move, reset } = usePins();
   const [placing, setPlacing] = useState(false);
   const placeIds = useMemo(() => [...new Set(base0.map(l => l.placeId))], [base0]);
@@ -28,8 +28,8 @@ export function MapPage() {
   const place = useCallback((lat: number, lon: number) => { setPlacing(false); void move(pin, lat, lon); }, [move, pin]);
   const { minutes, ready, loading: timesLoading, error: timesError } = usePinTimes(isDefault(pins) ? null : pin, placeIds);
   const { saved, save, error: saveError } = useSavedSearch();
-  // until the own pin's times are in (or if they fail), the page keeps Karlaplan's
-  const listings = useMemo(() => ready && !isKarlaplan(pin) ? base0.map(l => l.toOwnPin(minutes(l.placeId))) : base0, [base0, pin, ready, minutes]);
+  // until the own pin's times are in (or if they fail), the page keeps centrum's
+  const listings = useMemo(() => ready && !isCentrum(pin) ? base0.map(l => l.toOwnPin(minutes(l.placeId))) : base0, [base0, pin, ready, minutes]);
   // a saved search fills the filters once, when the page opens without filters of its own
   const applied = useRef(false);
   useEffect(() => {

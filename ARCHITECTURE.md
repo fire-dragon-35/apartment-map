@@ -12,7 +12,7 @@ Status: draft 2, 23 nov 2026. Replaces the current mix (laptop browser + GitHub 
 
 A web app that shows every rental apartment in Stockholm that matches a user's filters, with real public transport travel time to a place the user picks, and links to the original ad.
 
-* **Free:** listings, filters, travel time to Karlaplan (the default pin), map and list.
+* **Free:** listings, filters, travel time to centrum (the default pin, T-Centralen; Karlaplan until 27 nov 2026), map and list.
 * **Paid (Stripe):** your own pins, several pins, saved searches, alerts.
 
 ## 2. Principles
@@ -223,6 +223,8 @@ Fetching is polite: one request at a time per site, a short pause between pages,
 
 ## 8. Travel times to any pin
 
+> **Since 27 nov: the default pin is centrum, at T-Centralen** (`CENTRUM`, matrix row `centrum`, `centrum_minutes()` in the view `listings_centrum`; migration `20261127000000_centrum.sql`, which reads the old `karlaplan` row until the worker has rebuilt the matrix, `MATRIX_RULES = 4`, and keeps `listings_karlaplan` as the same view until the page reads the new name). What follows describes the move to the matrix with the old names.
+>
 > **Since 26 nov: the matrix is the only source.** It has a row for Karlaplan's exact point (`karlaplan`) next to the grid cells; the page reads Karlaplan's minutes through `karlaplan_minutes()` in `listings_karlaplan`, an own pin through `travel-times` (matrix only). The SL client, `travel_times`, legs and routes are removed. The text below describes the earlier phases.
 
 `travel-times` takes a destination and a list of place ids, returns minutes and legs, and fills the cache.

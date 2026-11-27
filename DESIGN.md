@@ -1,6 +1,6 @@
 # DESIGN.md · Lägenhetskartan
 
-Status: **locked**. Version 4.3, 26 nov 2026 (4.3: pages built from Frame blocks only, `Heading` for every heading, §12 and §13. 4.2: sticky glass navbar and a glass map popup, R1. 4.1: one source for every restid, the travel matrix; no SL at runtime and no routes: `Visa resväg`, route text and route lines are gone, R10 dropped. 4.0: brand EnkelLGH; black and white with one indigo accent; original traffic light price colours in steps of 100; sources and tags neutral grey; warning black; Inter Tight; selected pin ring and card outline in indigo; R13. 3.9: the app gets a navbar, a footer and a landing page, section 13; the map page moves to `#/karta`, every rule in sections 1 to 11 applies to that page. 3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
+Status: **locked**. Version 4.4, 27 nov 2026 (4.4: the default pin is centrum at T-Centralen, never named Karlaplan; Plus page. 4.3: pages built from Frame blocks only, `Heading` for every heading, §12 and §13. 4.2: sticky glass navbar and a glass map popup, R1. 4.1: one source for every restid, the travel matrix; no SL at runtime and no routes: `Visa resväg`, route text and route lines are gone, R10 dropped. 4.0: brand EnkelLGH; black and white with one indigo accent; original traffic light price colours in steps of 100; sources and tags neutral grey; warning black; Inter Tight; selected pin ring and card outline in indigo; R13. 3.9: the app gets a navbar, a footer and a landing page, section 13; the map page moves to `#/karta`, every rule in sections 1 to 11 applies to that page. 3.8: the restid slider runs 0 to 60+ min, so `no limit` adds about 11 % of the listings instead of about 80 %. 3.7: a `Datakällor` line under the list says whether the latest scrape of every site was complete and when; it opens to one block per site, section 4.5. 3.6: the sort row is one chip per key, `Restid`, `Hyra`, `Storlek`, `kr/m²`; a tap picks the key, the chosen chip again flips the direction, shown as ` ↑` / ` ↓`. 3.5: route text in row 4, tags and warning in row 5; the källa chip is the link to the ad, in line 3 with avtal and ålder; no separate link row; route text on every card and in the popup; the route is drawn on the map only for the selected listing, behind the `Visa resväg` toggle; rent shown without kr in regular weight; warning shortened; `·` between rent and kr/m². 3.4: card and popup rows fixed: r1 adress · område | restid, r2 storlek · rum | hyra and kr/m², r3 avtal · källa · ålder | `Extern länk >`, r4 tags and warning badges, r5 route in plain text (no line colours). `>` replaces every arrow in the UI. 3.3: price scale green → beige → red, bands in steps of 100 from 250; popup and card identical, both with a discreet source link. 3.2: muted price scale, pin edge in a darker shade of its fill; card as a grid with numbers in fixed columns; route line only on the selected card. 3.1: `apps/web` is composed with Frame, section 12; behaviour unchanged).
 
 > `CORE.md` is the fixed part and wins over this file. This file is the detailed current spec: keep it true when you change the page.
 
@@ -36,7 +36,7 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | R9 ✓ | Restid MUST be the travel matrix minutes to the pin (section 6), unchanged. |
 | R10 | (dropped in 4.1: no routes) |
 | R11 ✓ | Only one listing can be selected: one popup, one outlined card, one ringed pin. |
-| R12 ✓ | The accent (indigo) MUST NOT appear on the map except Karlaplan and the selected pin's ring. |
+| R12 ✓ | The accent (indigo) MUST NOT appear on the map except centrum and the selected pin's ring. |
 | R13 ✓ | A selected or highlighted card's outline and background MUST follow the list's rounded corners (first and last card inherit the radius); no clipped corners. |
 
 ## 3. Tokens
@@ -49,7 +49,7 @@ v3 goes back to the plain layout that felt smooth: **a normal web page** with a 
 | `price.text.1` … `.5` | #1E7B34, #4A7208, #7F6200, #9C4E00, #B42318 | text in the kr/m² chip (background: the price colour at 20 %) |
 | `text.1` / `.2` / `.3` | #0A0A0A / #3A3A3A / #6E6E6E | primary / secondary / tertiary text |
 | `line` | #EAEAEA | dividers |
-| `accent` | #6E3AEE (indigo) | logo `LGH`, primary buttons, links, Karlaplan, the `ny` badge text colour family; never a data colour |
+| `accent` | #6E3AEE (indigo) | logo `LGH`, primary buttons, links, centrum, the `ny` badge text colour family; never a data colour |
 | `accent.text` | #4E22B5 | text on `new.bg`, the `ny` badge and the `{N} nya` count |
 | `new.bg` | #F1EAFF | `ny` badge background and the card of a listing new today |
 | `selected` | #6E3AEE | pin ring, card outline (2 px) |
@@ -67,7 +67,7 @@ Type: Inter Tight (self hosted, `@fontsource-variable/inter-tight`), tabular fig
 ## 4. Layout (top to bottom, one column, max width 768 px)
 
 1. **Header** (spacing from Frame, section 12): title `Lägenheter i Stockholm`; T3 line `{N} träffar · {N} nya · ≤ 30k kr · ≥ 20 m² · ≤ 30 min`; then one toolbar row of equally tall controls: the pin bar (section 14) beside a `<details>` whose summary is a bordered button with a sliders icon, the word `Filter` and a chevron. The details open a bordered panel, as wide as the toolbar, that floats over the page (no reflow; closes on click outside or Escape), one slider per row, all drawn the same (one rail, round thumbs, the chosen part filled), labels and values aligned, the value showing the chosen range. The end of every slider is no limit and shown with a `+`: Max restid 0 to 60+ min step 1 (one thumb, 30 by default), Max hyra 0 to 30k+ kr step 500 (one thumb), Max kr/m² 0 to 700+ step 25 (one thumb; listings without a known kr/m² always pass), Storlek 0 to 100+ m² step 5 (two thumbs), Antal rum 1 to 4+ step 0,5 (two thumbs); thumbs never cross; all remembered in the browser. A footer row holds the checkbox `Bara nya` and `Återställ`.
-2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. Karlaplan, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
+2. **Map** in a flush panel, height 55 vh (min 320 px). Esri light grey base + reference labels at 55 %. centrum, dashed rings at 2, 4 and 6 km, pins. Leaflet's own zoom buttons are off; pinch and double tap zoom.
 3. **Legend**, one wrapping T3 line: five price dots with `<250`, `250 till 349`, `350 till 449`, `450 till 549`, `550+ kr/m²`, then `större prick = fler m²`, then `restid: SL dörr till dörr, framme 08:00 nästa vardag`.
 4. **List** of cards in a flush panel, divider between cards. A sort row on top: one chip per key (`Restid`, `Hyra`, `Storlek`, `kr/m²`); a tap picks the key in its natural direction (storlek largest first, the rest lowest first), a tap on the chosen chip flips it; the chosen chip shows ` ↑` or ` ↓`. Default: restid ascending, then hyra. Missing values go last. The list shows 5 cards and scrolls inside itself for the rest.
 5. **Stockholms data**, a section on the `Om tjänsten` page (`#/om`, not on the map page), always visible, no dropdown. A table, one row per site: `Källa` (name and what it covers), `Senast körning` (always a symbol, then `{idag|igår|datum} {HH:MM}`: a green `✓` when the latest fetch was complete, meaning every page was fetched without error and its run finished; otherwise a red `✗`, for an incomplete fetch, an unfinished run (still going or interrupted, with the time the run started) or a stale one (last complete fetch over 36 hours ago). The status in words is the symbol's accessible label; the error text below when it failed), `Antal` (the number kept when the symbol is `✓`, else 0), `Senast lyckad körning` (a green `✓` and the time of the latest successful run, complete and finished), `Antal` (the number that run kept) and `Alla körningar` (how many different listings all runs together have collected from the source, removed ones and cross site copies included, so it is never under `Antal`). Counts are bare integers, without a unit; a cell with nothing to show is `-`. Facebook-grupper is a row of `-`. The last row is `Totalt`: the sums of both `Antal` columns and of `Alla körningar`, `-` elsewhere. If the status cannot be read the section says `Kunde inte läsa datakällornas status`. Times are Stockholm time and approximate on purpose: each source's time is moved 5 to 45 minutes earlier by `shownTime` (fixed per source and fetch, never later than the real time). The data is the view `source_status` (ARCHITECTURE.md §5).
@@ -101,7 +101,7 @@ Notes from data: `first-hand` → förstahand, `student` → studentlägenhet, `
 restid = the travel matrix minutes from the listing to the pin, computed every night on the laptop:
          R5 on SL's timetable (GTFS) and OpenStreetMap, departures 07:30 to 08:00 next weekday (25th percentile),
          or walking (haversine × 1.3 / 80 m/min) when that is not slower; none over an hour of walking.
-         Karlaplan is an exact destination; an own pin reads its ~460 m cell and is shown as ~N min.
+         centrum is an exact destination; an own pin reads its ~460 m cell and is shown as ~N min.
 ```
 
 `restid` is used for display, sorting and the time filter.
@@ -110,7 +110,7 @@ restid = the travel matrix minutes from the listing to the pin, computed every n
 
 **Pin** (Leaflet `circleMarker` on one canvas renderer in its own pane above the rings, tap tolerance 8 px; rings and the pin are non interactive SVG): radius 6 + 6 × clamp((√m² − √20) / (√65 − √20), 0, 1); fill price colour, opacity 0.9; 1.5 px edge in its `price.edge` colour. Selected: `selected` 2 px edge, brought to front. Smaller pins drawn above larger.
 
-**Karlaplan**: Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Centrum`, not clickable. The page never names Karlaplan: the free default pin is called `centrum` in all copy (pin label, `Tillbaka till centrum`, `restid till centrum`); Karlaplan stays the point's position and its name in code and docs.
+**Centrum** (T-Centralen, `CENTRUM` in `@lk/shared`; it was centrum until 27 nov 2026): Leaflet `circleMarker`, radius 7, `accent` fill, white edge, permanent tooltip `Centrum`, not clickable. The free default pin is called `centrum` in all copy (pin label, `Tillbaka till centrum`, `restid till centrum`).
 
 **Card** (padding 12 16; a `<button>` covers the whole card, line 3 with the source link sits on top of it). Card and popup are identical: the same grid, the same link, two columns (text left, numbers right aligned with tabular figures):
 
@@ -118,7 +118,7 @@ restid = the travel matrix minutes from the listing to the pin, computed every n
 Hornsgatan · Södermalm                              23 min     r1: adress (T1), område (T3) | restid (T1)
 52 m² · 2 rok                           15.2k · [296 kr/m²]     r2: storlek · rum (T2) | hyra (T1), chip
 15 dec > 15 dec 2027 · [Samtrygg] · 9 d                        r3: full width: avtal · [källa, the link] · ålder (T3)
-gång 8 min > T18 · 1 stopp > T13 · 2 stopp > gång 5 min > Karlaplan   r4: full width, plain text (every card)
+gång 8 min > T18 · 1 stopp > T13 · 2 stopp > gång 5 min > centrum   r4: full width, plain text (every card)
 [förstahand] [! långt under marknadspris]                      r5: full width: tags and warning, both badges
 ```
 
@@ -138,7 +138,7 @@ New today: `new.bg` background. Selected and keyboard focus: 2 px `selected` out
 | Tap card | select: card outlined, popup; page and map do not move (R3). The popup opens without auto pan. Tap again: close. |
 | Tap empty map, popup ×, Esc | close, clear (R4) |
 | Filter change | refilter, close popup, keep the map where it is |
-| Load | fit Karlaplan and all pins once, max zoom 14 |
+| Load | fit centrum and all pins once, max zoom 14 |
 
 Motion: only Leaflet's own pan and zoom animations and smooth page scroll. With reduced motion: none.
 
@@ -233,7 +233,7 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
 
 ## 14. Own pin and saved search (paid, CORE.md)
 
-* **One pin** restid is measured to: Karlaplan for everyone; Plus moves it to an own place ("Din plats") and back
+* **One pin** restid is measured to: centrum for everyone; Plus moves it to an own place ("Din plats") and back
   with `Tillbaka till centrum`. No extra pins. Moving: `Flytta pinnen` turns on a placing mode (the listing dots
   are hidden, the popup closes, the cursor is a crosshair); the pin (22 px) can be dragged only in this mode; dropping it or the next tap on the map
   places it and ends the mode; `Avbryt` leaves it unchanged.
@@ -242,7 +242,7 @@ The map page of sections 1 to 11 is one page of a small site. Pages are chosen b
   `Mejla mig nya träffar` (these two on a line of their own).
 * **The pin on the map:** an indigo dot with a permanent label; draggable for Plus. The 2/4/6 km rings follow it.
 * **Restid to an own place** comes from the travel matrix and shows as `~18 min`; the card's route line shows
-  `Din plats ~18 min` instead of Karlaplan's route; the map draws the exact SL trip to the pin for the selected
+  `Din plats ~18 min` instead of centrum's route; the map draws the exact SL trip to the pin for the selected
   listing (`travel-times` with one `placeId`: slow the first time, then cached), so it can differ from `~18 min` by a few minutes.
 * **Saved search:** one per user: the filters (not "Bara nya") and the pin. Opening the map without a filter query
   applies it. The email (07:45, edge function `notify-matches`) lists that morning's new matches once a day.

@@ -1,7 +1,8 @@
 export interface LatLon { lat: number; lon: number }
 export interface PlaceCoord extends LatLon { id: number }
 
-export const KARLAPLAN: LatLon = { lat: 59.3389, lon: 18.0907 };
+/** The free default pin: T-Centralen (until 27 nov 2026 it was Karlaplan, 59.3389, 18.0907). */
+export const CENTRUM: LatLon = { lat: 59.3311, lon: 18.0617 };
 
 /** Places are keyed at 4 decimals (about 10 m), so copies of one flat share travel times. */
 export const placeKey = (p: LatLon) => `${p.lat.toFixed(4)},${p.lon.toFixed(4)}`;

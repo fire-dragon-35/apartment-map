@@ -3,12 +3,12 @@
  * thin wrapper and the paywall test runs it on Node.
  *
  * POST { lat, lon, placeIds } → { results: [{ placeId, minutes }], failed: [placeId] }
- *   restid from the travel matrix, one database read. Karlaplan is free; any other pin needs a signed in, paying user
+ *   restid from the travel matrix, one database read. centrum is free; any other pin needs a signed in, paying user
  *   (402 otherwise). Nothing calls SL at runtime.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../database.types.ts';
-import { isKarlaplan } from '../domain/travel.ts';
+import { isCentrum } from '../domain/travel.ts';
 import { destKey, MATRIX_PROFILE } from './grid.ts';
 import { MatrixReader } from './matrix.ts';
 
@@ -48,7 +48,7 @@ export async function handleTravelTimes(req: Request, deps: HandlerDeps): Promis
   try {
     const authorization = req.headers.get('authorization');
     const { user, service } = deps.clients(authorization);
-    if (!isKarlaplan(dest)) {
+    if (!isCentrum(dest)) {
       const token = authorization?.replace(/^Bearer\s+/i, '');
       const { data } = token ? await user.auth.getUser(token) : { data: { user: null } };
       if (!data.user) return json(402, { error: 'Logga in och skaffa Plus för att välja egen plats.' });

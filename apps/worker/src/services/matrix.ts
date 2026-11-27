@@ -1,6 +1,6 @@
 /**
  * The travel time matrix (ARCHITECTURE.md §8), the one source of every restid: from every active place to every cell
- * of the grid and to Karlaplan's exact point, so any pin is one database read. The router (R5 on this laptop) and the database are passed in.
+ * of the grid and to centrum's exact point, so any pin is one database read. The router (R5 on this laptop) and the database are passed in.
  *
  * Full rebuild only when the timetable or the grid changed; otherwise only places without a row are computed and
  * appended to every cell row. Deterministic: the same inputs give the same rows.

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSupabase } from '@frame/supabase';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { isKarlaplan } from '@lk/shared';
+import { isCentrum } from '@lk/shared';
 import { pinKey, type Pin } from './usePins.ts';
 
 const CHUNK = 300;   // the travel-times function takes at most 300 places per call
@@ -20,13 +20,13 @@ async function fetchMinutes(client: SupabaseClient, pin: Pin, placeIds: number[]
 }
 
 /**
- * restid from every place to the user's own pin (Karlaplan's comes with the listings). The travel-times edge function
+ * restid from every place to the user's own pin (centrum's comes with the listings). The travel-times edge function
  * answers from the matrix in a few fast parallel calls; the answer is kept for the page load. `ready` is false while
- * loading and after an error, and then the page keeps Karlaplan's times and shows `error`.
+ * loading and after an error, and then the page keeps centrum's times and shows `error`.
  */
 export function usePinTimes(pin: Pin | null, placeIds: number[]) {
   const client = useSupabase();
-  const key = pin && !isKarlaplan(pin) ? pinKey(pin) : null;
+  const key = pin && !isCentrum(pin) ? pinKey(pin) : null;
   const [failed, setFailed] = useState<{ key: string; message: string } | null>(null);
   const [, setArrived] = useState(0);
 

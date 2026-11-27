@@ -18,7 +18,7 @@ interface Props {
   error: string | null;
 }
 
-/** In the header toolbar: the pins restid is measured to, and the saved search. Everything but Karlaplan is paid (CORE.md). */
+/** In the header toolbar: the pins restid is measured to, and the saved search. Everything but centrum is paid (CORE.md). */
 export function PinBar({ pins, canEdit, onReset, placing, onPlacing, alerts, onSave, saved, error }: Props) {
   const [upsell, setUpsell] = useState(false);
   const offer = useRef<HTMLDivElement>(null);

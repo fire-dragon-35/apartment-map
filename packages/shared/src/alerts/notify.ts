@@ -5,7 +5,7 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../database.types.ts';
-import { KARLAPLAN } from '../domain/place.ts';
+import { CENTRUM } from '../domain/place.ts';
 import { contractOk, DEFAULT_FILTERS, passesFilters, type PageFilters } from '../format/design.ts';
 import { fmt } from '../format/index.ts';
 import { destKey, MATRIX_PROFILE } from '../travel/grid.ts';
@@ -48,7 +48,7 @@ export async function notifyMatches({ db, send, today, siteUrl }: NotifyDeps): P
     if (paying !== true) continue;
 
     const { data: pins } = await db.from('destinations').select('lat, lon').eq('user_id', s.user_id).order('id');
-    const dests = (pins?.length ? pins : [KARLAPLAN]).map(p => ({ lat: Number(p.lat), lon: Number(p.lon) }));
+    const dests = (pins?.length ? pins : [CENTRUM]).map(p => ({ lat: Number(p.lat), lon: Number(p.lon) }));
     const perPin = await Promise.all(dests.map(d => matrix.minutes(destKey(d), MATRIX_PROFILE, placeIds)));
     const f: PageFilters = { ...DEFAULT_FILTERS, ...(s.filters as Partial<PageFilters>) };
 

@@ -6,7 +6,7 @@
  */
 import { metresBetween } from '@lk/shared';
 
-export const KARLAPLAN = { lat: 59.3389, lon: 18.0907 };
+export const CENTRUM = { lat: 59.3389, lon: 18.0907 };
 
 export interface Row {
   id: number; source: string; source_id: string; url: string; street: string | null; area: string | null;
@@ -37,10 +37,10 @@ export function buildRows(today: string, count = 32): Row[] {
   const rows: Row[] = [];
   for (let i = 0; i < count; i++) {
     const metres = 500 + rnd() * 5200, bearing = rnd() * 2 * Math.PI;
-    const lat = KARLAPLAN.lat + (metres * Math.cos(bearing)) / 111_320;
-    const lon = KARLAPLAN.lon + (metres * Math.sin(bearing)) / (111_320 * Math.cos((KARLAPLAN.lat * Math.PI) / 180));
+    const lat = CENTRUM.lat + (metres * Math.cos(bearing)) / 111_320;
+    const lon = CENTRUM.lon + (metres * Math.sin(bearing)) / (111_320 * Math.cos((CENTRUM.lat * Math.PI) / 180));
     const pin = { lat: Number(lat.toFixed(4)), lon: Number(lon.toFixed(4)) };
-    const walk = Math.max(1, Math.round((metresBetween(pin, KARLAPLAN) * 1.3) / 80));
+    const walk = Math.max(1, Math.round((metresBetween(pin, CENTRUM) * 1.3) / 80));
 
     // sizes and kr/m² chosen to hit every price band, then rent follows
     const m2 = [22, 28, 35, 42, 55, 64, 31, 48][i % 8]!;
