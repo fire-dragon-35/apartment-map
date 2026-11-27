@@ -1,6 +1,6 @@
 /**
  * Test 3 of 5 (ARCHITECTURE.md §13): the page rules of DESIGN.md, R1 to R13, checked on the BUILT app in a phone sized
- * headless Chromium. The legacy legacy/tests/design_check.py ported rule by rule. Supabase is mocked (a fixture of about
+ * headless Chromium. Supabase is mocked (a fixture of about
  * 30 listings in the shape of the view), map tiles are refused: no network. Needs Chromium: npx playwright install chromium
  *
  * The app is built with `--mode test` (npm test does it), which publishes `window.__lgh`: the listings, the selection,

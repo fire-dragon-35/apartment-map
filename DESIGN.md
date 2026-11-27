@@ -4,7 +4,7 @@ Status: **locked**. Version 4.3, 26 nov 2026 (4.3: pages built from Frame blocks
 
 > `CORE.md` is the fixed part and wins over this file. This file is the detailed current spec: keep it true when you change the page.
 
-This file is the single source of truth for the page: `apps/web` (and `legacy/index.html` until it is retired). Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
+This file is the single source of truth for the page: `apps/web`. Rules use MUST and MUST NOT and have ids (`R1` …). Rules marked ✓ are checked by `apps/web/test/design.test.ts` (and, for the legacy page, `legacy/tests/design_check.py`).
 
 **Changing the design:** edit this file first, then the page, then run the check. A change is done only when the check prints ALL PASS.
 
@@ -172,7 +172,7 @@ Page filters: restid ≤ slider, hyra ≤ slider, kr/m² ≤ slider, storlek ≥
 
 ## 11. Automated check
 
-`legacy/tests/design_check.py` opens the page in a phone sized headless browser with the repo data:
+`apps/web/test/design.test.ts` opens the built page in a phone sized headless Chromium with a fixture of listings:
 
 * R1: no element has computed position fixed; sticky only on the navbar region; backdrop-filter only on the navbar and inside the map popup; the document is taller than the viewport and scrolls.
 * R2: tapping each pin centre in view selects the pin on top there, opens a popup and outlines its card; page and list scroll positions are unchanged.
@@ -185,9 +185,7 @@ Page filters: restid ≤ slider, hyra ≤ slider, kr/m² ≤ slider, storlek ≥
 * R9: restid = the matrix minutes of the view for every listing.
 * R11: never more than one popup, outlined card or ringed pin.
 
-Run: `pip install playwright && playwright install chromium && python legacy/tests/design_check.py`
-
-The same checks run on `apps/web` with `npm test -w @lk/web`. That test finds elements by ids and data attributes, never by CSS class names (CSS Modules hash them): `#map`, `#list`, `#nya`, `#f-min`, `#f-rent`, `#f-m2`, `#f-new`, `#c{id}` and `[data-card]` for cards, `aria-pressed="true"` for the selected card, `[data-new]` for a card new today, `[data-line="1"]` / `[data-line="2"]` for card lines, `[data-a]` for atoms.
+Run: `npm test -w @lk/web` (once: `npx playwright install chromium`). The test finds elements by ids and data attributes, never by CSS class names (CSS Modules hash them): `#map`, `#list`, `#nya`, `#f-min`, `#f-rent`, `#f-m2`, `#f-new`, `#c{id}` and `[data-card]` for cards, `aria-pressed="true"` for the selected card, `[data-new]` for a card new today, `[data-line="1"]` / `[data-line="2"]` for card lines, `[data-a]` for atoms.
 
 ## 12. Structure (Frame)
 

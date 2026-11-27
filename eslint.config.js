@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', 'legacy/**', 'index.html', 'vendor/**', 'apps/worker/out/**', 'apps/worker/cache/**', 'apps/web/dist-test/**', 'apps/worker/router/.venv/**'] },
+  { ignores: ['**/dist/**', '**/node_modules/**', 'vendor/**', 'apps/worker/out/**', 'apps/worker/cache/**', 'apps/web/dist-test/**', 'apps/worker/router/.venv/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   // apps/web follows Frame's rules (vendor/frame/AGENTS.md): accessibility, hooks, no inline styles
