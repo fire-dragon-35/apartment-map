@@ -57,7 +57,7 @@ export function PlusPage() {
   const next = loading ? null
     : !user ? (
       <Stack gap={3} align="center">
-        <Heading level={3} as="h2">Logga in för att köpa</Heading>
+        <Heading level={3} as="h2">Logga in för att skaffa Plus</Heading>
         <Text as="p" tone="secondary" align="center">Med Google eller en länk till din e-post. Är du ny skapas kontot direkt.</Text>
         <SignIn />
       </Stack>
