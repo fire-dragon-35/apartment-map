@@ -1,14 +1,13 @@
 import { ButtonLink } from '@frame/ui';
-import { Pricing, Section } from '@frame/site';
+import { Section } from '@frame/site';
 import { ROUTES } from '../../app/useRoute.ts';
-import { PLAN } from '../plus/plan.ts';
+import { PlanCard } from '../plus/PlanCard.tsx';
 
-/** What Plus adds, and its price. Buying happens on the Plus page. */
+/** What Plus adds, with the price beside it. Buying happens on the Plus page. */
 export function Plus() {
   return (
     <Section align="center" size="narrow" title="Plus">
-      <Pricing lead={PLAN.lead} price={PLAN.price} unit={PLAN.unit} note={PLAN.note}
-        action={<ButtonLink href={ROUTES.plus}>Skaffa Plus</ButtonLink>} features={PLAN.features} />
+      <PlanCard action={<ButtonLink href={ROUTES.plus}>Skaffa Plus</ButtonLink>} />
     </Section>
   );
 }

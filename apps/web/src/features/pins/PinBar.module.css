@@ -1,6 +1,8 @@
-/* items of the header toolbar: `end` sits at its right edge, `row` takes a line of its own */
-.end {
-  margin-left: auto;
+/* items of the header toolbar: `tools` is the quiet pin and search pair beside Filter (it wraps as one group);
+   `row` takes a line of its own */
+.tools {
+  display: flex;
+  gap: var(--space-1);
 }
 .row {
   display: flex;
@@ -8,16 +10,4 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2) var(--space-3);
-}
-/* floats below the toolbar, which anchors it (no reflow); the tint lies on an opaque base */
-.upsell {
-  position: absolute;
-  top: calc(100% + var(--space-2));
-  width: min(100%, 20rem);
-  right: 0;
-  z-index: 1000;
-  box-shadow: var(--shadow-pop);
-  padding: var(--space-3);
-  border-radius: var(--radius-panel);
-  background: linear-gradient(var(--new), var(--new)), var(--color-background);
 }

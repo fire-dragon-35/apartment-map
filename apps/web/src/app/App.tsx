@@ -19,7 +19,7 @@ export function App() {
         : route === 'hem' ? <Landing />
         : route === 'om' ? <About />
         : route === 'plus' ? <PlusPage />
-        : route === 'logga-in' || route === 'skapa-konto' ? <Account />
+        : route === 'konto' ? <Account />
         : <ComingSoon />}
     </AppShell>
   );

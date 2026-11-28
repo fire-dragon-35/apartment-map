@@ -3,12 +3,11 @@ export const PLAN = {
   price: '299',
   unit: 'kr/mån',
   note: 'Inklusive moms. Avsluta när du vill under Konto.',
-  lead: 'Kartan är gratis med restider till centrum. Plus gör den till din.',
+  lead: 'Anpassa kartan efter dina specifika behov:',
   features: [
-    { title: 'Din egen plats', text: 'Flytta pinnen från centrum till jobbet, skolan eller en vän och se restiden från varje lägenhet dit.' },
-    { title: 'Sparad sökning', text: 'Dina filter finns kvar nästa gång du öppnar kartan.' },
-    { title: 'Mejl om nytt', text: 'Få ett mejl när en ny annons passar din sökning.' },
-    { title: 'Sålla', text: 'Bocka för annonser du redan kollat, sökt eller inte vill ha: de blir grå på kartan och i listan.' },
+    { title: 'Din egen plats', text: 'Flytta kartans centrum till ditt jobb, barnens skola eller en vän du gärna bor nära.' },
+    { title: 'Notifikationer', text: 'Spara dina filtreringar och få notiser via mejl.' },
+    { title: 'Sålla', text: 'Bocka för annonser du redan kollat, sökt eller inte vill ha så du kan fokusera på nytt istället.' },
   ],
 };
 

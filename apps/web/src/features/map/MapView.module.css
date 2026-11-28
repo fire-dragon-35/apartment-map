@@ -54,7 +54,7 @@
   box-shadow: 0 0 0 1px var(--accent);
   cursor: grab;
 }
-/* "Flytta pinnen": the listing dots are hidden so every tap reaches the map */
+/* "Flytta centrum": the listing dots are hidden so every tap reaches the map */
 .placing :global(.leaflet-grab) {
   cursor: crosshair;
 }

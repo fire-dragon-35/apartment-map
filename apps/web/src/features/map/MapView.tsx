@@ -128,7 +128,7 @@ interface Props {
   onClose: () => void;
   pins: Place[];
   editablePins: boolean;
-  /** "Flytta pinnen" is on: listing dots are hidden, the pin can be dragged and the next map tap or drop places it */
+  /** "Flytta centrum" is on: listing dots are hidden, the pin can be dragged and the next map tap or drop places it */
   placing: boolean;
   onPlace: (lat: number, lon: number) => void;
 }
