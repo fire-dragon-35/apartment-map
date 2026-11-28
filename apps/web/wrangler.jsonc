@@ -1,6 +1,14 @@
 // Cloudflare Workers, static assets only: the built page from `npm run build -w @lk/web`. Routes are hashes, so no fallback.
+// Served on enkellgh.se; www.enkellgh.se is a 301 to it (a redirect rule in the zone, not here).
+// Workers Builds runs wrangler from the repo root: `.wrangler/deploy/config.json` there points it at this file.
+// `previews`: Workers Builds runs `wrangler preview` for pull requests, which needs the block (it can stay empty).
 {
   "name": "enkellgh-web",
   "compatibility_date": "2026-11-27",
-  "assets": { "directory": "./dist" }
+  "assets": { "directory": "./dist" },
+  "previews": {},
+  "routes": [
+    { "pattern": "enkellgh.se", "custom_domain": true },
+    { "pattern": "www.enkellgh.se", "custom_domain": true }
+  ]
 }
