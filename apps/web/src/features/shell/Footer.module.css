@@ -1,3 +1,9 @@
+/* the contact address under the tagline: the tagline's colour, underlined so it reads as a link */
+.mail {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .legal {
   display: block;
   text-align: center;

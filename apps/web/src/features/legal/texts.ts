@@ -5,7 +5,7 @@
 export interface LegalDoc { title: string; updated: string; intro: string; sections: { title: string; body: string[] }[] }
 
 const OWNER = '[Ditt namn eller företagsnamn], [org.nr]';
-export const CONTACT = '[kontakt@din-domän.se]';
+export const CONTACT = 'kontakt@enkellgh.se';
 
 export const PRIVACY: LegalDoc = {
   title: 'Integritetspolicy',
