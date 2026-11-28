@@ -11,3 +11,6 @@ __pycache__/
 dist-test/
 *.local
 dist-prod/
+# wrangler state; only the redirect to apps/web/wrangler.jsonc is checked in (Workers Builds runs wrangler from the root)
+/.wrangler/*
+!/.wrangler/deploy/
